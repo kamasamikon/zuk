@@ -44,7 +44,7 @@ INCLUDEPATH += ../lib/timesync \
 # Input
 HEADERS += options.h sysdeps.h
 
-SOURCES += frontend.cpp options.c sysdeps.c zuk_fw.cpp zuk_main.cpp
+SOURCES += options.c sysdeps.c zuk_fw.cpp zuk_main.cpp
 
 unix:LIBS += -L/usr/lib
 unix:LIBS += -lexpat

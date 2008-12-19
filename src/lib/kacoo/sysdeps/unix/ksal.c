@@ -169,25 +169,34 @@ kint ksal_sema_rel(kbean semaphId)
     return 0;
 }
 
-kint ksal_execvp(const kchar *a_path, kchar *const a_argv[], const kchar *a_workdir, kint a_xiuflg, kbool a_block, kbean *a_retbean)
+kint ksal_exec(kint a_xiuflg, kbool a_block, kbean *a_retbean, const kchar *a_args, ...)
 {
-    kchar curdir[1024];
-    kint status = 0;
+    kint i = 0, status = 0;
     pid_t pid;
+
+    kchar *arg, *argv[1000];
+    va_list args;
 
     if (a_retbean) {
         *a_retbean = knil;
     }
 
+    va_start(args, a_args);
+    while (1) {
+        arg = va_arg(args, kchar*);
+        if (!arg) {
+            break;
+        }
+        argv[i++] = arg;
+    }
+    argv[i] = 0;
+    va_end(args);
+
     pid = fork();
     if (0 == pid) {
         /* printf("\nchild process, execute the command:path:%s\n", path); */
         /* child process, execute the command */
-        if (a_workdir) {
-            getcwd(curdir, sizeof(curdir));
-            chdir(a_workdir);
-        }
-        execvp(a_path, a_argv);
+        execvp(argv[0], argv);
         _exit(EXIT_FAILURE);
     } else if (0 > pid) {
         /* fork failed,report failure */

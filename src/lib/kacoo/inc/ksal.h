@@ -95,7 +95,7 @@ kint ksal_sema_rel(kbean a_semaphId);
  *
  * @return 0 for success, -1 for error.
  */
-kint ksal_execvp(const kchar *a_path, kchar *const a_argv[], const kchar *a_workdir, kint a_xiuflg, kbool a_block, kbean *a_retbean);
+kint ksal_exec(kint a_xiuflg, kbool a_block, kbean *a_retbean, const kchar *a_args, ...);
 kint ksal_kill(kbean a_pid, kuint a_sig);
 /** @} */
 

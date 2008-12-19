@@ -53,7 +53,7 @@ EXPORTS
     ksal_sema_del @49
     ksal_sema_get @50
     ksal_sema_rel @51
-    ksal_execvp @52
+    ksal_exec @52
     ksal_kill @53
     ksal_exedir @54
     kvfs_path_sep @55

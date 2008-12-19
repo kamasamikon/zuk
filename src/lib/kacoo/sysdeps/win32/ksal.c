@@ -256,13 +256,15 @@ kint ksal_sema_rel(kbean semaphId)
     return 0;
 }
 
-
-kint ksal_execvp(const kchar *a_path, kchar *const a_argv[], const kchar *a_workdir, kint a_xiuflg, kbool a_block, kbean *a_retbean)
+kint ksal_exec(kint a_xiuflg, kbool a_block, kbean *a_retbean, const kchar *a_args, ...)
 {
     STARTUPINFO si;
     PROCESS_INFORMATION pi;
-    CHAR szCmdLine[512] = "";
+    CHAR szCmdLine[4096] = "";
     kint i, ret;
+
+    kchar *arg;
+    va_list args;
 
     // 2, retrieve the data
     ZeroMemory(&pi, sizeof(pi));
@@ -271,17 +273,23 @@ kint ksal_execvp(const kchar *a_path, kchar *const a_argv[], const kchar *a_work
     si.dwFlags = STARTF_USESHOWWINDOW;
     si.wShowWindow = a_xiuflg ? SW_SHOW : SW_HIDE;
 
-    for (i = 0; a_argv[i]; i++) {
+    va_start(args, a_args);
+    while (1) {
+        arg = va_arg(args, kchar*);
+        if (!arg) {
+            break;
+        }
 		strcat(szCmdLine, "\"");
-        strcat(szCmdLine, a_argv[i]);
+        strcat(szCmdLine, arg);
 		strcat(szCmdLine, "\"");
         strcat(szCmdLine, " ");
     }
+    va_end(args);
 
     if (a_retbean) {
         *a_retbean = knil;
     }
-    if (!CreateProcess(NULL, szCmdLine, NULL, NULL, FALSE, NULL, NULL, a_workdir, &si, &pi)) {
+    if (!CreateProcess(NULL, szCmdLine, NULL, NULL, FALSE, NULL, NULL, NULL, &si, &pi)) {
         return -1;
     }
     if (a_retbean) {

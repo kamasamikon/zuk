@@ -269,9 +269,9 @@ kint zuk_init(kint argc, kchar **argv)
     kim_start(im);
 
     if ((o = read_opt(opt, "show-loading")) && ('1' == o[0])) {
-        // ksal_exec(show, path, wait, retbean, "z-loading", ...);
-        // ksal_exec(show, path, wait, retbean, "z-loading.exe", ...);
-        // kim_addptr(__g_im, "p.misc.app.bean.loading", loading_application, ...);
+        sprintf(buffer, "%s%sz-loading", instdir, ps);
+        ksal_exec(kfalse, kfalse, &loading_application, 0, buffer, 0);
+        kim_addptr(__g_im, "p.misc.app.bean.loading", loading_application, RF_AUTOSET, knil, knil);
     }
 
     /* initialize the timer, needed by SubscriberId */
