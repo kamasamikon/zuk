@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module id="zuk" homepage="http://192.168.1.13" updateurl="http://192.168.1.13" ver="1.0.2">
+    <name>zuk-zuk</name>
+    <desc>zuk-zuk</desc>
+    <type>0</type>
+    <state>1</state>
+    <platform id="linux" maxver="2.6.99" minver="2.6.0">
+    </platform>
+</module>
+

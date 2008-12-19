@@ -1,0 +1,139 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.6	//
+AR	Makefile	/^AR            = ar cqs$/;"	m
+CC	Makefile	/^CC            = gcc$/;"	m
+CFLAGS	Makefile	/^CFLAGS        = -pipe $(DEFINES)$/;"	m
+CHK_DIR_EXISTS	Makefile	/^CHK_DIR_EXISTS= test -d$/;"	m
+COMPRESS	Makefile	/^COMPRESS      = gzip -9f$/;"	m
+COPY	Makefile	/^COPY          = cp -f$/;"	m
+COPY_DIR	Makefile	/^COPY_DIR      = $(COPY) -r$/;"	m
+COPY_FILE	Makefile	/^COPY_FILE     = $(COPY)$/;"	m
+CXX	Makefile	/^CXX           = g++$/;"	m
+CXXFLAGS	Makefile	/^CXXFLAGS      = -pipe $(DEFINES)$/;"	m
+DEFINES	Makefile	/^DEFINES       = $/;"	m
+DEL_DIR	Makefile	/^DEL_DIR       = rmdir$/;"	m
+DEL_FILE	Makefile	/^DEL_FILE      = rm -f$/;"	m
+DESTDIR	Makefile	/^DESTDIR       = $/;"	m
+DIST	Makefile	/^DIST          = \/media\/sda9\/tools\/Trolltech\/Qt-4.4.0\/mkspecs\/common\/g++.conf \\$/;"	m
+ERSN_QUIT	zuk_main.cpp	61;"	d	file:
+ERSN_REBOOT	zuk_main.cpp	62;"	d	file:
+GET_FOREGROUND	frontend.cpp	58;"	d	file:
+GET_FOREGROUND	frontend.cpp	61;"	d	file:
+IINFO_GUID	zuk_main.cpp	214;"	d	file:
+INCPATH	Makefile	/^INCPATH       = -I\/media\/sda9\/tools\/Trolltech\/Qt-4.4.0\/mkspecs\/linux-g++ -I.$/;"	m
+INSTALL_DIR	Makefile	/^INSTALL_DIR   = $(COPY_DIR)$/;"	m
+INSTALL_FILE	Makefile	/^INSTALL_FILE  = install -m 644 -p$/;"	m
+INSTALL_PROGRAM	Makefile	/^INSTALL_PROGRAM = install -m 755 -p$/;"	m
+KMSG_CMD_LOOP	zuk_main.cpp	219;"	d	file:
+KMSG_START	zuk_main.cpp	218;"	d	file:
+LFLAGS	Makefile	/^LFLAGS        = -Wl,-rpath,\/media\/sda9\/tools\/Trolltech\/Qt-4.4.0\/lib$/;"	m
+LIBS	Makefile	/^LIBS          = $(SUBLIBS)   $/;"	m
+LINK	Makefile	/^LINK          = g++$/;"	m
+MKDIR	Makefile	/^MKDIR         = mkdir -p$/;"	m
+MOVE	Makefile	/^MOVE          = mv -f$/;"	m
+OBJECTS	Makefile	/^OBJECTS       = $/;"	m
+OBJECTS_DIR	Makefile	/^OBJECTS_DIR   = .\/$/;"	m
+PLAYLIST_GUID	zuk_main.cpp	212;"	d	file:
+QMAKE	Makefile	/^QMAKE         = \/media\/sda9\/tools\/Trolltech\/Qt-4.4.0\/bin\/qmake$/;"	m
+QMAKE_TARGET	Makefile	/^QMAKE_TARGET  = main$/;"	m
+RANLIB	Makefile	/^RANLIB        = $/;"	m
+SED	Makefile	/^SED           = sed$/;"	m
+SET_FOREGROUND	frontend.cpp	59;"	d	file:
+SET_FOREGROUND	frontend.cpp	62;"	d	file:
+SOURCES	Makefile	/^SOURCES       =  $/;"	m
+SYMLINK	Makefile	/^SYMLINK       = ln -sf$/;"	m
+TAR	Makefile	/^TAR           = tar -cf$/;"	m
+TARGET	Makefile	/^TARGET        = main$/;"	m
+UPGRADER_GUID	zuk_main.cpp	213;"	d	file:
+__K_OPTS_H__	options.h	2;"	d
+__g_air_application	frontend.cpp	/^static kbean __g_air_application = knil;$/;"	v	file:
+__g_be_task	zuk_main.cpp	/^static kbean __g_be_task = knil;$/;"	v	file:
+__g_im	frontend.cpp	/^static KIM *__g_im = knil;$/;"	v	file:
+__g_im	zuk_main.cpp	/^static KIM *__g_im = (KIM*)knil;$/;"	v	file:
+__g_im	zuk_main.cpp	/^static KIM *__g_im = knil;$/;"	v	file:
+__g_jc_receipt	frontend.cpp	/^static turJcReceipt *__g_jc_receipt = 0;$/;"	v	file:
+__g_mc	zuk_main.cpp	/^static KMediaContainer *__g_mc = knil;$/;"	v	file:
+__g_mediaWnd	frontend.cpp	/^static turMediaWindow *__g_mediaWnd = 0;$/;"	v	file:
+__g_mm	zuk_main.cpp	/^static KMM *__g_mm = knil;$/;"	v	file:
+__g_tvplayer	frontend.cpp	/^static TVPlayer *__g_tvplayer = 0;$/;"	v	file:
+__g_tvplayer_application	frontend.cpp	/^static QApplication *__g_tvplayer_application = 0;$/;"	v	file:
+__g_uiWnd	frontend.cpp	/^static kbean __g_uiWnd = 0;$/;"	v	file:
+__g_wch_appShutdown	frontend.cpp	/^static kbean __g_wch_appShutdown = knil;$/;"	v	file:
+_zuk_opt	options.h	/^typedef struct _zuk_opt {$/;"	s
+_zuk_opt::desc	options.h	/^    kchar *desc;                            \/**< description *\/$/;"	m	struct:_zuk_opt	access:public
+_zuk_opt::name	options.h	/^    kchar *name;                            \/**< --name is opt name *\/$/;"	m	struct:_zuk_opt	access:public
+_zuk_opt::type	options.h	/^    kchar type;                             \/**< n:nul, i:int, b:bool, s:string *\/$/;"	m	struct:_zuk_opt	access:public
+_zuk_opt::val	options.h	/^    kchar *val;                             \/**< all value is string *\/$/;"	m	struct:_zuk_opt	access:public
+beat_shutdown	zuk_main.cpp	/^static kint beat_shutdown(struct _KIM *im, struct _KRtiRec *rec, kuchar reason)$/;"	f	file:	signature:(struct _KIM *im, struct _KRtiRec *rec, kuchar reason)
+check_application	zuk_main.cpp	/^static kbool check_application(KIM *im)$/;"	f	file:	signature:(KIM *im)
+desc	options.h	/^    kchar *desc;                            \/**< description *\/$/;"	m	struct:_zuk_opt	access:public
+emitCommand	frontend.cpp	/^void turJcReceipt::emitCommand(char *jcStr, char *respStr)$/;"	f	class:turJcReceipt	signature:(char *jcStr, char *respStr)
+event	frontend.cpp	/^bool turMediaWindow::event(QEvent* e)$/;"	f	class:turMediaWindow	signature:(QEvent* e)
+fewch_appShutdown	frontend.cpp	/^static kint fewch_appShutdown(struct _KIM *im, const struct _KRtiRec *rec, kvoid* ua, kvoid* ub, kuchar type)$/;"	f	file:	signature:(struct _KIM *im, const struct _KRtiRec *rec, kvoid* ua, kvoid* ub, kuchar type)
+getMediaWindowId	frontend.cpp	/^kint getMediaWindowId()$/;"	f	signature:()
+get_default_opt	options.c	/^static kint get_default_opt(const kchar *a_desc, kchar a_type, kvoid **a_ret)$/;"	f	file:	signature:(const kchar *a_desc, kchar a_type, kvoid **a_ret)
+get_default_opt_start	options.c	/^static kchar* get_default_opt_start(const kchar *a_desc)$/;"	f	file:	signature:(const kchar *a_desc)
+get_sysinfo	zuk_main.cpp	/^static kbool get_sysinfo(KIM *im)$/;"	f	file:	signature:(KIM *im)
+get_ui_window	frontend.cpp	/^kvoid get_ui_window()$/;"	f	signature:()
+imat_accountMail	zuk_main.cpp	/^static kint imat_accountMail(struct _KIM *im, struct _KRtiRec *rec, kuchar reason)$/;"	f	file:	signature:(struct _KIM *im, struct _KRtiRec *rec, kuchar reason)
+imat_accountName	zuk_main.cpp	/^static kint imat_accountName(struct _KIM *im, struct _KRtiRec *rec, kuchar reason)$/;"	f	file:	signature:(struct _KIM *im, struct _KRtiRec *rec, kuchar reason)
+imat_accountPass	zuk_main.cpp	/^static kint imat_accountPass(struct _KIM *im, struct _KRtiRec *rec, kuchar reason)$/;"	f	file:	signature:(struct _KIM *im, struct _KRtiRec *rec, kuchar reason)
+imat_playbarActive	frontend.cpp	/^static kint imat_playbarActive(struct _KIM *im, struct _KRtiRec *rec, kuchar reason)$/;"	f	file:	signature:(struct _KIM *im, struct _KRtiRec *rec, kuchar reason)
+imat_playbarGeometry	frontend.cpp	/^static kint imat_playbarGeometry(struct _KIM *im, struct _KRtiRec *rec, kuchar reason)$/;"	f	file:	signature:(struct _KIM *im, struct _KRtiRec *rec, kuchar reason)
+imat_playbarShow	frontend.cpp	/^static kint imat_playbarShow(struct _KIM *im, struct _KRtiRec *rec, kuchar reason)$/;"	f	file:	signature:(struct _KIM *im, struct _KRtiRec *rec, kuchar reason)
+jcConsumer	frontend.cpp	/^void turMediaWindow::jcConsumer(char *jcStr, char *respStr)$/;"	f	class:turMediaWindow	signature:(char *jcStr, char *respStr)
+jcDone	frontend.cpp	/^static QWaitCondition jcDone;$/;"	v	file:
+jcLock	frontend.cpp	/^static QMutex jcLock;$/;"	v	file:
+jc_command_cosumer	frontend.cpp	/^kint jc_command_cosumer(kchar *jcstr, kchar *respbuf)$/;"	f	signature:(kchar *jcstr, kchar *respbuf)
+jc_mkret	zuk_main.cpp	/^static kint jc_mkret(kchar a_retbuf[4096], const kchar *a_cmd, const kchar *a_data,$/;"	f	file:	signature:(kchar a_retbuf[4096], const kchar *a_cmd, const kchar *a_data, kint a_argcnt, const kchar *a_arg, ...)
+main	zuk_fw.cpp	/^int main(int argc, char **argv)$/;"	f	signature:(int argc, char **argv)
+mouseDoubleClickEvent	frontend.cpp	/^void turMediaWindow::mouseDoubleClickEvent(QMouseEvent *event)$/;"	f	class:turMediaWindow	signature:(QMouseEvent *event)
+name	options.h	/^    kchar *name;                            \/**< --name is opt name *\/$/;"	m	struct:_zuk_opt	access:public
+om_beCmdLoop	zuk_main.cpp	/^static kint om_beCmdLoop(kbean a_tsk, kuint a_msg, kvoid *a_ar0, kvoid *a_ar1, kvoid *a_ar2, kvoid *a_ar3, kint a_rsn)$/;"	f	file:	signature:(kbean a_tsk, kuint a_msg, kvoid *a_ar0, kvoid *a_ar1, kvoid *a_ar2, kvoid *a_ar3, kint a_rsn)
+om_beQuit	zuk_main.cpp	/^static kint om_beQuit(kbean a_tsk, kuint a_msg, kvoid *a_ar0, kvoid *a_ar1, kvoid *a_ar2, kvoid *a_ar3, kint a_rsn)$/;"	f	file:	signature:(kbean a_tsk, kuint a_msg, kvoid *a_ar0, kvoid *a_ar1, kvoid *a_ar2, kvoid *a_ar3, kint a_rsn)
+om_beStart	zuk_main.cpp	/^static kint om_beStart(kbean a_tsk, kuint a_msg, kvoid *a_ar0, kvoid *a_ar1, kvoid *a_ar2, kvoid *a_ar3, kint a_rsn)$/;"	f	file:	signature:(kbean a_tsk, kuint a_msg, kvoid *a_ar0, kvoid *a_ar1, kvoid *a_ar2, kvoid *a_ar3, kint a_rsn)
+processShutdown	frontend.cpp	/^void turMediaWindow::processShutdown()$/;"	f	class:turMediaWindow	signature:()
+process_jc_command	zuk_main.cpp	/^int process_jc_command(kchar *jcstr, kchar *respbuf)$/;"	f	signature:(kchar *jcstr, kchar *respbuf)
+read_arg_opt	options.c	/^void read_arg_opt(zuk_opt *a_opt, kint a_argc, kchar **a_argv)$/;"	f	signature:(zuk_opt *a_opt, kint a_argc, kchar **a_argv)
+read_arg_opt	options.h	/^void read_arg_opt(zuk_opt *a_opt, kint a_argc, kchar **a_argv);$/;"	p	signature:(zuk_opt *a_opt, kint a_argc, kchar **a_argv)
+read_ini_opt	options.c	/^void read_ini_opt(zuk_opt *a_opt, const kchar *a_inipath)$/;"	f	signature:(zuk_opt *a_opt, const kchar *a_inipath)
+read_ini_opt	options.h	/^void read_ini_opt(zuk_opt *a_opt, const kchar *a_inipath);$/;"	p	signature:(zuk_opt *a_opt, const kchar *a_inipath)
+read_opt	options.c	/^kchar* read_opt(zuk_opt *a_opt, const kchar *a_optname)$/;"	f	signature:(zuk_opt *a_opt, const kchar *a_optname)
+show_help	options.c	/^void show_help(zuk_opt *a_opt)$/;"	f	signature:(zuk_opt *a_opt)
+show_help	options.h	/^void show_help(zuk_opt *a_opt);$/;"	p	signature:(zuk_opt *a_opt)
+turJcReceipt	frontend.cpp	/^turJcReceipt::turJcReceipt( QWidget *parent ) : QWidget( parent )$/;"	f	class:turJcReceipt	signature:( QWidget *parent )
+turJcReceipt::emitCommand	frontend.cpp	/^void turJcReceipt::emitCommand(char *jcStr, char *respStr)$/;"	f	class:turJcReceipt	signature:(char *jcStr, char *respStr)
+turJcReceipt::turJcReceipt	frontend.cpp	/^turJcReceipt::turJcReceipt( QWidget *parent ) : QWidget( parent )$/;"	f	class:turJcReceipt	signature:( QWidget *parent )
+turMediaWindow	frontend.cpp	/^turMediaWindow::turMediaWindow( QWidget *parent ) : QWidget( parent, Qt::Drawer | Qt::FramelessWindowHint )$/;"	f	class:turMediaWindow	signature:( QWidget *parent )
+turMediaWindow::event	frontend.cpp	/^bool turMediaWindow::event(QEvent* e)$/;"	f	class:turMediaWindow	signature:(QEvent* e)
+turMediaWindow::jcConsumer	frontend.cpp	/^void turMediaWindow::jcConsumer(char *jcStr, char *respStr)$/;"	f	class:turMediaWindow	signature:(char *jcStr, char *respStr)
+turMediaWindow::mouseDoubleClickEvent	frontend.cpp	/^void turMediaWindow::mouseDoubleClickEvent(QMouseEvent *event)$/;"	f	class:turMediaWindow	signature:(QMouseEvent *event)
+turMediaWindow::processShutdown	frontend.cpp	/^void turMediaWindow::processShutdown()$/;"	f	class:turMediaWindow	signature:()
+turMediaWindow::turMediaWindow	frontend.cpp	/^turMediaWindow::turMediaWindow( QWidget *parent ) : QWidget( parent, Qt::Drawer | Qt::FramelessWindowHint )$/;"	f	class:turMediaWindow	signature:( QWidget *parent )
+turtle_backend_start	zuk_main.cpp	/^kint turtle_backend_start(KIM *im, kint argc, kchar **argv)$/;"	f	signature:(KIM *im, kint argc, kchar **argv)
+turtle_backend_term	zuk_main.cpp	/^kint turtle_backend_term()$/;"	f	signature:()
+turtle_check_single_instance	zuk_main.cpp	/^kint turtle_check_single_instance(const kchar *a_instdir);$/;"	p	file:	signature:(const kchar *a_instdir)
+turtle_frontend_start	frontend.cpp	/^kint turtle_frontend_start(KIM *im, kint argc, kchar **argv)$/;"	f	signature:(KIM *im, kint argc, kchar **argv)
+turtle_frontend_start_for_air	frontend.cpp	/^kint turtle_frontend_start_for_air(KIM *im, kint argc, kchar **argv)$/;"	f	signature:(KIM *im, kint argc, kchar **argv)
+turtle_frontend_start_for_qt	frontend.cpp	/^kint turtle_frontend_start_for_qt(KIM *im, kint argc, kchar **argv)$/;"	f	signature:(KIM *im, kint argc, kchar **argv)
+turtle_frontend_term	frontend.cpp	/^kint turtle_frontend_term()$/;"	f	signature:()
+turtle_frontend_term_for_air	frontend.cpp	/^kint turtle_frontend_term_for_air()$/;"	f	signature:()
+turtle_frontend_term_for_qt	frontend.cpp	/^kint turtle_frontend_term_for_qt()$/;"	f	signature:()
+turtle_install_update	zuk_main.cpp	/^int turtle_install_update(const kchar *a_instdir);$/;"	p	file:	signature:(const kchar *a_instdir)
+turtle_mark_single_instance	zuk_main.cpp	/^kint turtle_mark_single_instance(const kchar *a_instdir);$/;"	p	file:	signature:(const kchar *a_instdir)
+turtle_quit_single_instance	zuk_main.cpp	/^kint turtle_quit_single_instance(const kchar *a_instdir);$/;"	p	file:	signature:(const kchar *a_instdir)
+turtle_sysdeps_start	zuk_main.cpp	/^kint turtle_sysdeps_start(KIM *im, kint argc, kchar **argv);$/;"	p	file:	signature:(KIM *im, kint argc, kchar **argv)
+turtle_sysdeps_term	zuk_main.cpp	/^kint turtle_sysdeps_term();$/;"	p	file:	signature:()
+type	options.h	/^    kchar type;                             \/**< n:nul, i:int, b:bool, s:string *\/$/;"	m	struct:_zuk_opt	access:public
+val	options.h	/^    kchar *val;                             \/**< all value is string *\/$/;"	m	struct:_zuk_opt	access:public
+zuk_main	zuk_main.cpp	/^kint zuk_main(kint argc, kchar **argv)$/;"	f	signature:(kint argc, kchar **argv)
+zuk_opt	options.h	/^} zuk_opt;$/;"	t	typeref:struct:_zuk_opt
+zuk_opt_final	options.c	/^kvoid zuk_opt_final(zuk_opt *a_opt)$/;"	f	signature:(zuk_opt *a_opt)
+zuk_opt_final	options.h	/^kvoid zuk_opt_final(zuk_opt *a_opt);$/;"	p	signature:(zuk_opt *a_opt)
+zuk_opt_init	options.c	/^zuk_opt* zuk_opt_init()$/;"	f
+zuk_opt_init	options.h	/^zuk_opt* zuk_opt_init();$/;"	p	signature:()
+zukopts	options.c	/^static zuk_opt zukopts[] =$/;"	v	file:

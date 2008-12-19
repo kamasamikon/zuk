@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module id="playlist" homepage="" updateurl="" ver="1.0.1">
+    <name>play list</name>
+    <desc>play list</desc>
+    <type>0</type>
+    <state>1</state>
+    <platform id="linux" maxver="2.6.99" minver="2.6.0">
+        <target id="zuk" maxver="1.1.0" minver="1.0.0" />
+    	<dep>defui</dep>
+        <entrance>playlist</entrance>
+    </platform>
+</module>
+

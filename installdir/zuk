@@ -1,0 +1,178 @@
+#!/bin/bash
+
+# Log Level, 0=None, 1=signal, 2=many
+LOG_LEVEL="2"
+
+# no readlink in MID, use other to get real path
+THE_PATH=`file -b /proc/$$/fd/255`
+THE_START=`expr index "$THE_PATH" "/"`
+THE_PATH=`expr substr "$THE_PATH" $THE_START 10000`
+THE_LENGTH=`expr length "$THE_PATH"`
+THE_PATH=${THE_PATH:0:(( $THE_LENGTH - 1 ))}
+
+SSPATH=$THE_PATH                                            # Script's path
+SSDIR=`dirname $THE_PATH`                                   # Script's dir
+
+# Log file
+LOG_FILE="/dev/null"
+# Debug file
+DBG_FILE="/dev/null"
+
+# keep temp files, for debug
+KEEP_TEMP="false"
+
+# options
+ORG_OPT="--show-debug --has-title yes $@" 
+ADD_OPT="-widgetcount"
+
+# update dir
+UPDIR="a56236b4-3609-45af-8556-d95dad4e81c"
+
+# applicationDir
+APPDIR=""
+
+show_help() {
+    echo -e "Usage: zuk [Options]"
+    echo -e ""
+    echo -e " Option:"
+    echo -e "   --help:        Show this"
+    echo -e "   --log-level:   Set Loglevel:"
+    echo -e "                  0: no log; 1: log to ~/iv.log; 2: log to ~/iv.log.TIMESTAMP"
+    echo -e "   --keep-temp:   Do not delete temp files"
+    echo -e "   --show-debug:  Show debug message"
+    echo -e ""
+}
+kill_junk_apps() {
+    echo "(II) kill_junk_apps" &> $DBG_FILE
+    killall -9 mb_loading &> /dev/null
+    killall -9 mb_upalert &> /dev/null
+    killall -9 mb_quiting &> /dev/null
+    killall -9 mplayer &> /dev/null
+    killall -9 cmmb_demux &> /dev/null
+}
+set_log_file() {
+    echo "(II) set_log_file: LL is $LOG_LEVEL" &> $DBG_FILE
+    if [ "$LOG_LEVEL" == "1" ]; then
+        LOG_FILE="$HOME/iv.log"
+        touch $LOG_FILE
+    elif [ "$LOG_LEVEL" == "2" ]; then
+        LOG_FILE="$HOME/iv.log.`date +%y%m%d.%H%M%S`"
+        touch $LOG_FILE
+    else
+        LOG_FILE="/dev/null"
+    fi
+    echo "(II) set_log_file: LF is $LOG_FILE" &> $DBG_FILE
+}
+proc_temp_file() {
+    if [ "$KEEP_TEMP" != "true" ]; then
+        rm -fr /tmp/turtle
+    fi
+}
+install_zuk() {
+    echo "(II) install_zuk" &> $DBG_FILE
+
+    if [ -e "$APPDIR/$UPDIR/zuk.bin" ]; then
+        GOAHEAD="false"
+
+        if [ -e "$APPDIR/mb_upalert" ]; then
+            $APPDIR/mb_upalert
+            if [ $? == "121" ]; then
+                GOAHEAD="true"
+            fi
+        else
+            echo "(EE) install_zuk: mb_upalert not found." &> $DBG_FILE
+        fi
+
+        echo "(II) install_zuk: GOAHEAD is $GOAHEAD." &> $DBG_FILE
+
+        if [ $GOAHEAD == "true" ]; then
+            chmod a+x $APPDIR/$UPDIR/zuk.bin
+            
+            echo -e "(II) install_zuk, cmd:\r  $APPDIR/$UPDIR/zuk.bin --silentUpdate --applicationDir $APPDIR" &> $DBG_FILE
+
+            $APPDIR/$UPDIR/zuk.bin --silentUpdate --applicationDir $APPDIR &> $DBG_FILE
+
+            # delete update package anyway
+            rm -f $APPDIR/$UPDIR/zuk.bin
+        fi
+    fi
+}
+install_modules() {
+    echo "(II) install_modules" &> $DBG_FILE
+
+    for mod in $APPDIR/$UPDIR/*_setup.bin; do
+        if [ `basename $mod` == "zuk.bin" ]; then
+            continue
+        fi
+
+        if [ -e "$mod" ]; then
+            echo "(II) IM: $mod" &> $DBG_FILE
+            chmod a+x $mod
+            $mod --silentUpdate --applicationDir $APPDIR &> $DBG_FILE
+
+            # delete update package anyway
+            rm -f $mod
+        fi
+    done
+}
+run_real() {
+    echo "(II) run_real: $APPDIR/zuk.bin $ORG_OPT $ADD_OPT --skip-update &> $LOG_FILE" &> $DBG_FILE
+    $APPDIR/zuk.bin $ORG_OPT $ADD_OPT --skip-update &> $LOG_FILE
+}
+
+# parse options
+while [ "$1" ]; do
+    if [ "$1" == "--help" ]; then
+        show_help
+        exit 0
+    elif [ "$1" == "--log-level" ]; then
+        LOG_LEVEL="$2"
+        shift
+    elif [ "$1" == "--keep-temp" ]; then
+        KEEP_TEMP="true"
+    elif [ "$1" == "--show-debug" ]; then
+        DBG_FILE="/dev/stdout"
+    elif [ "$1" == "--applicationDir" ]; then
+        APPDIR=$2
+        shift
+    fi
+    shift
+done
+
+if [ "$SSPATH" != "/tmp/nlwza2x4el" ]; then
+    cp $SSDIR/zuk /tmp/nlwza2x4el
+
+    # setup QT environment
+    export LD_LIBRARY_PATH=$SSDIR/../qt:$LD_LIBRARY_PATH
+    export QT_PLUGIN_PATH=$SSDIR/../plugins
+
+    chmod a+x /tmp/nlwza2x4el
+    /tmp/nlwza2x4el --applicationDir $SSDIR $ORG_OPT
+    exit
+fi
+
+LOOPIT="true"
+while [ $LOOPIT == "true" ]; do
+    kill_junk_apps
+    set_log_file
+
+    install_zuk
+    install_modules
+    run_real
+
+    RETCODE=$?
+    echo "(II) zuk.bin ret $RETCODE" &> $DBG_FILE
+
+    LOOPIT="false"
+    if [ "$RETCODE" == "11" ]; then
+        LOOPIT="true"
+    fi
+
+    echo "(II) LOOPIT is $LOOPIT" &> $DBG_FILE
+done
+
+kill_junk_apps
+proc_temp_file
+
+echo "(II) bye zuk" &> $DBG_FILE
+

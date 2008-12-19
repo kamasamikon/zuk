@@ -1,0 +1,41 @@
+#!/bin/bash
+
+# no readlink in MID, use other to get real path
+THE_PATH=`file -b /proc/$$/fd/255`
+THE_START=`expr index "$THE_PATH" "/"`
+THE_PATH=`expr substr "$THE_PATH" $THE_START 10000`
+THE_LENGTH=`expr length "$THE_PATH"`
+THE_PATH=${THE_PATH:0:(( $THE_LENGTH - 1 ))}
+
+SSPATH=$THE_PATH                                            # Script's path
+SSDIR=`dirname $THE_PATH`                                   # Script's dir
+
+OUTPUTDIR=${SSDIR}/../../output
+INSTDIR=${SSDIR}/../../installdir
+
+copy_libs() {
+    echo "copy installdir/lib" 
+    cp -f ${OUTPUTDIR}/libkacoo* ${INSTDIR}/lib
+    cp -f ${OUTPUTDIR}/libsg* ${INSTDIR}/lib
+    cp -f ${OUTPUTDIR}/libxmldoc* ${INSTDIR}/lib
+    echo "copy installdir/lib done" 
+}
+
+copy_mods() {
+    echo "copy mods"
+}
+
+copy_libs_for_mods() {
+    echo "copy libs for mods"
+}
+
+copy_main() {
+    echo "copy main to installdir"
+    cp -f ${OUTPUTDIR}/zuk.bin ${INSTDIR}/../installdir
+}
+
+copy_libs
+copy_mods
+copy_libs_for_mods
+copy_main
+
