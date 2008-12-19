@@ -22,7 +22,7 @@ DBG_FILE="/dev/null"
 KEEP_TEMP="false"
 
 # options
-ORG_OPT="--show-debug --has-title yes $@" 
+ORG_OPT="--show-debug yes --has-title yes $@" 
 ADD_OPT="-widgetcount"
 
 # update dir
