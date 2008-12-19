@@ -39,65 +39,65 @@ int OnMsg_Timer(kbean a_tsk, kuint msg, kvoid *ar0, kvoid *ar1, kvoid *ar2, kvoi
 }
 
 kbean sema;
-#define CMD_GET			0x00000002
-#define CMD_REL			0x00000003
+#define CMD_GET            0x00000002
+#define CMD_REL            0x00000003
 
 int om_get(kbean a_tsk, kuint msg, kvoid *ar0, kvoid *ar1, kvoid *ar2, kvoid *ar3, kint rsn)
 {
-	kchar *name = (kchar*)ar3;
-	printf("om_get: hey %s\n", name);
-	ksyn_sem_get(sema, -1);
-	printf("om_get: bye %s\n\n", name);
+    kchar *name = (kchar*)ar3;
+    printf("om_get: hey %s\n", name);
+    ksyn_sem_get(sema, -1);
+    printf("om_get: bye %s\n\n", name);
 }
 
 int om_rel(kbean a_tsk, kuint msg, kvoid *ar0, kvoid *ar1, kvoid *ar2, kvoid *ar3, kint rsn)
 {
-	kchar *name = (kchar*)ar3;
-	printf("\nom_get:\n");
-	ksyn_sem_rel(sema);
+    kchar *name = (kchar*)ar3;
+    printf("\nom_get:\n");
+    ksyn_sem_rel(sema);
 }
 
 
 int main()
 {
-	kint ch;
+    kint ch;
 
-	// release
-	kbean tsk_rel = ktsk_new(knil, knil, 1, 2, 3, "tsk_rel");
+    // release
+    kbean tsk_rel = ktsk_new(knil, knil, 1, 2, 3, "tsk_rel");
 
-	// get
-	kbean tsk_get1 = ktsk_new(knil, knil, 1, 2, 3, "tsk_get1");
-	kbean tsk_get2 = ktsk_new(knil, knil, 1, 2, 3, "tsk_get2");
-	kbean tsk_get3 = ktsk_new(knil, knil, 1, 2, 3, "tsk_get3");
-	kbean tsk_get4 = ktsk_new(knil, knil, 1, 2, 3, "tsk_get4");
+    // get
+    kbean tsk_get1 = ktsk_new(knil, knil, 1, 2, 3, "tsk_get1");
+    kbean tsk_get2 = ktsk_new(knil, knil, 1, 2, 3, "tsk_get2");
+    kbean tsk_get3 = ktsk_new(knil, knil, 1, 2, 3, "tsk_get3");
+    kbean tsk_get4 = ktsk_new(knil, knil, 1, 2, 3, "tsk_get4");
 
-	sema = ksyn_sem_new(0);
+    sema = ksyn_sem_new(0);
 
-	kmsg_slot_set(tsk_rel, CMD_REL, om_rel);
+    kmsg_slot_set(tsk_rel, CMD_REL, om_rel);
 
-	kmsg_slot_set(tsk_get1, CMD_GET, om_get);
-	kmsg_slot_set(tsk_get2, CMD_GET, om_get);
-	kmsg_slot_set(tsk_get3, CMD_GET, om_get);
-	kmsg_slot_set(tsk_get4, CMD_GET, om_get);
+    kmsg_slot_set(tsk_get1, CMD_GET, om_get);
+    kmsg_slot_set(tsk_get2, CMD_GET, om_get);
+    kmsg_slot_set(tsk_get3, CMD_GET, om_get);
+    kmsg_slot_set(tsk_get4, CMD_GET, om_get);
 
-	for (;;) {
-		ch = getch();
-		switch (ch) {
-		case 'r':
-			kmsg_post(tsk_rel, CMD_REL, 0, 0, 0, 0);
-			break;
-		case 'g':
-			kmsg_post(tsk_get1, CMD_GET, 0, 0, 0, "tsk_get1");
-			kmsg_post(tsk_get2, CMD_GET, 0, 0, 0, "tsk_get2");
-			kmsg_post(tsk_get3, CMD_GET, 0, 0, 0, "tsk_get3");
-			kmsg_post(tsk_get4, CMD_GET, 0, 0, 0, "tsk_get4");
-			break;
-		case 'q':
-			return 0;
-		default:
-			break;
-		}
-	}
+    for (;;) {
+        ch = getch();
+        switch (ch) {
+        case 'r':
+            kmsg_post(tsk_rel, CMD_REL, 0, 0, 0, 0);
+            break;
+        case 'g':
+            kmsg_post(tsk_get1, CMD_GET, 0, 0, 0, "tsk_get1");
+            kmsg_post(tsk_get2, CMD_GET, 0, 0, 0, "tsk_get2");
+            kmsg_post(tsk_get3, CMD_GET, 0, 0, 0, "tsk_get3");
+            kmsg_post(tsk_get4, CMD_GET, 0, 0, 0, "tsk_get4");
+            break;
+        case 'q':
+            return 0;
+        default:
+            break;
+        }
+    }
 }
 
 int main2()

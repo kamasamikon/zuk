@@ -25,9 +25,9 @@ typedef struct _sync_lock {
 kbean ksyn_lck_new(kvoid)
 {
     sync_lock *lck = (sync_lock*)kmem_alloz(sizeof(sync_lock));
-	if (lck) {
-		lck->sema = ksal_sema_new(1);
-	}
+    if (lck) {
+        lck->sema = ksal_sema_new(1);
+    }
     return (kbean)lck;
 }
 kint ksyn_lck_del(kbean a_lck)
@@ -66,7 +66,7 @@ kvoid ksyn_lck_rel(kbean a_lck)
     if (lck && (lck->owner.tsk == curtsk)) {
         lck->owner.ref--;
         if (0 == lck->owner.ref) {
-			lck->owner.tsk = 0;
+            lck->owner.tsk = 0;
             ksal_sema_rel(lck->sema);
         }
     } else {

@@ -15,8 +15,8 @@ KMediaContainer *__g_mc = (KMediaContainer*)knil;
 #define SET_GLOBALS(im) \
     do { \
         __g_im = (KIM*)(im); \
-		__g_mm = (KMM*)kim_getptr((im), "p.sys.kmm", NULL); \
-		__g_mc = (KMediaContainer*)kim_getptr((im), "p.sys.kmc", NULL); \
+        __g_mm = (KMM*)kim_getptr((im), "p.sys.kmm", NULL); \
+        __g_mc = (KMediaContainer*)kim_getptr((im), "p.sys.kmc", NULL); \
     } while (0)
 
 #endif /* __SET_GLOBALS_H__ */

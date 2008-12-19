@@ -279,9 +279,9 @@ kint ksal_exec(kint a_xiuflg, kbool a_block, kbean *a_retbean, const kchar *a_ar
         if (!arg) {
             break;
         }
-		strcat(szCmdLine, "\"");
+        strcat(szCmdLine, "\"");
         strcat(szCmdLine, arg);
-		strcat(szCmdLine, "\"");
+        strcat(szCmdLine, "\"");
         strcat(szCmdLine, " ");
     }
     va_end(args);
@@ -439,14 +439,14 @@ kint kvfs_tell(kbean a_file)
 
 kint kvfs_copy(const kchar *a_srcfile, const kchar *a_dstfile)
 {
-    int	src_fd;
-    int	dst_fd;
-    char	*buffer;
-    long	max;
-    long	nbytes;
-    long	nbytes2;
-    int	err;
-    int	result;
+    int    src_fd;
+    int    dst_fd;
+    char    *buffer;
+    long    max;
+    long    nbytes;
+    long    nbytes2;
+    int    err;
+    int    result;
 
     kchar srcfile[1024], dstfile[1024];
     strcpy(srcfile, a_srcfile);
@@ -554,16 +554,16 @@ kint kvfs_cpdir(const kchar *a_srcpath, const kchar *a_dstpath)
         do {
             if (0 != strcmp(fInfo.name, ".") && 0 !=strcmp(fInfo.name, "..")) {
 
-				sprintf(tmppath, "%s%c%s", a_srcpath, '\\', fInfo.name);
-				sprintf(targetPath, "%s%c%s", a_dstpath, '\\', fInfo.name);
+                sprintf(tmppath, "%s%c%s", a_srcpath, '\\', fInfo.name);
+                sprintf(targetPath, "%s%c%s", a_dstpath, '\\', fInfo.name);
 
-				if (KVFS_A_SUBDIR & fInfo.attrib) {
-					kvfs_mkdir(tmppath);
-					kvfs_cpdir(tmppath, targetPath);
-					continue;
-				}
+                if (KVFS_A_SUBDIR & fInfo.attrib) {
+                    kvfs_mkdir(tmppath);
+                    kvfs_cpdir(tmppath, targetPath);
+                    continue;
+                }
 
-				CopyFile(tmppath, targetPath, FALSE);
+                CopyFile(tmppath, targetPath, FALSE);
             }
         } while (-1 != kvfs_findnext(fd, &fInfo));
 
@@ -605,14 +605,14 @@ kint kvfs_rmdir(const kchar *a_path)
         do {
             if (0 != strcmp(fInfo.name, ".") && 0 !=strcmp(fInfo.name, "..")) {
 
-				sprintf(tmppath, "%s%c%s", a_path, '\\', fInfo.name);
+                sprintf(tmppath, "%s%c%s", a_path, '\\', fInfo.name);
 
-				if (KVFS_A_SUBDIR & fInfo.attrib) {
-					kvfs_rmdir(tmppath);
-					continue;
-				}
+                if (KVFS_A_SUBDIR & fInfo.attrib) {
+                    kvfs_rmdir(tmppath);
+                    continue;
+                }
 
-				kvfs_remove(tmppath);
+                kvfs_remove(tmppath);
             }
         } while (-1 != kvfs_findnext(fd, &fInfo));
 
@@ -634,9 +634,9 @@ kint kvfs_dsk_free(kchar *a_path)
     kint sec_per_cluster, byte_per_sec, free_cluster, clusters;
     if (GetDiskFreeSpace(a_path, &sec_per_cluster, &byte_per_sec, &free_cluster, &clusters)) {
         space = free_cluster;
-		space *= sec_per_cluster;
-		space *= byte_per_sec;
-		space /= (1024 * 1024);
+        space *= sec_per_cluster;
+        space *= byte_per_sec;
+        space /= (1024 * 1024);
         return (kint)space;
     }
     return -1;

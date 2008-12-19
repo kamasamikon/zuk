@@ -105,7 +105,7 @@ kint kstr_escxml(const kchar *a_is, kchar **a_os, kint *a_ol)
             return -1;
         }
         buflen = *a_ol;
-	}
+    }
     (*a_os)[0] = '\0';
     end = *a_os;
 

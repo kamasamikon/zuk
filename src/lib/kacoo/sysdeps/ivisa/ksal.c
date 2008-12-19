@@ -16,8 +16,8 @@ kint kprintf(const kchar *format, ...)
     va_end(args);
 
     OutputDebugString(buffer);
-	printf(buffer);
-	return 0;
+    printf(buffer);
+    return 0;
 }
 
 kvoid kdbgbrk(kvoid)
@@ -107,9 +107,9 @@ void* ksal_mem_alloc(kuint size)
 void ksal_mem_free(kuchar * ptr)
 {
     kint size;
-	if (!ptr) {
-		return;
-	}
+    if (!ptr) {
+        return;
+    }
     ptr -= 4;
     size = _msize(ptr);
 
@@ -156,7 +156,7 @@ kint ksal_sema_rel(kbean semaphId)
  */
 kchar kvfs_path_sep(kvoid)
 {
-	return '\\';
+    return '\\';
 }
 
 /**
@@ -164,14 +164,14 @@ kchar kvfs_path_sep(kvoid)
  */
 kbool kvfs_exist(const kchar *a_path)
 {
-	if (-1 != _access(a_path, 0)) {
-		return ktrue;
-	}
-	return kfalse;
+    if (-1 != _access(a_path, 0)) {
+        return ktrue;
+    }
+    return kfalse;
 }
 kbean kvfs_open(const kchar *a_path, const kchar *a_mode, kuint a_flg)
 {
-	return (kbean)fopen(a_path, a_mode);
+    return (kbean)fopen(a_path, a_mode);
 }
 
 kint kvfs_close(kbean a_file)
@@ -216,26 +216,26 @@ kint kvfs_write(kbean a_file, kvoid *a_buf, kint a_size)
 
 kint kvfs_length(kbean file)
 {
-	kint len = -1, pos;
-	if (file) {
+    kint len = -1, pos;
+    if (file) {
         pos = kvfs_tell(file);
-		kvfs_seek(file, 0, SEEK_END);
-		len = kvfs_tell(file);
-		kvfs_seek(file, pos, SEEK_SET);
-	}
-	return len;
+        kvfs_seek(file, 0, SEEK_END);
+        len = kvfs_tell(file);
+        kvfs_seek(file, pos, SEEK_SET);
+    }
+    return len;
 }
 
 kint kvfs_printf(kbean a_file, kchar *a_fmt, ...)
 {
-	va_list arg;
-	kint done;
+    va_list arg;
+    kint done;
 
-	va_start(arg, a_fmt);
-	done = vfprintf((FILE*)a_file, a_fmt, arg);
-	va_end(arg);
+    va_start(arg, a_fmt);
+    done = vfprintf((FILE*)a_file, a_fmt, arg);
+    va_end(arg);
 
-	return done;
+    return done;
 }
 
 kint kvfs_seek(kbean a_file, kint a_offset, kint a_origin)
@@ -260,7 +260,7 @@ kint kvfs_chdir(const kchar *a_path)
 
 kint kvfs_cpdir(const kchar *a_srcpath, const kchar *a_dstpath)
 {
-	kchar tmppath[1024], targetPath[1024];
+    kchar tmppath[1024], targetPath[1024];
     KVFS_FINDDATA fInfo;
     kbean fd = 0;
 
@@ -271,16 +271,16 @@ kint kvfs_cpdir(const kchar *a_srcpath, const kchar *a_dstpath)
         do {
             if (0 != strcmp(fInfo.name, ".") && 0 !=strcmp(fInfo.name, "..")) {
 
-				sprintf(tmppath, "%s%c%s", a_srcpath, '/', fInfo.name);
-				sprintf(targetPath, "%s%c%s", a_dstpath, '/', fInfo.name);
+                sprintf(tmppath, "%s%c%s", a_srcpath, '/', fInfo.name);
+                sprintf(targetPath, "%s%c%s", a_dstpath, '/', fInfo.name);
 
-				if (KVFS_A_SUBDIR & fInfo.attrib) {
-					kvfs_mkdir(tmppath);
-					kvfs_cpdir(tmppath, targetPath);
-					continue;
-				}
+                if (KVFS_A_SUBDIR & fInfo.attrib) {
+                    kvfs_mkdir(tmppath);
+                    kvfs_cpdir(tmppath, targetPath);
+                    continue;
+                }
 
-				kvfs_copy(tmppath, targetPath);
+                kvfs_copy(tmppath, targetPath);
             }
         } while (-1 != kvfs_findnext(fd, &fInfo));
 
@@ -302,7 +302,7 @@ kint kvfs_rmdir(const kchar *a_path)
 
 kint kvfs_cwd(kchar *a_buf, kint a_size)
 {
-	return getcwd(a_buf, a_size);
+    return getcwd(a_buf, a_size);
 }
 
 kbean kvfs_findfirst(const kchar *a_fspec, KVFS_FINDDATA *a_finfo)
@@ -313,33 +313,33 @@ kbean kvfs_findfirst(const kchar *a_fspec, KVFS_FINDDATA *a_finfo)
 
     sprintf(fspec, "%s\\*.*", a_fspec);
 
-	hfile = _findfirst(a_fspec, &fileinfo);
-	if (hfile != -1) {
-		a_finfo->attrib = fileinfo.attrib;
+    hfile = _findfirst(a_fspec, &fileinfo);
+    if (hfile != -1) {
+        a_finfo->attrib = fileinfo.attrib;
         strncpy(a_finfo->name, fileinfo.name, sizeof(a_finfo->name) - 1);
         a_finfo->name[sizeof(a_finfo->name) - 1] = '\0';
-		a_finfo->size = fileinfo.size;
-		return hfile;
-	} else {
-		return 0;
-	}
+        a_finfo->size = fileinfo.size;
+        return hfile;
+    } else {
+        return 0;
+    }
 }
 
 kint kvfs_findnext(kbean a_find, KVFS_FINDDATA *a_finfo)
 {
-	struct _finddata_t fileinfo;
-	if (!_findnext(a_find, &fileinfo)) {
-		a_finfo->attrib = fileinfo.attrib;
+    struct _finddata_t fileinfo;
+    if (!_findnext(a_find, &fileinfo)) {
+        a_finfo->attrib = fileinfo.attrib;
         strncpy(a_finfo->name, fileinfo.name, sizeof(a_finfo->name) - 1);
         a_finfo->name[sizeof(a_finfo->name) - 1] = '\0';
-		a_finfo->size = fileinfo.size;
-		return 0;
-	} else {
-		return -1;
-	}
+        a_finfo->size = fileinfo.size;
+        return 0;
+    } else {
+        return -1;
+    }
 }
 
 kint kvfs_findclose(kbean a_find)
 {
-	return _findclose(a_find);
+    return _findclose(a_find);
 }

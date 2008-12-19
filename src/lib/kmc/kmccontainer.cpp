@@ -42,15 +42,15 @@ KMediaContainer::KMediaContainer(KIM* im, char* a_name)
     kim_addint(im, "i.kmc.evt.channel.searchStep", 0, 0, NULL, "正在扫描, ua = deviceHash, ub = percent");
     kim_addint(im, "i.kmc.evt.channel.searchEnd", 0, 0, NULL, "对某一设备扫描频道完成已经完成, ua = deviceHash");
 
-	// about record 
-	// var :channelHash
+    // about record
+    // var :channelHash
     kim_addint(im, "i.kmc.evt.channel.RecordStart", 0, 0, NULL, "开始设置录制频道, ua = channelHash");
-	kim_addint(im, "i.kmc.evt.channel.RecordTime", 0, 0, NULL, "可录制节目时间长度更新, ua = channelHash");
+    kim_addint(im, "i.kmc.evt.channel.RecordTime", 0, 0, NULL, "可录制节目时间长度更新, ua = channelHash");
     kim_addint(im, "i.kmc.evt.channel.RecordEnd", 0, 0, NULL, "开始录制或失败, ua = channelHash");
 
-	// about play window state
-	//  issue enum { KMCPW_HIDE, KMCPW_SHOW} KMCPW;
-	kim_addint(im, "i.kmc.evt.channel.playWindowState", 0, 0, NULL, "开始录制或失败, ua = channelHash");
+    // about play window state
+    //  issue enum { KMCPW_HIDE, KMCPW_SHOW} KMCPW;
+    kim_addint(im, "i.kmc.evt.channel.playWindowState", 0, 0, NULL, "开始录制或失败, ua = channelHash");
 
     // issue enum { KMCPE_END, KMCPE_ERR, KMCPE_ABT } KMCPE;
     kim_addint(im, "i.kmc.evt.playEvent", 0, 0, NULL, "What's up when play, val=KMCPE', ua=chHash");
@@ -58,7 +58,7 @@ KMediaContainer::KMediaContainer(KIM* im, char* a_name)
     kim_addint(im, "i.kmc.evt.playStateChange", 0, 0, NULL, "play, pause, stop 已经发生");
 
 
-	
+
 
     kim_addint(im, "i.kmc.evt.esgStateChange", 0, 0, NULL, "双向或广播的ESG/EPG信息");
     kim_addint(im, "i.kmc.evt.esgChannelChange", 0, 0, NULL, "频道发生变化");
@@ -92,7 +92,7 @@ KMediaContainer::~KMediaContainer(void)
         prot = FIELD_TO_STRUCTURE(protEntry, KMediaProtocal, protocalEntry);
         delete prot;
     }
-    
+
     kim_delint(im, "i.kmc.evt.channel.switchStart");
     kim_delint(im, "i.kmc.evt.channel.switchEnd");
     kim_delint(im, "i.kmc.evt.protocol.new");

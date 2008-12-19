@@ -29,8 +29,8 @@ typedef struct _kmsg_slot {
 
 typedef struct _kmsg {
     K_dlist_entry ent;              /**< used for queue into ktsk::msg_qhdr */
-    kuint serial;		            /**< uniq id, auto inc when each new msg */
-    kuint flg;			            /**< DYNMEM, POST, */
+    kuint serial;                    /**< uniq id, auto inc when each new msg */
+    kuint flg;                        /**< DYNMEM, POST, */
 
     kuint msg;
     kvoid *ar0, *ar1, *ar2, *ar3;
@@ -709,7 +709,7 @@ kint kmsg_send(kbean a_tsk, kuint a_msg,
         while (!kflg_chk(msg.flg, KMF_DONE)) {
             ktsk_sleep(20);
         }
-#if 0	/* XXX ksyn_sem can not serialize the queue task when unlock */
+#if 0    /* XXX ksyn_sem can not serialize the queue task when unlock */
         if (0 != ksyn_sem_get(tsk->msg_send_wait_sema, -1)) {
             klog(("msg %x unsuccessfully returned\n", a_msg));
             return -1;
@@ -905,7 +905,7 @@ static kbool kmsg_cleanup(kbean a_tsk)
         if (kflg_chk(flg, KMF_SNDMSG)) {
             klog(("[%s] Return Send Message:%x\n", tsk->name, curmsg->msg));
 
-#if 0	/* XXX ksyn_sem can not serialize the queue task when unlock */
+#if 0    /* XXX ksyn_sem can not serialize the queue task when unlock */
             ksyn_sem_rel(tsk->msg_send_wait_sema);
 #endif
 
@@ -964,7 +964,7 @@ static kvoid kmsg_windup(kbean a_tsk)
     if (kflg_chk(flg, KMF_SNDMSG)) {
         klog(("[%s] Return Send Message:%x\n", tsk->name, msgid));
 
-#if 0	/* XXX ksyn_sem can not serialize the queue task when unlock */
+#if 0    /* XXX ksyn_sem can not serialize the queue task when unlock */
         ksyn_sem_rel(tsk->msg_send_wait_sema);
 #endif
 

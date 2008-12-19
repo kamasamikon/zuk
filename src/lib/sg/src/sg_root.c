@@ -2416,7 +2416,7 @@ kint sg_root_get_cache_rec_dat(sg_root *rt, ef_cache_rec *rec, kchar **data, kin
 {
     kchar *dat = knil, path[IV_PATH_MAX_SIZE];
     kbean file;
-	kint datlen = 0x7FFFFFFF;
+    kint datlen = 0x7FFFFFFF;
     sg_root_get_cache_rec_item_path(rt, rec, path);
 
     file = kvfs_open(path, "rb", 0);

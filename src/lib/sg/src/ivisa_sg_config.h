@@ -19,16 +19,16 @@
 //};
 //#define     IV_SG_BROADCAST_TYPE          BROADCAST_TYPE_DAB
 
-//#define		IV_DEBUG					  1
+//#define        IV_DEBUG                      1
 
 
 /* Platform specific configurations */
 #define     IV_SG_BIG_ENDIAN              0       //Define this macro for Big Endian CPU
 
-#define		IV_PATH_MAX_SIZE			256
+#define        IV_PATH_MAX_SIZE            256
 
-//#define	 PROT_DMBTH
-//#define	 PROT_DAB
-//#define		PROT_IP
+//#define     PROT_DMBTH
+//#define     PROT_DAB
+//#define        PROT_IP
 
 #endif

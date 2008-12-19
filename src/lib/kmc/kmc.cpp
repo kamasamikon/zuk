@@ -18,18 +18,18 @@
 //// file:kmcprogram.h
 #if 0
 typedef struct _KMediaProgram {
-	struct {
-		KEsgProgramBean *cur;
-		KEsgProgramBean *next;
-	} epgInfo;
+    struct {
+        KEsgProgramBean *cur;
+        KEsgProgramBean *next;
+    } epgInfo;
 
-	struct {
-		int curCnt;
-		KHDBean *cur;
+    struct {
+        int curCnt;
+        KHDBean *cur;
 
-		int nextCnt;
-		KHDBean *next;
-	} itvInfo;
+        int nextCnt;
+        KHDBean *next;
+    } itvInfo;
 } KMediaProgram;
 #endif
 // 上层根据哈希表直接访问目的
@@ -40,78 +40,78 @@ typedef struct _KMediaProgram {
 //
 
 class KDVBTChannel : public KMediaChannel {
-public:
-	KDVBTChannel(KMediaDevice* a_parentDevice, char* a_name) : KMediaChannel(a_parentDevice, a_name) {}
+    public:
+        KDVBTChannel(KMediaDevice* a_parentDevice, char* a_name) : KMediaChannel(a_parentDevice, a_name) {}
 
-	char* getHash() { return "oi5yelrm"; }
+        char* getHash() { return "oi5yelrm"; }
 };
 
 class KDVBTDevice : public KMediaDevice {
-public:
-	KDVBTDevice(KMediaProtocal* a_parentProtocal, char* a_name) : KMediaDevice(a_parentProtocal, a_name) {}
+    public:
+        KDVBTDevice(KMediaProtocal* a_parentProtocal, char* a_name) : KMediaDevice(a_parentProtocal, a_name) {}
 
-	char* getHash() { return "sdasdfas"; }
+        char* getHash() { return "sdasdfas"; }
 
-	int updateChannelList(void) {
-		int cnt = 22;
-		while (cnt--) {
-			KDVBTChannel *ch = new KDVBTChannel(this, "DVBTChannel");
-			ch->start();
-		}
-		return EC_OK;
-	}
+        int updateChannelList(void) {
+            int cnt = 22;
+            while (cnt--) {
+                KDVBTChannel *ch = new KDVBTChannel(this, "DVBTChannel");
+                ch->start();
+            }
+            return EC_OK;
+        }
 };
 
 class KDVBTProtocal : public KMediaProtocal {
-	char* getHash() { return "45oineroi"; }
+    char* getHash() { return "45oineroi"; }
 
-	int scanDevice(void) {
-		int cnt = 22;
-		while (cnt--) {
-			// get each of device and collect neccessary infomation
+    int scanDevice(void) {
+        int cnt = 22;
+        while (cnt--) {
+            // get each of device and collect neccessary infomation
 
-			KDVBTDevice *dev = new KDVBTDevice(this, "DVBTDevice");
-			dev->start();
-		}
-		return EC_OK;
-	}
+            KDVBTDevice *dev = new KDVBTDevice(this, "DVBTDevice");
+            dev->start();
+        }
+        return EC_OK;
+    }
 };
 #endif
 #if 0
 void entry(void)
 {
-	KMediaContainer *kmc = new KMediaContainer();
-	kim_setptr(im, "KMediaContainer", kmc, NULL, NULL);
+    KMediaContainer *kmc = new KMediaContainer();
+    kim_setptr(im, "KMediaContainer", kmc, NULL, NULL);
 
-	KDVBTModule::mm_hey(im) {
-		KMediaContainer *kmc = kim_getptr(im, "KMediaContainer");
+    KDVBTModule::mm_hey(im) {
+        KMediaContainer *kmc = kim_getptr(im, "KMediaContainer");
 
-		KDVBTProtocal *theProtocal = new KDVBTProtocal(kmc, "DVBTProtocal");
-		kmc->addProtocal(theProtocal);
-		kmc->startProtocal(theProtocal);
+        KDVBTProtocal *theProtocal = new KDVBTProtocal(kmc, "DVBTProtocal");
+        kmc->addProtocal(theProtocal);
+        kmc->startProtocal(theProtocal);
 
-		// create a window and put the window to KWM
-		CPlayDlg *playDlg;
-		playDlg->Create(CPlayDlg::IDD, mainDlg);
-		playDlg->kal_set_size(...);
-		playDlg->kal_set_pos(...);
-		kim_addptr(im, "playDlg", playDlg, 0, NULL);
-	}
+        // create a window and put the window to KWM
+        CPlayDlg *playDlg;
+        playDlg->Create(CPlayDlg::IDD, mainDlg);
+        playDlg->kal_set_size(...);
+        playDlg->kal_set_pos(...);
+        kim_addptr(im, "playDlg", playDlg, 0, NULL);
+    }
 
-	if (10) {
-		KPlayListItem *pli = getCurrentPlayListItem();
-		KMediaDevice *dev = kmc->getMediaDeviceFromChannel(pli->hash);
-		if (!dev->isPresent) {
-			klog(("device not used skip this segment"));
-			return;
-		}
+    if (10) {
+        KPlayListItem *pli = getCurrentPlayListItem();
+        KMediaDevice *dev = kmc->getMediaDeviceFromChannel(pli->hash);
+        if (!dev->isPresent) {
+            klog(("device not used skip this segment"));
+            return;
+        }
 
-		KMediaChannel *ch = kmc->getMediaChannelFromChannel(pli->hash);
-		ch->setOutputWindow(playDlg->m_hWnd);
-		ch->setPlaySpeed(120);		// 以120％的速度播放
-		ch->setPlayState(KMCPS_PLAY);
+        KMediaChannel *ch = kmc->getMediaChannelFromChannel(pli->hash);
+        ch->setOutputWindow(playDlg->m_hWnd);
+        ch->setPlaySpeed(120);        // 以120％的速度播放
+        ch->setPlayState(KMCPS_PLAY);
 
-		...
-	}
+        ...
+    }
 }
 #endif

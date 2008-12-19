@@ -188,9 +188,9 @@ kbool kini_setstr(const kchar *a_sec, const kchar *a_key, const kchar *a_val, co
     }
 
     /* [sec]\r\na_key=a_val\r\n, should left room to maintain all */
-	wbuflen = buflen + strlen(a_sec) + strlen(a_key) + strlen(a_val) + 20;
+    wbuflen = buflen + strlen(a_sec) + strlen(a_key) + strlen(a_val) + 20;
     w_buf = (kchar*)kmem_alloc(wbuflen);
-	memset(w_buf, 0, wbuflen);
+    memset(w_buf, 0, wbuflen);
     if (-1 == sec_s) {
 
         if (0 == buflen) {

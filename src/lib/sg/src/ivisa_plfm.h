@@ -118,4 +118,4 @@ void Iv_printf(kchar *format, ...);
 #endif // __cplusplus
 
 #endif // __IV_PLTFM_H__
- 
+

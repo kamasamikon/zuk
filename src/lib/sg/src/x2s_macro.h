@@ -27,41 +27,41 @@ extern "C" {
 #define X2S_FUN_S               {
 #define X2S_FUN_E               }
 
-#define X2S_FUN(T)         		x2s_fill_##T(KXmlDoc *doc)
+#define X2S_FUN(T)                 x2s_fill_##T(KXmlDoc *doc)
 
 #define X2S_FUN_DECL(T)         kvoid *x2s_fill_##T(KXmlDoc *doc)
-//#define X2S_CURLY_BRACE_L     {
+    //#define X2S_CURLY_BRACE_L     {
 #define X2S_DECL_VAR(T)             kuint i, ncnt; \
-                                    KXmlNode *node; \
-                                    KXmlAttr *attr; \
-                                    T##_t *curNode = (T##_t*)knil; \
-                                    T##_rec *arr = (T##_rec*)knil; \
-                                    (kvoid)i; (kvoid)ncnt; (kvoid)node; (kvoid)attr; \
+    KXmlNode *node; \
+    KXmlAttr *attr; \
+    T##_t *curNode = (T##_t*)knil; \
+    T##_rec *arr = (T##_rec*)knil; \
+    (kvoid)i; (kvoid)ncnt; (kvoid)node; (kvoid)attr; \
 
 #define X2S_GETNODECNT(T)           if (0 < (ncnt = xmldoc_getNodeCnt(doc, #T)))
-//#define X2S_CURLY_BRACE_L         {
+    //#define X2S_CURLY_BRACE_L         {
 #define X2S_ALLOC_T(T)                  curNode = kmem_alloz(sizeof(T##_t));
 #define X2S_SET_CNT(T)                  curNode->ecnt = ncnt;
 #define X2S_ALLOC_REC(T)                curNode->arr = arr = kmem_alloz(ncnt * sizeof(T##_rec));
 #define X2S_FOREACH_NCNT(T)             for (i = 0; i < ncnt; i++)
-//#define X2S_CURLY_BRACE_L             {
+    //#define X2S_CURLY_BRACE_L             {
 #define X2S_GOTO_iST_NODE(T)                node = xmldoc_gotoNode(doc, #T, i);
 #define X2S_BRK_IF_BAD_NODE(T)              if (!node) break;
 
 #define X2S_FILL_ATT(T, N)                  if (attr = xmlnode_getattr(node, #N)) { \
-                                                arr[i].attr./**/N = GETVAL_##T(attr->value); \
-                                            }
+    arr[i].attr./**/N = GETVAL_##T(attr->value); \
+}
 
 #define X2S_FILL_ATT_DEF(T, N, D)           if (attr = xmlnode_getattr(node, #N)) { \
-                                                arr[i].attr./**/N = GETVAL_##T(attr->value); \
-                                            } else { \
-                                                arr[i].attr./**/N = (D); \
-											}
+    arr[i].attr./**/N = GETVAL_##T(attr->value); \
+} else { \
+    arr[i].attr./**/N = (D); \
+}
 
 
 #define X2S_FILL_VAL(T, N)                  if (node->text) { \
-                                                arr[i].val./**/N = GETVAL_##T(node->text); \
-                                            }
+    arr[i].val./**/N = GETVAL_##T(node->text); \
+}
 
 #define X2S_FILL_SUB(T, N)                  arr[i]./**/N = x2s_fill_##N(doc);
 
@@ -75,8 +75,8 @@ extern "C" {
 
 /////////////////////////////////////////////////////////////////////////
 #define X2S_FILL_ATT_(T, N, N_)             if (attr = xmlnode_getattr(node, N_)) { \
-                                                arr[i].attr./**/N = GETVAL_##T(attr->value); \
-                                            }
+    arr[i].attr./**/N = GETVAL_##T(attr->value); \
+}
 
 #endif /* __X2S_MACRO_H__ */
 

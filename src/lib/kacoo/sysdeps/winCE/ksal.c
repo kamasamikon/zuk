@@ -12,15 +12,15 @@
 //kint kmemavail(kchar *str)
 //{
 //    kchar strBuffer[1024];
-//	WCHAR outBuffer[1024];
-//	MEMORYSTATUS memory;
+//    WCHAR outBuffer[1024];
+//    MEMORYSTATUS memory;
 //
-//	GlobalMemoryStatus(&memory);
-//	sprintf(strBuffer,"[MEMORY]%s:%d B\n",str,memory.dwAvailPhys);
+//    GlobalMemoryStatus(&memory);
+//    sprintf(strBuffer,"[MEMORY]%s:%d B\n",str,memory.dwAvailPhys);
 //
-//	MultiByteToWideChar(CP_OEMCP, 0, strBuffer, -1, outBuffer, 1024 );
+//    MultiByteToWideChar(CP_OEMCP, 0, strBuffer, -1, outBuffer, 1024 );
 //    OutputDebugString(outBuffer);
-//	return 0;
+//    return 0;
 //}
 
 kint kmemavail(const kchar *format, ...)
@@ -38,7 +38,7 @@ kint kmemavail(const kchar *format, ...)
     GlobalMemoryStatus(&memory);
     sprintf(str,"[MEMORY]%s:%d B\n",strBuffer,memory.dwAvailPhys);
 
-	MultiByteToWideChar(CP_OEMCP, 0, str, -1, outBuffer, 1024 );
+    MultiByteToWideChar(CP_OEMCP, 0, str, -1, outBuffer, 1024 );
     OutputDebugString(outBuffer);
     return 0;
 }
@@ -61,13 +61,13 @@ kint kprintf(const kchar *format, ...)
 
 kint stricmp(const char *str0,const char *str1)
 {
-	return _stricmp(str0, str1);
+    return _stricmp(str0, str1);
 }
 
 
 kint strnicmp(const char *str0, const char *str1, size_t len)
 {
-	return _strnicmp(str0, str1,len);
+    return _strnicmp(str0, str1,len);
 }
 
 kvoid kdbgbrk(kvoid)
@@ -217,7 +217,7 @@ kint ksal_sema_rel(kbean semaphId)
  */
 kchar kvfs_path_sep(kvoid)
 {
-	return '\\';
+    return '\\';
 }
 
 /**
@@ -225,27 +225,27 @@ kchar kvfs_path_sep(kvoid)
  */
 kbool kvfs_exist(const kchar *a_path)
 {
-	WCHAR wpath[MAX_PATH];
-	MultiByteToWideChar(CP_OEMCP, 0, a_path, -1, wpath, MAX_PATH );
+    WCHAR wpath[MAX_PATH];
+    MultiByteToWideChar(CP_OEMCP, 0, a_path, -1, wpath, MAX_PATH );
 
-	if((GetFileAttributes(wpath)) != 0xFFFFFFFF) {//0xFFFFFFFF failure
-		return 1;
-	}
-	return 0;
+    if((GetFileAttributes(wpath)) != 0xFFFFFFFF) {//0xFFFFFFFF failure
+        return 1;
+    }
+    return 0;
 }
 
 kbean kvfs_open(const kchar *a_path, const kchar *a_mode, kuint a_flg)
 {
-	if(a_path)
-		return (kbean)fopen(a_path, a_mode);
-	return 0;
+    if(a_path)
+        return (kbean)fopen(a_path, a_mode);
+    return 0;
 }
 
 kint kvfs_close(kbean a_file)
 {
-	if(a_file)
-		return fclose((FILE*)a_file);
-	return 0;
+    if(a_file)
+        return fclose((FILE*)a_file);
+    return 0;
 }
 
 /**
@@ -279,72 +279,72 @@ kint kvfs_read(kbean a_file, kvoid **a_buf, kint *a_size)
 
 kint kvfs_write(kbean a_file, kvoid *a_buf, kint a_size)
 {
-	if(a_file){
-		FILE *fp = (FILE*)a_file;
-		return fwrite(a_buf, 1, a_size, (FILE*)a_file);
-	}else{
-		return 0;
-	}
+    if(a_file){
+        FILE *fp = (FILE*)a_file;
+        return fwrite(a_buf, 1, a_size, (FILE*)a_file);
+    }else{
+        return 0;
+    }
 }
 
 kint kvfs_length(kbean file)
 {
-	kint len = -1, pos;
-	if (file) {
+    kint len = -1, pos;
+    if (file) {
         pos = kvfs_tell(file);
-		kvfs_seek(file, 0, SEEK_END);
-		len = kvfs_tell(file);
-		kvfs_seek(file, pos, SEEK_SET);
-	}
-	return len;
+        kvfs_seek(file, 0, SEEK_END);
+        len = kvfs_tell(file);
+        kvfs_seek(file, pos, SEEK_SET);
+    }
+    return len;
 }
 
 kint kvfs_printf(kbean a_file, kchar *a_fmt, ...)
 {
-	va_list arg;
-	kint done;
+    va_list arg;
+    kint done;
 
-	va_start(arg, a_fmt);
-	done = vfprintf((FILE*)a_file, a_fmt, arg);
-	va_end(arg);
+    va_start(arg, a_fmt);
+    done = vfprintf((FILE*)a_file, a_fmt, arg);
+    va_end(arg);
 
-	return done;
+    return done;
 }
 
 kint kvfs_seek(kbean a_file, kint a_offset, kint a_origin)
 {
-	if(a_file){
-		FILE *fp = (FILE*)a_file;
-		return fseek(fp, a_offset, a_origin);
-	}
-	return 0;
+    if(a_file){
+        FILE *fp = (FILE*)a_file;
+        return fseek(fp, a_offset, a_origin);
+    }
+    return 0;
 }
 
 kint kvfs_tell(kbean a_file)
 {
-	if(a_file){
-		FILE *fp = (FILE*)a_file;
-		return ftell(fp);
-	}
-	return 0;
+    if(a_file){
+        FILE *fp = (FILE*)a_file;
+        return ftell(fp);
+    }
+    return 0;
 }
 
 kint kvfs_remove(const kchar *a_path)
 {
-	WCHAR wpath[MAX_PATH];
-	MultiByteToWideChar(CP_OEMCP, 0, a_path, -1, wpath, MAX_PATH );
+    WCHAR wpath[MAX_PATH];
+    MultiByteToWideChar(CP_OEMCP, 0, a_path, -1, wpath, MAX_PATH );
 
-	return DeleteFile(wpath);
+    return DeleteFile(wpath);
 }
 
 kint kvfs_chdir(const kchar *a_path) // no current work directoy concept  in WINCE
 {
-	return 0;
+    return 0;
 }
 
 kint kvfs_cpdir(const kchar *a_srcpath, const kchar *a_dstpath)
 {
-	kchar tmppath[1024], targetPath[1024];
+    kchar tmppath[1024], targetPath[1024];
     KVFS_FINDDATA fInfo;
     kbean fd = 0;
 
@@ -354,19 +354,19 @@ kint kvfs_cpdir(const kchar *a_srcpath, const kchar *a_dstpath)
     if (fd) {
         do {
             if (0 != strcmp(fInfo.name, ".") && 0 !=strcmp(fInfo.name, "..")) {
-				
-				
-				sprintf(tmppath, "%s%c%s", a_srcpath, '/', fInfo.name);
-				sprintf(targetPath, "%s%c%s", a_dstpath, '/', fInfo.name);
-				
-				if (KVFS_A_SUBDIR & fInfo.attrib) {
-					kvfs_mkdir(tmppath);
-					kvfs_cpdir(tmppath, targetPath);
-					continue;
-				}
-				
-				kvfs_copy(tmppath, targetPath);
-			}
+
+
+                sprintf(tmppath, "%s%c%s", a_srcpath, '/', fInfo.name);
+                sprintf(targetPath, "%s%c%s", a_dstpath, '/', fInfo.name);
+
+                if (KVFS_A_SUBDIR & fInfo.attrib) {
+                    kvfs_mkdir(tmppath);
+                    kvfs_cpdir(tmppath, targetPath);
+                    continue;
+                }
+
+                kvfs_copy(tmppath, targetPath);
+            }
         } while (-1 != kvfs_findnext(fd, &fInfo));
 
         kvfs_findclose(fd);
@@ -377,89 +377,89 @@ kint kvfs_cpdir(const kchar *a_srcpath, const kchar *a_dstpath)
 
 kint kvfs_mkdir(const kchar *a_path)
 {
-	WCHAR wpath[MAX_PATH];
+    WCHAR wpath[MAX_PATH];
 
-	MultiByteToWideChar(CP_OEMCP, 0, a_path, -1, wpath, MAX_PATH );
-	return CreateDirectory(wpath,NULL);
+    MultiByteToWideChar(CP_OEMCP, 0, a_path, -1, wpath, MAX_PATH );
+    return CreateDirectory(wpath,NULL);
 }
 
 kint kvfs_rmdir(const kchar *a_path)
 {
-	WCHAR wpath[MAX_PATH];
+    WCHAR wpath[MAX_PATH];
 
-	MultiByteToWideChar(CP_OEMCP, 0, a_path, -1, wpath, MAX_PATH );
-	return RemoveDirectory(wpath);
+    MultiByteToWideChar(CP_OEMCP, 0, a_path, -1, wpath, MAX_PATH );
+    return RemoveDirectory(wpath);
 }
 
 kint kvfs_cwd(kchar *a_buf, kint a_size) // no current work dir concept in WINCE
 {
-	return 0;
+    return 0;
 }
 
 kbean kvfs_findfirst(const kchar *a_fspec, KVFS_FINDDATA *a_finfo)
 {
     kchar fspec[MAX_PATH];
-	WIN32_FIND_DATA fileinfo;
-	WCHAR wfSpec[MAX_PATH];
-	char tmppath[MAX_PATH];
-	HANDLE hfile;
-	int result;
-	DWORD temp;
+    WIN32_FIND_DATA fileinfo;
+    WCHAR wfSpec[MAX_PATH];
+    char tmppath[MAX_PATH];
+    HANDLE hfile;
+    int result;
+    DWORD temp;
 
     sprintf(fspec, "%s\\*.*", a_fspec);
 
-	MultiByteToWideChar(CP_OEMCP, 0, fspec, -1, wfSpec, MAX_PATH );//CP_OEMCP:ok
+    MultiByteToWideChar(CP_OEMCP, 0, fspec, -1, wfSpec, MAX_PATH );//CP_OEMCP:ok
 
-	hfile = FindFirstFile(wfSpec, &fileinfo);
-	if (hfile != INVALID_HANDLE_VALUE) {
-		a_finfo->attrib = fileinfo.dwFileAttributes;
+    hfile = FindFirstFile(wfSpec, &fileinfo);
+    if (hfile != INVALID_HANDLE_VALUE) {
+        a_finfo->attrib = fileinfo.dwFileAttributes;
 
-		result = WideCharToMultiByte(CP_OEMCP, NULL, fileinfo.cFileName, -1, tmppath, MAX_PATH,NULL,NULL );//wfSpec, should be char *, to save mem
-											//MUST be CP_OEMCP, if CP_OEMCP will get error
-		if(!result)
-			temp =  GetLastError();
-		strncpy(a_finfo->name, tmppath, strlen(tmppath)+1); //+1: NULL_teminated
-		a_finfo->size = (kint)fileinfo.nFileSizeLow; //nFileSizeHigh is discard for use small size file only now
-		return (kint)hfile;
-	} else {
-		//no more file
-		DWORD error;
-		error=GetLastError();
-		return 0;
-	}
+        result = WideCharToMultiByte(CP_OEMCP, NULL, fileinfo.cFileName, -1, tmppath, MAX_PATH,NULL,NULL );//wfSpec, should be char *, to save mem
+                                            //MUST be CP_OEMCP, if CP_OEMCP will get error
+        if(!result)
+            temp =  GetLastError();
+        strncpy(a_finfo->name, tmppath, strlen(tmppath)+1); //+1: NULL_teminated
+        a_finfo->size = (kint)fileinfo.nFileSizeLow; //nFileSizeHigh is discard for use small size file only now
+        return (kint)hfile;
+    } else {
+        //no more file
+        DWORD error;
+        error=GetLastError();
+        return 0;
+    }
 }
 
 kint kvfs_findnext(kbean a_find, KVFS_FINDDATA *a_finfo)
 {
-	WIN32_FIND_DATA fileinfo;
-	char fSpec[MAX_PATH];
-	int result;
-	DWORD temp;
-	kbean fHandle = a_find;
+    WIN32_FIND_DATA fileinfo;
+    char fSpec[MAX_PATH];
+    int result;
+    DWORD temp;
+    kbean fHandle = a_find;
 
 
-	if (FindNextFile((HANDLE)fHandle, &fileinfo)) {
-		a_finfo->attrib = fileinfo.dwFileAttributes;
+    if (FindNextFile((HANDLE)fHandle, &fileinfo)) {
+        a_finfo->attrib = fileinfo.dwFileAttributes;
 
-		result = WideCharToMultiByte(CP_OEMCP, NULL, fileinfo.cFileName, -1, fSpec, MAX_PATH,NULL,NULL );
-		if(!result)
-			temp =  GetLastError();
-		strncpy(a_finfo->name, fSpec, strlen(fSpec)+1);//+1: NULL_teminated
-		a_finfo->size = (kint)fileinfo.nFileSizeLow;//nFileSizeHigh is discard for use small size file only now
-		return 0;
-	} else {
-		//no more file
-		DWORD error;
-		error=GetLastError();
-		return -1;
-	}
+        result = WideCharToMultiByte(CP_OEMCP, NULL, fileinfo.cFileName, -1, fSpec, MAX_PATH,NULL,NULL );
+        if(!result)
+            temp =  GetLastError();
+        strncpy(a_finfo->name, fSpec, strlen(fSpec)+1);//+1: NULL_teminated
+        a_finfo->size = (kint)fileinfo.nFileSizeLow;//nFileSizeHigh is discard for use small size file only now
+        return 0;
+    } else {
+        //no more file
+        DWORD error;
+        error=GetLastError();
+        return -1;
+    }
 }
 
 kint kvfs_findclose(kbean a_find)
 {
-	if(a_find)
-		return FindClose((HANDLE)a_find);
-	return 0;
+    if(a_find)
+        return FindClose((HANDLE)a_find);
+    return 0;
 }
 
 
@@ -508,13 +508,13 @@ kint  Iv_FS_fopen(kchar *filename, kchar *mode)
 {
     if(filename)
         return (kint)fopen(filename, mode);
-	return 0;
+    return 0;
 }
 kint  Iv_FS_fclose(kint hFile)
 {
     if(hFile)
         return fclose((FILE*)hFile);
-	return 0;
+    return 0;
 }
 kint  Iv_FS_fread(void *buf, kint size, kint count, kint hFile)
 {
@@ -553,7 +553,7 @@ kint  Iv_FS_fseek(kint hFile, kint offset, kint origin)
         FILE *fp = (FILE*)hFile;
         return fseek(fp, offset, origin);
     }
-	return 0;
+    return 0;
 }
 kint  Iv_FS_ftell(kint hFile)
 {
@@ -561,7 +561,7 @@ kint  Iv_FS_ftell(kint hFile)
         FILE *fp = (FILE*)hFile;
         return ftell(fp);
     }
-	return 0;
+    return 0;
 }
 
 kint  Iv_FS_remove(const kchar *path)
@@ -650,7 +650,7 @@ kint  Iv_FS_findnext(kint hFind, IV_FINDDATA *fInfo){
 kint  Iv_FS_findclose(kint hFind){
         if(hFind)
             return FindClose((HANDLE)hFind);
-		return 0;
+        return 0;
     }
 
 kint  Iv_FS_getcwd(kchar *buffer, kint size){ // no current work dir concept in WINCE

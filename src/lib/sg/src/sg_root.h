@@ -234,7 +234,7 @@ typedef struct _sg_root {
     struct _sg_mgr *mgr;        /**< pointer back to the SG manager. */
     struct _K_pvdr *pvdr;       /**< the provider this root belong to */
 
-	kbean tmr_scan_data_timeout;/**< only used for scan */
+    kbean tmr_scan_data_timeout;/**< only used for scan */
 
     /**
      * maintain the service now playing in current provider,
@@ -247,7 +247,7 @@ typedef struct _sg_root {
      */
     kchar *curser;              /**< current service, can be nil, when set, also save ::curFrequency */
 
-	kuint curFrequency;			/**< has curFrequency, but no curser is possible */
+    kuint curFrequency;            /**< has curFrequency, but no curser is possible */
 
     /**
      * All the data, include dir and fragment should be save in this queue.

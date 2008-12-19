@@ -9,18 +9,18 @@ extern "C" {
 #include "esgfile.h"
 #include "sg_com.h"
 
-#define SDDF_DONE		0x00000001
+#define SDDF_DONE        0x00000001
 
-typedef ServiceGuideDeliveryDescriptor_t sg_sdd;
+    typedef ServiceGuideDeliveryDescriptor_t sg_sdd;
 
-kint sg_sdd_new(sg_sdd **sdd);
-kint sg_sdd_del(sg_sdd *sdd, kbool rmcache);
-kint sg_sdd_x2s(sg_sdd *sdd);
-kint sg_sdd_add_cache(sg_sdd *sdd);
-kint sg_sdd_del_cache(sg_sdd *sdd);
-kint sg_sdd_ld_cache(sg_sdd *sdd);
+    kint sg_sdd_new(sg_sdd **sdd);
+    kint sg_sdd_del(sg_sdd *sdd, kbool rmcache);
+    kint sg_sdd_x2s(sg_sdd *sdd);
+    kint sg_sdd_add_cache(sg_sdd *sdd);
+    kint sg_sdd_del_cache(sg_sdd *sdd);
+    kint sg_sdd_ld_cache(sg_sdd *sdd);
 
-Fragment_rec *sg_sdd_get_frag_by_tid(sg_sdd *sdd, kuint tid);
+    Fragment_rec *sg_sdd_get_frag_by_tid(sg_sdd *sdd, kuint tid);
 
 #ifdef __cplusplus
 }

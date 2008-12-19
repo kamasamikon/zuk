@@ -19,12 +19,12 @@ extern "C" {
 #include "sg_com.h"
 #include "xmldoc.h"
 
-typedef enum _BS_FT {
-    BS_BIN = 0,                             /**< Bin file */
-    BS_XML = 1,                             /**< XML file */
+    typedef enum _BS_FT {
+        BS_BIN = 0,                             /**< Bin file */
+        BS_XML = 1,                             /**< XML file */
 
-    XBS_TOP = 2                             /**< MAX of file type */
-} BS_FT;
+        XBS_TOP = 2                             /**< MAX of file type */
+    } BS_FT;
 
 #define BSF_USED                0x00000001  /**< this record is used */
 #define BSF_DYN_MEM             0x00000002  /**< dynamic memory, free when delete */
@@ -39,131 +39,131 @@ typedef enum _BS_FT {
 #define SCAN_STOP               0x00000003
 #define SCAN_CHANGE_CNT         0x00000004  /**< change now scanning provider count */
 
-typedef struct _K_x_acc_hdr {
-    struct _K_pvdr_acc *pvdr_acc;           /**< back to parent */
-    kchar tmode;                            /**< same as _K_pvdr_acc::tmode */
-} K_x_acc_hdr;
+    typedef struct _K_x_acc_hdr {
+        struct _K_pvdr_acc *pvdr_acc;           /**< back to parent */
+        kchar tmode;                            /**< same as _K_pvdr_acc::tmode */
+    } K_x_acc_hdr;
 
-typedef struct _K_flute_acc {
-    K_x_acc_hdr hdr;                        /**< tree info */
+    typedef struct _K_flute_acc {
+        K_x_acc_hdr hdr;                        /**< tree info */
 
-    IV_FLUTE_ALC_SESSION_ENTRYINFO alc;
-} K_flute_acc;
+        IV_FLUTE_ALC_SESSION_ENTRYINFO alc;
+    } K_flute_acc;
 
-typedef struct _K_mot_acc {
-    K_x_acc_hdr hdr;                        /**< tree info */
+    typedef struct _K_mot_acc {
+        K_x_acc_hdr hdr;                        /**< tree info */
 
-    IV_DAB_SESSION_ENTRYINFO dab;
-} K_mot_acc;
-
-/**
- * \brief Access information for B-Direction SG
- * \{
- */
-typedef struct _K_bdir_acc {
-    K_x_acc_hdr hdr;                        /**< tree info */
-
-    kchar *url;                             /**< URL to get the data */
-
-    kchar *nid;                             /**< Network ID */
-    kchar *nname;                           /**< Network name */
-    kuint ntype;                            /**< Network type */
-
-    kchar *tsid;                            /**< Transport Stream ID */
-    kchar *tsname;                          /**< Transport Stream name */
-    kuint frequency;                        /**< The frequency this TS been used for */
-} K_bdir_acc;
-/* \} */
-
-/**
- * \brief Collect ALL Access information for a frequency
- * Only describes the access information for one frequency
- *
- * \warning for a frequency, only one access instance can be exist
- * multi ESGAccessDescriptor is NOT supported.
- */
-typedef struct _K_pvdr_acc {
-    K_dlist_entry le;                   /**< queue to K_pvdr::acchdr */
-    struct _K_pvdr *pvdr;               /**< back */
-
-    kuint frequency;                    /**< what frequency */
-
-    kuint protocol;                     /**< \sa ::SG_Protocol */
-    kchar tmode[8];
-    kuint tindex;
-
-    K_mot_acc *mot;                     /**< ESGAccessDescriptor for mot */
-    K_bdir_acc *bdir;                   /**< ESGAccessDescriptor for b-dir */
-    K_flute_acc *flute;                 /**< ESGAccessDescriptor for flute */
-
-} K_pvdr_acc;
-
-/**
- * \name K_pvdr
- * \brief maintain the information for a single SG provider
- */
-typedef struct _K_pvdr {
-    K_dlist_entry le;                   /**< queue to sg_mgr::provhdr or sg_scan::provhdr */
-
-    kuint flg;                          /**< */
-
-    kuint protocol;                     /**< dab, ip, dmbth */
-
-    kuint id;                           /**< id is important, so add here */
+        IV_DAB_SESSION_ENTRYINFO dab;
+    } K_mot_acc;
 
     /**
-     * Save base information, such as ID, name, flg, etc.
-     * Directy load the file in data_dir/$(providerID)/__pvdr.xml
+     * \brief Access information for B-Direction SG
+     * \{
      */
-    KXmlDoc *doc;
+    typedef struct _K_bdir_acc {
+        K_x_acc_hdr hdr;                        /**< tree info */
 
-    K_dlist_entry acchdr;               /**< queue header for K_pvdr_acc */
+        kchar *url;                             /**< URL to get the data */
 
-    struct _sg_root *root;              /**< new it when enable this sg */
-} K_pvdr;
+        kchar *nid;                             /**< Network ID */
+        kchar *nname;                           /**< Network name */
+        kuint ntype;                            /**< Network type */
 
-/**
- * \name sg_scan
- * \brief manager the BootStrap information.
- */
-typedef struct _sg_scan {
-    kuint flg;
-    struct _sg_mgr *mgr;                /**< save the SG manager */
+        kchar *tsid;                            /**< Transport Stream ID */
+        kchar *tsname;                          /**< Transport Stream name */
+        kuint frequency;                        /**< The frequency this TS been used for */
+    } K_bdir_acc;
+    /* \} */
 
-    kchar scan_ok;                      /**< count of pvdr which successfully start scan */
-    kchar scan_ng;                      /**< count of pvdr which not successfully start scan */
-    kchar now_scan;                     /**< count of provider now scaning */
-    kchar all_scan_issued;
+    /**
+     * \brief Collect ALL Access information for a frequency
+     * Only describes the access information for one frequency
+     *
+     * \warning for a frequency, only one access instance can be exist
+     * multi ESGAccessDescriptor is NOT supported.
+     */
+    typedef struct _K_pvdr_acc {
+        K_dlist_entry le;                   /**< queue to K_pvdr::acchdr */
+        struct _K_pvdr *pvdr;               /**< back */
 
-    struct {
-        kuint frequency;
-        kuint protocol;					/**< ip, dab, dvb */
-        kuint timeout;					/**< timeout in millisecond */
-        kchar tmode;					/**< SG_TMODE_XXX, \sa Transition_mode */
-        kchar tcode;                 	/**< scan success? default false, when any scan success, set 1 */
+        kuint frequency;                    /**< what frequency */
 
-        kvoid *userdata;                /**< user data set when start scan */
+        kuint protocol;                     /**< \sa ::SG_Protocol */
+        kchar tmode[8];
+        kuint tindex;
+
+        K_mot_acc *mot;                     /**< ESGAccessDescriptor for mot */
+        K_bdir_acc *bdir;                   /**< ESGAccessDescriptor for b-dir */
+        K_flute_acc *flute;                 /**< ESGAccessDescriptor for flute */
+
+    } K_pvdr_acc;
+
+    /**
+     * \name K_pvdr
+     * \brief maintain the information for a single SG provider
+     */
+    typedef struct _K_pvdr {
+        K_dlist_entry le;                   /**< queue to sg_mgr::provhdr or sg_scan::provhdr */
+
+        kuint flg;                          /**< */
+
+        kuint protocol;                     /**< dab, ip, dmbth */
+
+        kuint id;                           /**< id is important, so add here */
 
         /**
-         * default settings
+         * Save base information, such as ID, name, flg, etc.
+         * Directy load the file in data_dir/$(providerID)/__pvdr.xml
          */
-        kchar *bdir_url;                /**< well known uri to get provider list */
-        SOCKET *bdir_socket;            /**< socket when get bdir data */
+        KXmlDoc *doc;
+
+        K_dlist_entry acchdr;               /**< queue header for K_pvdr_acc */
+
+        struct _sg_root *root;              /**< new it when enable this sg */
+    } K_pvdr;
+
+    /**
+     * \name sg_scan
+     * \brief manager the BootStrap information.
+     */
+    typedef struct _sg_scan {
+        kuint flg;
+        struct _sg_mgr *mgr;                /**< save the SG manager */
+
+        kchar scan_ok;                      /**< count of pvdr which successfully start scan */
+        kchar scan_ng;                      /**< count of pvdr which not successfully start scan */
+        kchar now_scan;                     /**< count of provider now scaning */
+        kchar all_scan_issued;
 
         struct {
-            kuint all;                  /**< all fragment or service */
-            kuint cur;                  /**< current gotten fragment */
-        } stat;
-    } scan;
+            kuint frequency;
+            kuint protocol;                    /**< ip, dab, dvb */
+            kuint timeout;                    /**< timeout in millisecond */
+            kchar tmode;                    /**< SG_TMODE_XXX, \sa Transition_mode */
+            kchar tcode;                     /**< scan success? default false, when any scan success, set 1 */
 
-    struct _sg_ses ses;                 /**< the session to receive data */
+            kvoid *userdata;                /**< user data set when start scan */
 
-    K_dlist_entry fhdrs[XBS_TOP];       /**< queue to save the BS_BIN and BS_XML files */
+            /**
+             * default settings
+             */
+            kchar *bdir_url;                /**< well known uri to get provider list */
+            SOCKET *bdir_socket;            /**< socket when get bdir data */
 
-    kbean tmr_bootstrap_timeout;        /**< timeout for getting boot strap */
+            struct {
+                kuint all;                  /**< all fragment or service */
+                kuint cur;                  /**< current gotten fragment */
+            } stat;
+        } scan;
 
-    kbean worker_thread;                /**< main or worker task */
-} sg_scan;
+        struct _sg_ses ses;                 /**< the session to receive data */
+
+        K_dlist_entry fhdrs[XBS_TOP];       /**< queue to save the BS_BIN and BS_XML files */
+
+        kbean tmr_bootstrap_timeout;        /**< timeout for getting boot strap */
+
+        kbean worker_thread;                /**< main or worker task */
+    } sg_scan;
 
 #ifdef __cplusplus
 }

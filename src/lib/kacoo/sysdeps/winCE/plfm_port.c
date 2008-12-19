@@ -9,11 +9,11 @@ time_t time( time_t *inTT ) {
  FILETIME fTime;
  ULARGE_INTEGER int64time;
  time_t locTT = 0;
- 
+
  if ( inTT == NULL ) {
    inTT = &locTT;
  }
- 
+
  GetSystemTime( &sysTimeStruct );
  if ( SystemTimeToFileTime( &sysTimeStruct, &fTime ) ) {
    memcpy( &int64time, &fTime, sizeof( FILETIME ) );
@@ -23,12 +23,12 @@ time_t time( time_t *inTT ) {
    int64time.QuadPart /= 10000000;
    *inTT = int64time.QuadPart;
  }
- 
+
  return *inTT;
-} 
+}
 
 char *strerror(int errnum) {
-	return 0;
+    return 0;
 }
 
 
