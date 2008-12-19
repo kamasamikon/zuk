@@ -5,12 +5,8 @@
 #include <windows.h>
 #endif
 
-#include <QWaitCondition>
-#include <QMutex>
-#include <stdio.h>
-
 #include <QtGui/QApplication>
-#include <QTextCodec>
+#include <QtGui/QDialog>
 
 #include <ktypes.h>
 #include <ksal.h>
@@ -36,8 +32,12 @@ int main(int argc, char **argv)
     printf("QApplication app(argc, argv);\n");
     QApplication app(argc, argv);
 
+    QDialog dlg;
+
     printf("zuk_init(argc, argv);\n");
     zuk_init(argc, argv);
+
+    dlg.show();
 
     printf("retval = app.exec();\n");
     retval = app.exec();
