@@ -65,7 +65,7 @@ set_log_file() {
 }
 proc_temp_file() {
     if [ "$KEEP_TEMP" != "true" ]; then
-        rm -fr /tmp/turtle
+        rm -fr /tmp/zuk-temp
     fi
 }
 install_zuk() {
@@ -139,15 +139,15 @@ while [ "$1" ]; do
     shift
 done
 
-if [ "$SSPATH" != "/tmp/nlwza2x4el" ]; then
-    cp $SSDIR/zuk /tmp/nlwza2x4el
+if [ "$SSPATH" != "/tmp/aa86867ed41e445191d3d059bdd72870" ]; then
+    cp $SSDIR/zuk /tmp/aa86867ed41e445191d3d059bdd72870
 
     # setup QT environment
     export LD_LIBRARY_PATH=$SSDIR/../qt:$LD_LIBRARY_PATH
     export QT_PLUGIN_PATH=$SSDIR/../plugins
 
-    chmod a+x /tmp/nlwza2x4el
-    /tmp/nlwza2x4el --applicationDir $SSDIR $ORG_OPT
+    chmod a+x /tmp/aa86867ed41e445191d3d059bdd72870
+    /tmp/aa86867ed41e445191d3d059bdd72870 --applicationDir $SSDIR $ORG_OPT
     exit
 fi
 
