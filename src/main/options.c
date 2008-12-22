@@ -8,7 +8,6 @@
 static zuk_opt zukopts[] =
 {
     { "help", 'n', "Show help the quit", knil },
-    { "show-debug", 'b', "[y/*n]: show kdbg message", "0" },
     { "skip-update", 'b', "[y/*n]: skip update install when boot", "0" },
     { "fullscreen", 'b', "[y/*n]: auto fullscreen when boot", "0" },
     { "maximize", 'b', "[y/*n]: auto fullscreen when boot", "0" },
