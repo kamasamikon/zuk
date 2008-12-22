@@ -250,9 +250,7 @@ kint zuk_init(kint argc, kchar **argv)
         return 0;
     }
 
-    if ((o = read_opt(opt, "show-debug")) && ('1' == o[0])) {
-        kdbg_init(DBG_LOG | DBG_ERR | DBG_FAT);
-    }
+    kdbg_init();
 
     /* TODO check single instance */
     if ((o = read_opt(opt, "skip-single")) && ('1' == o[0])) {
