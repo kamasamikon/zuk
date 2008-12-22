@@ -153,22 +153,22 @@ kint hget_connect(kint a_prot, const kchar *a_user, const kchar *a_pass,
     }
 
     /* Set socket parameters */
-    klog(("inet_addr\n"));
+    klog(("hget_connect: inet_addr\n"));
     ip_addr = inet_addr(a_host);
     if (INADDR_NONE == ip_addr) {
-        klog(("gethostbyname\n"));
+        klog(("hget_connect: gethostbyname\n"));
         host_ent = gethostbyname(a_host);
         if (!host_ent) {
-            kerror(("gethostbyname failed: %d\n", socket_last_error()));
+            kerror(("hget_connect: gethostbyname failed: %d\n", socket_last_error()));
             return PGEC_HOST;
         }
         ip_addr = *((kulong*)host_ent->h_addr);
     }
 
-    klog(("socket\n"));
+    klog(("hget_connect: socket\n"));
     sockfd = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP);
     if (-1 == sockfd) {
-        kerror(("create socket failed: %d\n", socket_last_error()));
+        kerror(("hget_connect: create socket failed: %d\n", socket_last_error()));
         return PGEC_SOCKET;
     }
 
@@ -180,10 +180,10 @@ kint hget_connect(kint a_prot, const kchar *a_user, const kchar *a_pass,
     timeout.tv_sec = 15;
     timeout.tv_usec = 0;
     if (setsockopt(sockfd, SOL_SOCKET, SO_RCVTIMEO, (char*)&timeout, sizeof(timeout)) < 0) {
-        perror("be:setsockopt:SO_RCVTIMEO");
+        perror("hget_connect: setsockopt:SO_RCVTIMEO");
     }
     if (setsockopt(sockfd, SOL_SOCKET, SO_SNDTIMEO, (char*)&timeout, sizeof(timeout)) < 0) {
-        perror("be:setsockopt:SO_SNDTIMEO");
+        perror("hget_connect: setsockopt:SO_SNDTIMEO");
     }
 
     addr.sin_family = AF_INET;
@@ -191,19 +191,19 @@ kint hget_connect(kint a_prot, const kchar *a_user, const kchar *a_pass,
     addr.sin_port = htons(a_port);
 
     /* connect */
-    klog(("connect\n"));
+    klog(("hget_connect: connect\n"));
     while ((-1 == (ret = connect(sockfd, (struct sockaddr *)&addr, sizeof(addr)))) && (EINTR == errno));
     if (-1 == ret) {
         if (a_socket) {
             *a_socket = -1;
         }
 
-        kerror(("connect failed: %d\n", socket_last_error()));
+        kerror(("hget_connect: connect failed: %d\n", socket_last_error()));
         hget_free_socket(sockfd);
         return PGEC_CONNECT;
     }
 
-    klog(("sockfd:%d\n", sockfd));
+    klog(("hget_connect: sockfd:%d\n", sockfd));
     return PGEC_SUCCESS;
 }
 
@@ -234,7 +234,7 @@ kint hget_recv(SOCKET a_socket, const kchar *a_host, const kchar *a_path,
     if (a_get) {
         sprintf(header,
                 "GET %s HTTP/1.1\r\n"
-                /*"Connection: Keep-Alive\r\n"*/
+                "Connection: Keep-Alive\r\n"
                 "Host: %s\r\n"
                 "Connection: Close\r\n\r\n",
                 a_path, a_host
@@ -243,7 +243,7 @@ kint hget_recv(SOCKET a_socket, const kchar *a_host, const kchar *a_path,
         sprintf(header,
                 "POST %s HTTP/1.1\r\n"
                 "Accept: text/xml\r\n"
-                /*"Connection: Keep-Alive\r\n"*/
+                "Connection: Keep-Alive\r\n"
                 "Content-Length: %d\r\n"
                 "Host: %s\r\n"
                 "Content-Type: text/xml\r\n\r\n"
@@ -288,7 +288,7 @@ kint hget_recv(SOCKET a_socket, const kchar *a_host, const kchar *a_path,
 
     if (ret > 0) {
 
-        klog(("hget:%d: cont-data:%s\n", __LINE__, (ret > 0) ? data : "(nil)"));
+        klog(("hget_recv:%d: cont-data:%s\n", __LINE__, (ret > 0) ? data : "(nil)"));
 
         /*
          * try to get header, only when (*a_hdrbuf != zero)
@@ -392,7 +392,7 @@ kint hget_recv(SOCKET a_socket, const kchar *a_host, const kchar *a_path,
         /*
          * Then got the rest data
          */
-        klog(("hget: cur_len:%d, dat_len:%d\n", cur_len, dat_len));
+        klog(("hget_recv: cur_len:%d, dat_len:%d\n", cur_len, dat_len));
         if (cur_len < dat_len) {
             resp_code = 1;
             while ((-1 == (ret = recv(a_socket, data, DATA_LEN, 0))) && (EINTR == errno));
@@ -402,8 +402,10 @@ kint hget_recv(SOCKET a_socket, const kchar *a_host, const kchar *a_path,
             if (0 == ret) {
                 kerror(("recv failed: socket closed.\n"));
             }
-            klog(("hget: recv_count: %d, ret:%d\n", resp_code++, ret));
-            klog(("hget: cont-data:%s\n", (ret > 0) ? data : "(nil)"));
+
+            klog(("hget_recv: dat_len:%d, cur_len:%d, recv_cnt:%d, ret:%d, err:%d\n",
+                        dat_len, cur_len, resp_code++, ret, socket_last_error()));
+
             while (ret > 0) {
 
                 lft_len = ret;
@@ -421,11 +423,13 @@ kint hget_recv(SOCKET a_socket, const kchar *a_host, const kchar *a_path,
 
                 if (cur_len < dat_len) {
                     while ((-1 == (ret = recv(a_socket, data, DATA_LEN, 0))) && (EINTR == errno));
-                    klog(("hget: recv_count: %d, ret:%d\n", resp_code++, ret));
-                    klog(("hget: cont-data:%s\n", (ret > 0) ? data : "(nil)"));
                 } else {
+                    klog(("hget_recv: all received\n"));
                     break;
                 }
+
+                klog(("hget_recv: dat_len:%d, cur_len:%d, recv_cnt:%d, ret:%d, err:%d\n",
+                            dat_len, cur_len, resp_code++, ret, socket_last_error()));
             }
         }
 
@@ -434,7 +438,7 @@ kint hget_recv(SOCKET a_socket, const kchar *a_host, const kchar *a_path,
     }
 
 done:
-    klog(("retcode is : %d\n", rc));
+    klog(("hget_recv is : %d\n", rc));
     return rc;
 }
 
@@ -526,10 +530,10 @@ kint hget_old(const kchar *a_url, const kchar *a_proxy, kbool a_get, const kchar
     /* process proxy */
 
     /* Set socket parameters */
-    klog(("inet_addr\n"));
+    klog(("hget: inet_addr\n"));
     ip_addr = inet_addr(host);
     if (INADDR_NONE == ip_addr) {
-        klog(("gethostbyname\n"));
+        klog(("hget: gethostbyname\n"));
         host_ent = gethostbyname(host);
         if (!host_ent) {
             kerror(("gethostbyname failed: %d\n", socket_last_error()));
@@ -538,7 +542,7 @@ kint hget_old(const kchar *a_url, const kchar *a_proxy, kbool a_get, const kchar
         ip_addr = *((kulong*)host_ent->h_addr);
     }
 
-    klog(("socket\n"));
+    klog(("hget: socket\n"));
     sockfd = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP);
     if (-1 == sockfd) {
         kerror(("create socket failed: %d\n", socket_last_error()));
@@ -565,7 +569,7 @@ kint hget_old(const kchar *a_url, const kchar *a_proxy, kbool a_get, const kchar
     /*
      * connect and send request
      */
-    klog(("connect\n"));
+    klog(("hget: connect\n"));
     while ((-1 == (ret = connect(sockfd, (struct sockaddr *)&addr, sizeof(addr)))) && (EINTR == errno));
     if (-1 == ret) {
         if (a_socket) {
@@ -576,7 +580,7 @@ kint hget_old(const kchar *a_url, const kchar *a_proxy, kbool a_get, const kchar
         return PGEC_CONNECT;
     }
 
-    klog(("sockfd:%d\n", sockfd));
+    klog(("hget: sockfd:%d\n", sockfd));
 
     /* Seperate Host and path in url */
     strcpy(host, a_url);
@@ -621,7 +625,7 @@ kint hget_old(const kchar *a_url, const kchar *a_proxy, kbool a_get, const kchar
                );
     }
 
-    klog(("start send\n"));
+    klog(("hget: start send\n"));
 
     while ((-1 == (ret = send(sockfd, header, strlen(header), 0))) && (EINTR == errno));
     if (-1 == ret) {
@@ -766,10 +770,10 @@ kint hget_old(const kchar *a_url, const kchar *a_proxy, kbool a_get, const kchar
             resp_code = 1;
             while ((-1 == (ret = recv(sockfd, data, DATA_LEN, 0))) && (EINTR == errno));
             if (-1 == ret) {
-                kerror(("recv failed: %d\n", socket_last_error()));
+                kerror(("hget: recv failed: %d\n", socket_last_error()));
             }
             if (0 == ret) {
-                kerror(("recv failed: socket closed.\n"));
+                kerror(("hget: recv failed: socket closed.\n"));
             }
             klog(("hget: recv_count: %d, ret:%d\n", resp_code++, ret));
             klog(("hget: cont-data:%s\n", (ret > 0) ? data : "(nil)"));
@@ -809,7 +813,7 @@ done:
         *a_socket = -1;
     }
 
-    klog(("retcode is : %d\n", rc));
+    klog(("hget: retcode is : %d\n", rc));
     return rc;
 }
 
