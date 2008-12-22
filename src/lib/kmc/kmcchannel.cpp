@@ -173,27 +173,27 @@ int KMediaChannel::getOutputType(int* a_type)
 {
     return EC_NOT_SUPPORT;
 }
-int KMediaChannel::setOutputWindowRect(void /*RECT*/* a_rc)
-                                                      {
-                                                      return EC_NOT_SUPPORT;
-                                                      }
-                                                      int KMediaChannel::getOutputWindowRect(void /*RECT*/* a_rc)
-                                                                                                            {
-                                                                                                            return EC_NOT_SUPPORT;
-                                                                                                            }
-                                                                                                            int KMediaChannel::getOrgOutputWindowRect(void /*RECT*/* a_rc)
-                                                                                                                                                                                               {
-                                                                                                                                                                                               return EC_NOT_SUPPORT;
-                                                                                                                                                                                               }
-                                                                                                                                                                                               int KMediaChannel::setOutputWindowRatio(int a_h, int a_w)
-                                                                                                                                                                                               {
-                                                                                                                                                                                               return EC_NOT_SUPPORT;
-                                                                                                                                                                                               }
-                                                                                                                                                                                               int KMediaChannel::getOutputWindowRatio(int a_h, int a_w)
-                                                                                                                                                                                               {
-                                                                                                                                                                                               return EC_NOT_SUPPORT;
-                                                                                                                                                                                               }
-                                                                                                                                                                                               int KMediaChannel::getOrgOutputWindowRatio(int a_h, int a_w)
-                                                                                                                                                                                               {
-                                                                                                                                                                                               return EC_NOT_SUPPORT;
-                                                                                                                                                                                               }
+int KMediaChannel::setOutputWindowRect(KMC_RECT *a_rc)
+{
+    return EC_NOT_SUPPORT;
+}
+int KMediaChannel::getOutputWindowRect(KMC_RECT *a_rc)
+{
+    return EC_NOT_SUPPORT;
+}
+int KMediaChannel::getOrgOutputWindowRect(KMC_RECT *a_rc)
+{
+    return EC_NOT_SUPPORT;
+}
+int KMediaChannel::setOutputWindowRatio(int a_h, int a_w)
+{
+    return EC_NOT_SUPPORT;
+}
+int KMediaChannel::getOutputWindowRatio(int a_h, int a_w)
+{
+    return EC_NOT_SUPPORT;
+}
+int KMediaChannel::getOrgOutputWindowRatio(int a_h, int a_w)
+{
+    return EC_NOT_SUPPORT;
+}
