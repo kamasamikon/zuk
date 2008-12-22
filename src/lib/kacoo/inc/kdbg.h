@@ -10,9 +10,11 @@ extern "C" {
 /*---------------------------------------------------------------------------------
  * debug message mask
  */
-#define DBG_LOG         0x00000001
-#define DBG_ERR         0x00000002
-#define DBG_FAT         0x00000004
+#define DBG_LOG         0x00000001          /**< show log */
+#define DBG_ERR         0x00000002          /**< show error */
+#define DBG_FAT         0x00000004          /**< show fatal error */
+#define DBG_ASS         0x00000008          /**< show assert message */
+#define DBG_BRK         0x00000010          /**< raise debug trap when assert failed */
 
 static kuint __gc_kdbg_level = (kuint)-1;
 
@@ -63,21 +65,17 @@ kuint kdbg_getlevel(const kchar *a_file);
 
 #if defined(DBG_HIDE_ASSERT) || defined(DBG_HIDE_ASSERT)
 #define kassert(x) do {} while (0)
-#elif defined(DBG_ASSERT_AS_ERR)
-#define kassert(_x_) \
-    do { \
-        if (!(_x_)) { \
-            kprintf("\n\n\tkassert failed!!!\n\t[%s], \n\tFILE:%s, LINES:%d\n\n", \
-                #_x_, __FILE__, __LINE__); \
-        } \
-    } while (0)
 #else
 #define kassert(_x_) \
     do { \
-        if (!(_x_)) { \
+        GET_DBG_LEVEL(); \
+        if ((__gc_kdbg_level & DBG_ASS) && (!(_x_))) { \
             kprintf("\n\n\tkassert failed!!!\n\t[%s], \n\tFILE:%s, LINES:%d\n\n", \
                 #_x_, __FILE__, __LINE__); \
-            kdbgbrk(); \
+            \
+            if (__gc_kdbg_level & DBG_BRK) { \
+                kdbgbrk(); \
+            } \
         } \
     } while (0)
 #endif

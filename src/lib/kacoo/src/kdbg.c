@@ -11,7 +11,7 @@ static kbool __g_kdbg_cmdline_inited = kfalse;          /**< command line gotten
 
 /**
  * \brief Set parameters for debug message, should be called once in main
- * \param a_level ored of DBG_LOG, DBG_ERR and DBG_FAT
+ * \param a_level ored of DBG_LOG, DBG_ERR, DBG_FAT, DBG_ASS and DBG_BRK
  * \return Debug message level after set.
  */
 kuint kdbg_init(kuint a_level)
@@ -35,6 +35,16 @@ kuint kdbg_init(kuint a_level)
         } else {
             kflg_clr(__g_kdbg_level, DBG_FAT);
         }
+        if (a_level & DBG_ASS) {
+            kflg_set(__g_kdbg_level, DBG_ASS);
+        } else {
+            kflg_clr(__g_kdbg_level, DBG_ASS);
+        }
+        if (a_level & DBG_BRK) {
+            kflg_set(__g_kdbg_level, DBG_BRK);
+        } else {
+            kflg_clr(__g_kdbg_level, DBG_BRK);
+        }
     }
 
     return __g_kdbg_level;
@@ -56,7 +66,7 @@ static kvoid kdbg_get_cmd_line()
  * This will check the command line to do more on each file.
  *
  * The command line format is --ll-N :file1.ext:file2.ext:file:
- *      N is ored DBG_LOG, DBG_ERR and DBG_FAT
+ *      N is ored DBG_LOG, DBG_ERR, DBG_ASS and DBG_BRK
  *      file.ext is the file name. If exist dup name file, the level set to all.
  */
 kuint kdbg_getlevel(const kchar *a_file)
@@ -85,7 +95,6 @@ kuint kdbg_getlevel(const kchar *a_file)
         if (0 == strncmp("--ll-", argv[i], 5)) {
             if ((i < argc - 1) && strstr(argv[i + 1], file)) {
                 cur_level = atoi(argv[i] + 5);
-                break;
             }
         }
     }
