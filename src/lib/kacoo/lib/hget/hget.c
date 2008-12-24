@@ -262,7 +262,9 @@ kint hget_recv(SOCKET a_socket, const kchar *a_host, const kchar *a_path,
         if (strstr(data, "\r\n\r\n")) {
             break;
         }
-        while ((-1 == (ret = recv(a_socket, data + ret, DATA_LEN - ret, 0))) && CAN_CONTI());
+        while ((-1 == (ret = recv(a_socket, data + ret, DATA_LEN - ret, 0))) && CAN_CONTI()) {
+            ret++;
+        }
         if (-1 == ret) {
             kerror(("hget_recv: recv failed: %d\n", socket_last_error()));
         }
