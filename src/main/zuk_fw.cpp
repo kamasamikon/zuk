@@ -29,23 +29,30 @@ int main(int argc, char **argv)
 {
     int retval;
 
-    printf("QApplication app(argc, argv);\n");
+    klog(("QApplication app(argc, argv);\n"));
     QApplication app(argc, argv);
 
     QDialog dlg;
 
-    printf("zuk_init(argc, argv);\n");
-    zuk_init(argc, argv);
+    klog(("kim_new\n"));
+    KIM* im = kim_new(knil);
+    kim_start(im);
+
+    klog(("zuk_init(argc, argv);\n"));
+    zuk_init(im, argc, argv);
 
     dlg.show();
 
-    printf("retval = app.exec();\n");
+    klog(("retval = app.exec();\n"));
     retval = app.exec();
 
-    printf("zuk_final(argc, argv);\n");
-    zuk_final(argc, argv);
+    klog(("zuk_final(argc, argv);\n"));
+    zuk_final(im, argc, argv);
 
-    printf("main:: return:%d\n", retval);
+    klog(("kim_del\n"));
+    kim_del(im);
+
+    klog(("main:: return:%d\n", retval));
     return retval;
 }
 

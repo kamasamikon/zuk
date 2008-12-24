@@ -45,7 +45,6 @@
 extern int __g_app_rev;
 #endif
 
-static KIM*  __g_im = knil;
 static KMM* __g_mm = knil;
 static KMediaContainer* __g_mc = knil;
 
@@ -224,7 +223,7 @@ quit:
  *
  * @return 0: normal quit, 1: normal reboot
  */
-kint zuk_init(kint argc, kchar **argv)
+kint zuk_init(KIM *im, kint argc, kchar **argv)
 {
     kbean loading_application = knil;
 
@@ -261,15 +260,10 @@ kint zuk_init(kint argc, kchar **argv)
     if ((o = read_opt(opt, "skip-update")) && ('1' == o[0])) {
     }
 
-    /* create im */
-    KIM* im = kim_new(knil);
-    __g_im = im;
-    kim_start(im);
-
     if ((o = read_opt(opt, "show-loading")) && ('1' == o[0])) {
         sprintf(buffer, "%s%sz-loading", instdir, ps);
         ksal_exec(kfalse, kfalse, &loading_application, 0, buffer, 0);
-        kim_addptr(__g_im, "p.misc.app.bean.loading", loading_application, RF_AUTOSET, knil, knil);
+        kim_addptr(im, "p.misc.app.bean.loading", loading_application, RF_AUTOSET, knil, knil);
     }
 
     /* initialize the timer, needed by SubscriberId */
@@ -383,7 +377,7 @@ kint zuk_init(kint argc, kchar **argv)
     klog(("kmm_load_modules end\n"));
 }
 
-kint zuk_final(kint argc, kchar **argv)
+kint zuk_final(KIM *im, kint argc, kchar **argv)
 {
     if (__g_mm) {
         kmm_final(__g_mm);
@@ -393,10 +387,6 @@ kint zuk_final(kint argc, kchar **argv)
     }
 
     ktmr_final();
-
-    if (__g_im) {
-        kim_del(__g_im);
-    }
 
     klog(("leave zuk\n"));
     return ERSN_QUIT;

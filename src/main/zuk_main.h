@@ -3,8 +3,8 @@
 
 #include "sysdeps.h"
 
-kint zuk_init(kint argc, kchar **argv);
-kint zuk_final(kint argc, kchar **argv);
+kint zuk_init(KIM *im, kint argc, kchar **argv);
+kint zuk_final(KIM *im, kint argc, kchar **argv);
 
 #endif /* __ZUK_MAIN_H__ **/
 
