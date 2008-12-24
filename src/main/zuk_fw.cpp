@@ -29,6 +29,8 @@ int main(int argc, char **argv)
 {
     int retval;
 
+    kdbg_init();
+
     klog(("QApplication app(argc, argv);\n"));
     QApplication app(argc, argv);
 

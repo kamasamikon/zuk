@@ -249,8 +249,6 @@ kint zuk_init(KIM *im, kint argc, kchar **argv)
         return 0;
     }
 
-    kdbg_init();
-
     /* TODO check single instance */
     if ((o = read_opt(opt, "skip-single")) && ('1' == o[0])) {
         /* TODO mark single instance */
