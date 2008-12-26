@@ -9,6 +9,7 @@
 #include <ktsk.h>
 #include <kstr.h>
 #include <ktmr.h>
+#include <ksal.h>
 
 #include <textconv.h>
 
@@ -16,6 +17,8 @@
 
 static char guid[] = "7D378382-9351-4f4e-BF83-4FF20C456B6D";
 static kbean __g_worker_thread = knil;
+
+static kchar *__g_mod_dir = knil;
 
 static kint __g_try_scan_when_mod_loaded = 0;
 static kint __g_try_scan_when_dev_defreeze = 0;
@@ -55,19 +58,18 @@ static kbean __g_wch_imsJcDisconnect = knil;
 static kvoid update_urls(kbool add)
 {
     kchar fnbuf[1024], *utf8;
-    kchar *modDir;
 
-    modDir = kim_getstr(__g_im, "s.env.path.moduleDir", knil);
+    __g_mod_dir = kim_getstr(__g_im, "s.env.path.moduleDir", knil);
     const kchar *lang = kim_getstr(__g_im, "s.env.language", knil);
     if (strncmp(lang, "zh_", 3)) {
         lang = "en";
     }
 
     /* the loading page */
-    sprintf(fnbuf, "%s\\playlist\\page\\live\\loading.png", modDir);
+    sprintf(fnbuf, "%s\\playlist\\page\\live\\loading.png", __g_mod_dir);
     kstr_subs(fnbuf, '\\', kvfs_path_sep());
     if (!kvfs_exist(fnbuf)) {
-        sprintf(fnbuf, "%s\\playlist\\page\\default\\%s\\loading.png", modDir, lang);
+        sprintf(fnbuf, "%s\\playlist\\page\\default\\%s\\loading.png", __g_mod_dir, lang);
         kstr_subs(fnbuf, '\\', kvfs_path_sep());
     }
 
@@ -84,10 +86,10 @@ static kvoid update_urls(kbool add)
 
 
     /* not no_device page */
-    sprintf(fnbuf, "%s\\playlist\\page\\live\\no_device.png", modDir);
+    sprintf(fnbuf, "%s\\playlist\\page\\live\\no_device.png", __g_mod_dir);
     kstr_subs(fnbuf, '\\', kvfs_path_sep());
     if (!kvfs_exist(fnbuf)) {
-        sprintf(fnbuf, "%s\\playlist\\page\\default\\%s\\no_device.png", modDir, lang);
+        sprintf(fnbuf, "%s\\playlist\\page\\default\\%s\\no_device.png", __g_mod_dir, lang);
         kstr_subs(fnbuf, '\\', kvfs_path_sep());
     }
 
@@ -103,10 +105,10 @@ static kvoid update_urls(kbool add)
     }
 
     /* not scanning page */
-    sprintf(fnbuf, "%s\\playlist\\page\\live\\scanning.png", modDir);
+    sprintf(fnbuf, "%s\\playlist\\page\\live\\scanning.png", __g_mod_dir);
     kstr_subs(fnbuf, '\\', kvfs_path_sep());
     if (!kvfs_exist(fnbuf)) {
-        sprintf(fnbuf, "%s\\playlist\\page\\default\\%s\\scanning.png", modDir, lang);
+        sprintf(fnbuf, "%s\\playlist\\page\\default\\%s\\scanning.png", __g_mod_dir, lang);
         kstr_subs(fnbuf, '\\', kvfs_path_sep());
     }
 
@@ -122,10 +124,10 @@ static kvoid update_urls(kbool add)
     }
 
     /* not scanning_failed page */
-    sprintf(fnbuf, "%s\\playlist\\page\\live\\scanning_failed.png", modDir);
+    sprintf(fnbuf, "%s\\playlist\\page\\live\\scanning_failed.png", __g_mod_dir);
     kstr_subs(fnbuf, '\\', kvfs_path_sep());
     if (!kvfs_exist(fnbuf)) {
-        sprintf(fnbuf, "%s\\playlist\\page\\default\\%s\\scanning_failed.png", modDir, lang);
+        sprintf(fnbuf, "%s\\playlist\\page\\default\\%s\\scanning_failed.png", __g_mod_dir, lang);
         kstr_subs(fnbuf, '\\', kvfs_path_sep());
     }
 
@@ -141,10 +143,10 @@ static kvoid update_urls(kbool add)
     }
 
     /* no live program */
-    sprintf(fnbuf, "%s\\playlist\\page\\live\\no_prg_live.png", modDir);
+    sprintf(fnbuf, "%s\\playlist\\page\\live\\no_prg_live.png", __g_mod_dir);
     kstr_subs(fnbuf, '\\', kvfs_path_sep());
     if (!kvfs_exist(fnbuf)) {
-        sprintf(fnbuf, "%s\\playlist\\page\\default\\%s\\no_prg_live.png", modDir, lang);
+        sprintf(fnbuf, "%s\\playlist\\page\\default\\%s\\no_prg_live.png", __g_mod_dir, lang);
         kstr_subs(fnbuf, '\\', kvfs_path_sep());
     }
 
@@ -161,10 +163,10 @@ static kvoid update_urls(kbool add)
 
 
     /* no live program */
-    sprintf(fnbuf, "%s\\playlist\\page\\live\\no_prg_vod.png", modDir);
+    sprintf(fnbuf, "%s\\playlist\\page\\live\\no_prg_vod.png", __g_mod_dir);
     kstr_subs(fnbuf, '\\', kvfs_path_sep());
     if (!kvfs_exist(fnbuf)) {
-        sprintf(fnbuf, "%s\\playlist\\page\\default\\%s\\no_prg_vod.png", modDir, lang);
+        sprintf(fnbuf, "%s\\playlist\\page\\default\\%s\\no_prg_vod.png", __g_mod_dir, lang);
         kstr_subs(fnbuf, '\\', kvfs_path_sep());
     }
 
@@ -181,10 +183,10 @@ static kvoid update_urls(kbool add)
 
 
     /* no live program */
-    sprintf(fnbuf, "%s\\playlist\\page\\live\\no_prg_rec.png", modDir);
+    sprintf(fnbuf, "%s\\playlist\\page\\live\\no_prg_rec.png", __g_mod_dir);
     kstr_subs(fnbuf, '\\', kvfs_path_sep());
     if (!kvfs_exist(fnbuf)) {
-        sprintf(fnbuf, "%s\\playlist\\page\\default\\%s\\no_prg_rec.png", modDir, lang);
+        sprintf(fnbuf, "%s\\playlist\\page\\default\\%s\\no_prg_rec.png", __g_mod_dir, lang);
         kstr_subs(fnbuf, '\\', kvfs_path_sep());
     }
 
@@ -568,7 +570,7 @@ extern "C" EXPORT_FUN void mm_hey(KIM *im)
     ktmr_init();
 
     char iniPath[1024];
-    sprintf(iniPath, "%s\\playlist\\playlist.ini", kim_getstr(im, "s.env.path.moduleDir", knil));
+    sprintf(iniPath, "%s\\playlist\\main.ini", kim_getstr(im, "s.env.path.moduleDir", knil));
     kstr_subs(iniPath, '\\', kvfs_path_sep());
 
     if (!kini_getint("general", "autoPlay", &__g_plrti.autoPlay, iniPath)) {
@@ -679,7 +681,7 @@ extern "C" EXPORT_FUN void mm_bye(KIM *im)
 
     // save settings
     char iniPath[1024], *tmp;
-    sprintf(iniPath, "%s\\playlist\\playlist.ini", kim_getstr(im, "s.env.path.moduleDir", knil));
+    sprintf(iniPath, "%s\\playlist\\main.ini", kim_getstr(im, "s.env.path.moduleDir", knil));
     kstr_subs(iniPath, '\\', kvfs_path_sep());
 
     kini_setint("general", "autoPlay", __g_plrti.autoPlay, iniPath);
@@ -738,9 +740,71 @@ extern "C" EXPORT_FUN void mm_guid(KIM *im, char **retguid)
     klog(("into playlist guid, %s\n", guid));
     *retguid = guid;
 }
-
 extern "C" EXPORT_FUN void jc_playlist_device_scan(KIM *im, kchar *ar0, kchar *ar1, kchar *ar2, kchar *ar3, kchar **pVarResult)
 {
     kmsg_send(__g_worker_thread, KMPL_SCAN, kstr_dup(ar0), ar1, ar2, ar3);
+}
+
+static kbool read_file(const kchar *a_path, kchar **a_buf, kint *a_buflen)
+{
+    kchar *buf = knil;
+    kint retlen = 0x7FFFFFFF;
+    kbean f;
+
+    if (!(f = kvfs_open(a_path, "rb", 0)))
+        return kfalse;
+
+    kvfs_read(f, (kvoid**)&buf, &retlen);
+
+    if (buf && retlen > 0)
+        buf[retlen] = '\0';
+
+    *a_buf = buf;
+    *a_buflen = retlen;
+
+    kvfs_close(f);
+    return ktrue;
+}
+
+extern "C" EXPORT_FUN void jc_playlist_get_script(KIM *im, kchar *ar0, kchar *ar1, kchar *ar2, kchar *ar3, kchar **pVarResult)
+{
+    kchar path[1024], *buf = knil, **ret = (kchar**)pVarResult;
+    kint retlen = 0;
+
+    if (!ret)
+        return;
+
+    *ret = "";
+    sprintf(path, "%s/playlist/pl.js", __g_mod_dir);
+    if (read_file(path, &buf, &retlen) && buf && retlen > 0)
+        *ret = buf;
+}
+
+extern "C" EXPORT_FUN void jc_playlist_get_ui(KIM *im, kchar *ar0, kchar *ar1, kchar *ar2, kchar *ar3, kchar **pVarResult)
+{
+    kchar path[1024], *buf = knil, **ret = (kchar**)pVarResult;
+    kint retlen = 0;
+
+    if (!ret)
+        return;
+
+    *ret = "";
+    sprintf(path, "%s/playlist/pl.ui", __g_mod_dir);
+    if (read_file(path, &buf, &retlen) && buf && retlen > 0)
+        *ret = buf;
+}
+
+extern "C" EXPORT_FUN void jc_playlist_get_theme(KIM *im, kchar *ar0, kchar *ar1, kchar *ar2, kchar *ar3, kchar **pVarResult)
+{
+    kchar path[1024], *buf = knil, **ret = (kchar**)pVarResult;
+    kint retlen = 0;
+
+    if (!ret)
+        return;
+
+    *ret = "";
+    sprintf(path, "%s/playlist/pl.qss", __g_mod_dir);
+    if (read_file(path, &buf, &retlen) && buf && retlen > 0)
+        *ret = buf;
 }
 

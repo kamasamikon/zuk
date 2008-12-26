@@ -7,12 +7,15 @@
 
 #include <QtGui/QApplication>
 #include <QtGui/QDialog>
+#include <QUiLoader>
+#include <QtScript>
 
 #include <ktypes.h>
 #include <ksal.h>
 #include <kdbg.h>
 
 #include <kim.h>
+#include <kmm.h>
 #include <kini.h>
 
 #if defined(__UNIX__)
@@ -27,14 +30,15 @@
 
 int main(int argc, char **argv)
 {
+    KMM *mm;
     int retval;
+
+    kchar *str_js, *str_ui, *str_theme;
 
     kdbg_init();
 
     klog(("QApplication app(argc, argv);\n"));
     QApplication app(argc, argv);
-
-    QDialog dlg;
 
     klog(("kim_new\n"));
     KIM* im = kim_new(knil);
@@ -43,7 +47,33 @@ int main(int argc, char **argv)
     klog(("zuk_init(argc, argv);\n"));
     zuk_init(im, argc, argv);
 
-    dlg.show();
+    mm = (KMM*)kim_getptr(im, "p.sys.kmm", knil);
+
+#define PLAYLIST_GUID "7D378382-9351-4f4e-BF83-4FF20C456B6D"
+    kmm_jc_cmd(mm, "jc_playlist_get_ui", PLAYLIST_GUID, knil, knil, knil, knil, (kchar**)&str_ui);
+    kmm_jc_cmd(mm, "jc_playlist_get_script", PLAYLIST_GUID, knil, knil, knil, knil, (kchar**)&str_js);
+    kmm_jc_cmd(mm, "jc_playlist_get_theme", PLAYLIST_GUID, knil, knil, knil, knil, (kchar**)&str_theme);
+
+    QScriptEngine engine;
+
+    engine.evaluate(str_js);
+
+    QTemporaryFile uifile;
+    if (!uifile.open())
+        return -1;
+
+    uifile.write(str_ui);
+    QUiLoader loader;
+    QWidget *ui = loader.load(&uifile);
+    uifile.close();
+
+    QScriptValue ctor = engine.evaluate("Calculator");
+    QScriptValue scriptUi = engine.newQObject(ui, QScriptEngine::ScriptOwnership);
+    QScriptValue calc = ctor.construct(QScriptValueList() << scriptUi);
+
+    qApp->setStyleSheet(str_theme);
+
+    ui->show();
 
     klog(("retval = app.exec();\n"));
     retval = app.exec();
