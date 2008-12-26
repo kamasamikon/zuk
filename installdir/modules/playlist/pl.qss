@@ -1,8 +1,3 @@
-*
-{
-	xcolor: beige;
-}
-
 QLabel, QAbstractButton 
 {
     font: 10pt bold;
