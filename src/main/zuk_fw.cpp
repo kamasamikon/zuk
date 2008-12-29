@@ -45,7 +45,7 @@ QWidget *playlist_ui(QObject *p, KMM *mm)
     kmm_jc_cmd(mm, "jc_playlist_get_script", PLAYLIST_GUID, knil, knil, knil, knil, (kchar**)&str_js);
     kmm_jc_cmd(mm, "jc_playlist_get_theme", PLAYLIST_GUID, knil, knil, knil, knil, (kchar**)&str_theme);
 
-    QScriptEngine *engine = new QScriptEngine(p);
+    QScriptEngine *engine = new QScriptEngine();
     engine->evaluate("print('hello', 'world')");
     engine->evaluate(str_js);
 
@@ -60,10 +60,10 @@ QWidget *playlist_ui(QObject *p, KMM *mm)
     qDebug() << "uifile:" << uifile.fileName() << endl;
     uifile.close();
 #else
-    QUiLoader *loader = new QUiLoader(p);
+    QUiLoader loader;
     QFile uiFile("/home/auv/work/zuk/installdir/modules/playlist/pl.ui");
     uiFile.open(QIODevice::ReadOnly);
-    QWidget *ui = loader->load(&uiFile);
+    QWidget *ui = loader.load(&uiFile);
     uiFile.close();
 
     if (!ui) {
