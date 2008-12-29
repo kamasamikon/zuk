@@ -59,7 +59,6 @@ static kvoid update_urls(kbool add)
 {
     kchar fnbuf[1024], *utf8;
 
-    __g_mod_dir = kim_getstr(__g_im, "s.env.path.moduleDir", knil);
     const kchar *lang = kim_getstr(__g_im, "s.env.language", knil);
     if (strncmp(lang, "zh_", 3)) {
         lang = "en";
@@ -568,6 +567,8 @@ extern "C" EXPORT_FUN void mm_hey(KIM *im)
     __g_plrti.im = im;
 
     ktmr_init();
+
+    __g_mod_dir = kim_getstr(__g_im, "s.env.path.moduleDir", knil);
 
     char iniPath[1024];
     sprintf(iniPath, "%s\\playlist\\main.ini", kim_getstr(im, "s.env.path.moduleDir", knil));
