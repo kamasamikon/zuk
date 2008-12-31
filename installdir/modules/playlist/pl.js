@@ -238,6 +238,13 @@ Calculator.prototype.clearAll = function()
     this.pendingMultiplicativeOperator = "";
     this.ui.display.text = "0";
     this.waitingForOperand = true;
+
+    try {
+        var obj = new QObject(this.ui);
+    }
+    catch (e) {
+        print(e);
+    }
 }
 
 Calculator.prototype.clearMemory = function()

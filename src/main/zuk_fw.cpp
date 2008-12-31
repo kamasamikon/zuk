@@ -31,10 +31,45 @@
 
 #include "zuk_main.h"
 
+QScriptValue mySpecialQObjectConstructor(QScriptContext *context, QScriptEngine *engine)
+{
+    static int i = 0;
+    QWidget *parent = (QWidget*)context->argument(0).toQObject();
+    printf("mySpecialQObjectConstructor:parent:%x\n", (unsigned int)parent);
+
+    char label[222];
+    sprintf(label, "shit:%d\n", i++);
+
+    QPushButton *object = new QPushButton(QString(label), (QWidget*)parent);
+    printf("mySpecialQObjectConstructor:object:%x\n", (unsigned int)object);
+
+    object->setVisible(true);
+    parent->layout()->addWidget(object);
+
+    /* ScriptOwnership and QtOwnership all works */
+    // return engine->newQObject(object, QScriptEngine::ScriptOwnership);
+    return engine->newQObject(object, QScriptEngine::QtOwnership);
+}
+
+
 class mwi {
-    QScriptEngine *engine;
+    kchar *modname;     /* playlist, ui, etc */
+
+    QScriptEngine engine;
+    QUiLoader uiLoader;
+
+    QString uiText;
+    QString scriptText;
+    QString themeText;
+
+    kuint type;         /* popup, main, float */
+
     QWidget *widget;
+
+    QWidget *newWidget(kchar *name);
 };
+
+// kim_addint("i.wmi.evt.win", add_or_del, [name of entry, e.g. "i.mod.mwi.win"], knil)
 
 QWidget *playlist_ui(QObject *p, KMM *mm)
 {
@@ -72,9 +107,21 @@ QWidget *playlist_ui(QObject *p, KMM *mm)
     }
 #endif
 
+
+    QVBoxLayout *layout = new QVBoxLayout();
+    ui->setLayout(layout);
+
     QScriptValue ctor = engine->evaluate("Calculator");
     QScriptValue scriptUi = engine->newQObject(ui, QScriptEngine::ScriptOwnership);
     QScriptValue calc = ctor.construct(QScriptValueList() << scriptUi);
+
+    ctor = engine->newFunction(mySpecialQObjectConstructor);
+    QScriptValue metaObject = engine->newQMetaObject(&QObject::staticMetaObject, ctor);
+    engine->globalObject().setProperty("QObject", metaObject);
+
+    // QScriptValue result = engine->evaluate("new QObject()");
+    // printf("xxxxxxxxxxxxxxxxxxxxx\n");
+
 
     return ui;
 }
@@ -142,6 +189,14 @@ int main(int argc, char **argv)
     QScriptValue ctor = engine.evaluate("Calculator");
     QScriptValue scriptUi = engine.newQObject(ui, QScriptEngine::ScriptOwnership);
     QScriptValue calc = ctor.construct(QScriptValueList() << scriptUi);
+
+    ctor = engine.newFunction(mySpecialQObjectConstructor);
+    QScriptValue metaObject = engine.newQMetaObject(&QObject::staticMetaObject, ctor);
+    engine.globalObject().setProperty("QObject", metaObject);
+
+    // QScriptValue result = engine.evaluate("new QObject()");
+    // printf("xxxxxxxxxxxxxxxxxxxxx\n");
+
 
     /////////////////////////////////////////////////
     QScriptEngine engggg;
