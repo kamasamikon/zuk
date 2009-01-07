@@ -201,7 +201,7 @@ kint kvfs_read(kbean a_file, kvoid **a_buf, kint *a_size)
         kvfs_seek(a_file, curpos, SEEK_SET);
 
         *a_buf = ksal_mem_alloc(readsize);
-        *a_size = fread(*a_buf, 1, readsize, a_file);
+        *a_size = fread(*a_buf, 1, readsize, (FILE*)a_file);
     } else {
         *a_size = fread(*a_buf, 1, *a_size, (FILE*)a_file);
     }

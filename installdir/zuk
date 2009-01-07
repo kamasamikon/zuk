@@ -14,7 +14,7 @@ SSPATH=$THE_PATH                                            # Script's path
 SSDIR=`dirname $THE_PATH`                                   # Script's dir
 
 # Log file
-LOG_FILE="/dev/null"
+LOG_FILE="/dev/stderr"
 # Debug file
 DBG_FILE="/dev/null"
 
@@ -22,7 +22,7 @@ DBG_FILE="/dev/null"
 KEEP_TEMP="false"
 
 # options
-ORG_OPT="--show-debug yes --has-title yes $@" 
+ORG_OPT="--log-level 7 --log-time y $@" 
 ADD_OPT="-widgetcount"
 
 # update dir

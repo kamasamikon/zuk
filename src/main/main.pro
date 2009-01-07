@@ -24,10 +24,8 @@ contains(DEFINES, __MID__) {
 win32:TARGET = zuk
 unix:TARGET = zuk.bin
 
-CONFIG += qt \
-    debug_and_release
-QT += webkit \
-    network
+CONFIG += qt debug_and_release uitools
+QT += webkit network script
 
 DEPENDPATH += .
 INCLUDEPATH += . \

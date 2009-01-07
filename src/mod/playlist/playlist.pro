@@ -5,7 +5,6 @@
 TEMPLATE = lib
 CONFIG += debug_and_release
 CONFIG += dll
-CONFIG -= qt
 
 QMAKE_LFLAGS += -Wl,-rpath,"'\$\${ORIGIN}'"
 QMAKE_LFLAGS += -Wl,-rpath,"'\$\${ORIGIN}/../../lib'"
@@ -25,5 +24,6 @@ DEPENDPATH += . ../inc ../../lib/textconv ../../lib/kacoo/inc ../../lib/kacoo/li
 
 # Input
 HEADERS +=
-SOURCES += playlist_impl.cpp
+SOURCES += playlist_impl.cpp 
+#playlist_ui.cpp
 

@@ -25,19 +25,10 @@
 
 #include <hget.h>
 
-#ifdef HGET_TEST
-char ctbuffer[200];
-char *curtime()
-{
-    struct timespec ts;
-    clock_gettime(CLOCK_REALTIME, &ts);
-    sprintf(ctbuffer, "%d.%d", ts.tv_sec, ts.tv_nsec / 1000);
-    return ctbuffer;
-}
-#define klog(x) do { printf("[klog-%s]", curtime()); printf x ; } while (0)
-#define DUMP_BUF() do { klog(("%s\n\n\n\n\n\n\n\n", a_retbuf)); } while (0)
+#if (defined(__WIN32__) || defined(__WINCE__))
+#define CAN_CONTI() ((WSAETIMEDOUT == socket_last_error()) || (WSAEINTR == socket_last_error()))
 #else
-#define DUMP_BUF() do { } while (0)
+#define CAN_CONTI() (EINTR == errno)
 #endif
 
 #define SOCKET kint
@@ -50,7 +41,6 @@ static kint socket_last_error()
 #if (defined(__WIN32__) || defined(__WINCE__))
     return WSAGetLastError();
 #else
-    perror("last_error");
     return errno;
 #endif
 }
@@ -159,6 +149,7 @@ kint hget_connect(kint a_prot, const kchar *a_user, const kchar *a_pass,
         klog(("hget_connect: gethostbyname\n"));
         host_ent = gethostbyname(a_host);
         if (!host_ent) {
+            kerror(("hget_connect: gethostbyname : ng : url(%s%s:%d)\n", a_host, a_path, a_port));
             kerror(("hget_connect: gethostbyname failed: %d\n", socket_last_error()));
             return PGEC_HOST;
         }
@@ -168,6 +159,7 @@ kint hget_connect(kint a_prot, const kchar *a_user, const kchar *a_pass,
     klog(("hget_connect: socket\n"));
     sockfd = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP);
     if (-1 == sockfd) {
+        kerror(("hget_connect: socket : ng : url(%s%s:%d)\n", a_host, a_path, a_port));
         kerror(("hget_connect: create socket failed: %d\n", socket_last_error()));
         return PGEC_SOCKET;
     }
@@ -180,10 +172,10 @@ kint hget_connect(kint a_prot, const kchar *a_user, const kchar *a_pass,
     timeout.tv_sec = 15;
     timeout.tv_usec = 0;
     if (setsockopt(sockfd, SOL_SOCKET, SO_RCVTIMEO, (char*)&timeout, sizeof(timeout)) < 0) {
-        perror("hget_connect: setsockopt:SO_RCVTIMEO");
+        kerror(("hget_connect: setsockopt:SO_RCVTIMEO:%d\n", socket_last_error()));
     }
     if (setsockopt(sockfd, SOL_SOCKET, SO_SNDTIMEO, (char*)&timeout, sizeof(timeout)) < 0) {
-        perror("hget_connect: setsockopt:SO_SNDTIMEO");
+        kerror(("hget_connect: setsockopt:SO_SNDTIMEO:%d\n", socket_last_error()));
     }
 
     addr.sin_family = AF_INET;
@@ -192,12 +184,13 @@ kint hget_connect(kint a_prot, const kchar *a_user, const kchar *a_pass,
 
     /* connect */
     klog(("hget_connect: connect\n"));
-    while ((-1 == (ret = connect(sockfd, (struct sockaddr *)&addr, sizeof(addr)))) && (EINTR == errno));
+    while ((-1 == (ret = connect(sockfd, (struct sockaddr *)&addr, sizeof(addr)))) && CAN_CONTI());
     if (-1 == ret) {
         if (a_socket) {
             *a_socket = -1;
         }
 
+        kerror(("hget_connect: connect : ng : url(%s%s:%d)\n", a_host, a_path, a_port));
         kerror(("hget_connect: connect failed: %d\n", socket_last_error()));
         hget_free_socket(sockfd);
         return PGEC_CONNECT;
@@ -252,11 +245,11 @@ kint hget_recv(SOCKET a_socket, const kchar *a_host, const kchar *a_path,
                );
     }
 
-    klog(("start send\n"));
+    klog(("hget_recv(%d): start send\n", a_socket));
 
-    while ((-1 == (ret = send(a_socket, header, strlen(header), 0))) && (EINTR == errno));
+    while ((-1 == (ret = send(a_socket, header, strlen(header), 0))) && CAN_CONTI());
     if (-1 == ret) {
-        kerror(("send failed: %d\n", socket_last_error()));
+        kerror(("hget_recv(%d): send failed: %d\n", a_socket, socket_last_error()));
         rc = PGEC_SEND;
         goto done;
     }
@@ -272,12 +265,14 @@ kint hget_recv(SOCKET a_socket, const kchar *a_host, const kchar *a_path,
         if (strstr(data, "\r\n\r\n")) {
             break;
         }
-        while ((-1 == (ret = recv(a_socket, data + ret, DATA_LEN - ret, 0))) && (EINTR == errno));
+        while ((-1 == (ret = recv(a_socket, data + ret, DATA_LEN - ret, 0))) && CAN_CONTI()) {
+            ret++;
+        }
         if (-1 == ret) {
-            kerror(("recv failed: %d\n", socket_last_error()));
+            kerror(("hget_recv(%d): recv failed: %d\n", a_socket, socket_last_error()));
         }
         if (0 == ret) {
-            kerror(("recv failed: socket closed.\n"));
+            kerror(("hget_recv(%d): recv failed: socket closed.\n", a_socket));
         }
         if (ret >= DATA_LEN) {
             cur_len += ret;
@@ -288,7 +283,7 @@ kint hget_recv(SOCKET a_socket, const kchar *a_host, const kchar *a_path,
 
     if (ret > 0) {
 
-        klog(("hget_recv:%d: cont-data:%s\n", __LINE__, (ret > 0) ? data : "(nil)"));
+        klog(("hget_recv(%d):%d: cont-data:%s\n", a_socket, __LINE__, (ret > 0) ? data : "(nil)"));
 
         /*
          * try to get header, only when (*a_hdrbuf != zero)
@@ -334,13 +329,13 @@ kint hget_recv(SOCKET a_socket, const kchar *a_host, const kchar *a_path,
             pTemp = strstr(data, "HTTP/1.0 ");
         }
         if (!pTemp) {
-            kerror(("Can not get Response code\n"));
+            kerror(("hget_recv(%d): Can not get Response code\n", a_socket));
             rc = PGEC_HEADER;
             goto done;
         }
         resp_code = atoi(pTemp + 9);
         if (resp_code < 200 || resp_code >= 300) {
-            kerror(("resp_code tell an error\n"));
+            kerror(("hget_recv(%d): resp_code (%d) tell an error\n", a_socket, resp_code));
             rc = PGEC_RESP_CODE;
             goto done;
         }
@@ -348,7 +343,7 @@ kint hget_recv(SOCKET a_socket, const kchar *a_host, const kchar *a_path,
         /* Get Buffer Length */
         pTemp = strstr(data, "Content-Length: ");
         if (!pTemp) {
-            kerror(("Can not get content length\n"));
+            kerror(("hget_recv(%d): Can not get content length\n", a_socket));
             rc = PGEC_CONTENT_LEN;
             goto done;
         }
@@ -366,7 +361,7 @@ kint hget_recv(SOCKET a_socket, const kchar *a_host, const kchar *a_path,
         }
         pNext = *a_datbuf;
         if (!pNext) {
-            kerror(("Can not alloc memory\n"));
+            kerror(("hget_recv(%d): Can not alloc memory\n", a_socket));
             rc = PGEC_MEMORY;
             goto done;
         }
@@ -392,19 +387,19 @@ kint hget_recv(SOCKET a_socket, const kchar *a_host, const kchar *a_path,
         /*
          * Then got the rest data
          */
-        klog(("hget_recv: cur_len:%d, dat_len:%d\n", cur_len, dat_len));
+        klog(("hget_recv(%d): cur_len:%d, dat_len:%d\n", a_socket, cur_len, dat_len));
         if (cur_len < dat_len) {
             resp_code = 1;
-            while ((-1 == (ret = recv(a_socket, data, DATA_LEN, 0))) && (EINTR == errno));
+            while ((-1 == (ret = recv(a_socket, data, DATA_LEN, 0))) && CAN_CONTI());
             if (-1 == ret) {
-                kerror(("recv failed: %d\n", socket_last_error()));
+                kerror(("hget_recv(%d): recv failed: %d\n", a_socket, socket_last_error()));
             }
             if (0 == ret) {
-                kerror(("recv failed: socket closed.\n"));
+                kerror(("hget_recv(%d): recv failed: socket closed.\n", a_socket));
             }
 
-            klog(("hget_recv: dat_len:%d, cur_len:%d, recv_cnt:%d, ret:%d, err:%d\n",
-                        dat_len, cur_len, resp_code++, ret, socket_last_error()));
+            klog(("hget_recv(%d): dat_len:%d, cur_len:%d, recv_cnt:%d, ret:%d, err:%d\n",
+                        a_socket, dat_len, cur_len, resp_code++, ret, socket_last_error()));
 
             while (ret > 0) {
 
@@ -422,14 +417,14 @@ kint hget_recv(SOCKET a_socket, const kchar *a_host, const kchar *a_path,
                 kassert(cur_len <= dat_len || !"bad cur_len or all_en");
 
                 if (cur_len < dat_len) {
-                    while ((-1 == (ret = recv(a_socket, data, DATA_LEN, 0))) && (EINTR == errno));
+                    while ((-1 == (ret = recv(a_socket, data, DATA_LEN, 0))) && CAN_CONTI());
                 } else {
-                    klog(("hget_recv: all received\n"));
+                    klog(("hget_recv(%d): all received\n", a_socket));
                     break;
                 }
 
-                klog(("hget_recv: dat_len:%d, cur_len:%d, recv_cnt:%d, ret:%d, err:%d\n",
-                            dat_len, cur_len, resp_code++, ret, socket_last_error()));
+                klog(("hget_recv(%d): dat_len:%d, cur_len:%d, recv_cnt:%d, ret:%d, err:%d\n",
+                            a_socket, dat_len, cur_len, resp_code++, ret, socket_last_error()));
             }
         }
 
@@ -438,7 +433,12 @@ kint hget_recv(SOCKET a_socket, const kchar *a_host, const kchar *a_path,
     }
 
 done:
-    klog(("hget_recv is : %d\n", rc));
+    if (PGEC_SUCCESS != rc) {
+        kerror(("hget_recv(%d): ng : skt(%d), host(%s), path(%s), get(%d), cmd(%d)\n",
+                    a_socket, a_socket, a_host, a_path, a_get, a_cmd));
+    }
+
+    klog(("hget_recv(%d): return : %d\n", a_socket, rc));
     return rc;
 }
 
@@ -458,363 +458,6 @@ kint hget(const kchar *a_url, const kchar *a_proxy, kbool a_get, const kchar *a_
         hget_free_socket(*s);
     }
     return ret;
-}
-
-/**
- * @brief Get SG data.
- *
- * @param[in] a_url URL from which get data.
- * @param[in] a_proxy Proxy URL
- * @param[in] a_get GET or POST method
- * @param[in] a_cmd Specific what kind of SG data should be returned.
- * @param[in] a_datbuf IN:*a_datbuf: buffer provider by caller, if (*a_datbuf == zero) (*a_datbuf = kmem_alloc).
- * @param[in] a_datlen IN:*a_datlen: max data len should be return, if zero, do not return hdr data
- *                     OUT:*a_datlen: actually read data length.
- * @param[in] a_hdrbuf IN:*a_hdrbuf: buffer provider by caller, if (*a_hdrbuf == zero) (*a_hdrbuf = kmem_alloc).
- * @param[in] a_hdrlen IN:*a_hdrlen: max hdr len should be return, if zero, do not return hdr data
- *                     OUT:*a_hdrlen: actually read header length.
- * @param[in] a_socket socket which can be close when hget last too long.
- *
- * @return 0 for success, -1 for error.
- */
-kint hget_old(const kchar *a_url, const kchar *a_proxy, kbool a_get, const kchar *a_cmd,
-        kchar **a_datbuf, kint *a_datlen, kchar **a_hdrbuf, kint *a_hdrlen, kint *a_socket)
-{
-    SOCKET sockfd;
-
-    kchar *pHost = 0, *pTemp, *pNext;
-    kchar host[PATH_LEN], dir[PATH_LEN];
-    kchar header[PATH_LEN] = "";
-
-    kchar data[DATA_LEN];
-    kint rc = PGEC_ERROR, ret = -1, resp_code, dat_len = 0, hdr_len, cur_len = 0, lft_len;
-
-    struct sockaddr_in addr;
-    struct hostent *host_ent;
-
-    kushort port = 80;
-    kuint ip_addr;
-
-    struct timeval timeout;
-
-    klog(("hget[in]:%s\n", a_cmd));
-
-#if (defined(__WIN32__) || defined(__WINCE__))
-#else
-    signal(SIGPIPE, SIG_IGN);
-#endif
-
-    /*
-     * renew the client
-     */
-    pTemp = strstr(a_url, "http://");
-    if (pTemp) {
-        a_url += 7;
-    }
-
-    /* Seperate Host and path in url */
-    strcpy(host, a_url);
-    for (pHost = host; *pHost != '/' && *pHost != '\0'; ++pHost);
-    *pHost = '\0';
-
-    /* get port */
-    pTemp = strchr(host, ':');
-    if (pTemp) {
-        /* set port */
-        port = (kushort)strtoul(pTemp + 1, 0, 10);
-
-        /* remove port part from host */
-        *pTemp = '\0';
-    }
-
-    /* process proxy */
-
-    /* Set socket parameters */
-    klog(("hget: inet_addr\n"));
-    ip_addr = inet_addr(host);
-    if (INADDR_NONE == ip_addr) {
-        klog(("hget: gethostbyname\n"));
-        host_ent = gethostbyname(host);
-        if (!host_ent) {
-            kerror(("gethostbyname failed: %d\n", socket_last_error()));
-            return PGEC_HOST;
-        }
-        ip_addr = *((kulong*)host_ent->h_addr);
-    }
-
-    klog(("hget: socket\n"));
-    sockfd = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP);
-    if (-1 == sockfd) {
-        kerror(("create socket failed: %d\n", socket_last_error()));
-        return PGEC_SOCKET;
-    }
-    if (a_socket) {
-        *a_socket = sockfd;
-    }
-
-    /* set timeout for recv and send */
-    timeout.tv_sec = 15;
-    timeout.tv_usec = 0;
-    if (setsockopt(sockfd, SOL_SOCKET, SO_RCVTIMEO, (char*)&timeout, sizeof(timeout)) < 0) {
-        perror("be:setsockopt:SO_RCVTIMEO");
-    }
-    if (setsockopt(sockfd, SOL_SOCKET, SO_SNDTIMEO, (char*)&timeout, sizeof(timeout)) < 0) {
-        perror("be:setsockopt:SO_SNDTIMEO");
-    }
-
-    addr.sin_family = AF_INET;
-    addr.sin_addr.s_addr = ip_addr;
-    addr.sin_port = htons(port);
-
-    /*
-     * connect and send request
-     */
-    klog(("hget: connect\n"));
-    while ((-1 == (ret = connect(sockfd, (struct sockaddr *)&addr, sizeof(addr)))) && (EINTR == errno));
-    if (-1 == ret) {
-        if (a_socket) {
-            *a_socket = -1;
-        }
-
-        kerror(("connect failed: %d\n", socket_last_error()));
-        return PGEC_CONNECT;
-    }
-
-    klog(("hget: sockfd:%d\n", sockfd));
-
-    /* Seperate Host and path in url */
-    strcpy(host, a_url);
-    for (pHost = host; *pHost != '/' && *pHost != '\0'; ++pHost);
-    if ((kuint)(pHost - host) == strlen(host)) {
-        strcpy(dir, "/");
-    } else {
-        strcpy(dir, pHost);
-    }
-    *pHost = '\0';
-
-    /*
-     * Fill the HTTP header information
-     */
-    /*
-     * An Example for Request
-     *
-     * "POST /SGHCServ/SGHCI.ashx HTTP/1.0\r\n"
-     * "Accept: text/xml\r\n"
-     * "Content-Length: 36\r\n"
-     * "Host: 192.168.1.19\r\n"
-     * "Content-Type: text/xml\r\n"
-     * "\r\n"
-     * "<Msg><Cmd>GetServiceList</Cmd></Msg>"
-     */
-    if (a_get) {
-        sprintf(header,
-                "GET %s HTTP/1.1\r\n"
-                "Host: %s\r\n"
-                "Connection: Close\r\n\r\n",
-                dir, host
-               );
-    } else {
-        sprintf(header,
-                "POST %s HTTP/1.1\r\n"
-                "Accept: text/xml\r\n"
-                "Content-Length: %d\r\n"
-                "Host: %s\r\n"
-                "Content-Type: text/xml\r\n\r\n"
-                "%s",
-                dir, a_cmd ? strlen(a_cmd) : 0, host, a_cmd ? a_cmd : ""
-               );
-    }
-
-    klog(("hget: start send\n"));
-
-    while ((-1 == (ret = send(sockfd, header, strlen(header), 0))) && (EINTR == errno));
-    if (-1 == ret) {
-        kerror(("send failed: %d\n", socket_last_error()));
-        rc = PGEC_SEND;
-        goto done;
-    }
-
-    /*
-     * first, get the information
-     */
-    /* try the first buffer as full as posible */
-    ret = cur_len = 0;
-    data[0] = '\0';
-    do {
-        cur_len += ret;
-        if (strstr(data, "\r\n\r\n")) {
-            break;
-        }
-        while ((-1 == (ret = recv(sockfd, data + ret, DATA_LEN - ret, 0))) && (EINTR == errno));
-        if (-1 == ret) {
-            kerror(("recv failed: %d\n", socket_last_error()));
-        }
-        if (0 == ret) {
-            kerror(("recv failed: socket closed.\n"));
-        }
-        if (ret >= DATA_LEN) {
-            cur_len += ret;
-        }
-    } while ((ret > 0) && (ret < DATA_LEN));
-
-    ret = cur_len;
-
-    if (ret > 0) {
-
-        klog(("hget: cont-data:%s\n", (ret > 0) ? data : "(nil)"));
-
-        /*
-         * try to get header, only when (*a_hdrbuf != zero)
-         */
-        if (*a_hdrlen < 0) {
-            *a_hdrlen = 0x7FFFFFFF;
-        }
-        if (*a_hdrlen > 0) {
-            cur_len = *a_hdrlen;
-            pTemp = strstr(data, "\r\n\r\n");
-            hdr_len = pTemp - data;
-            if (!*a_hdrbuf) {
-                if (hdr_len > cur_len) {
-                    *a_hdrbuf = (kchar*)kmem_alloz(cur_len + 1);
-                } else {
-                    *a_hdrbuf = (kchar*)kmem_alloz(hdr_len + 1);
-                }
-            }
-            *a_hdrlen = 0;
-            if (*a_hdrbuf) {
-                if (hdr_len > cur_len) {
-                    memcpy(*a_hdrbuf, data, cur_len);
-                    *a_hdrlen = cur_len;
-                } else {
-                    memcpy(*a_hdrbuf, data, hdr_len);
-                    *a_hdrlen = hdr_len;
-                }
-            }
-        }
-
-        if (*a_datlen < 0) {
-            *a_datlen = 0x7FFFFFFF;
-        }
-        if (*a_datlen == 0) {
-            /* not need content, return */
-            rc = PGEC_SUCCESS;
-            goto done;
-        }
-
-        /* Get Response Code */
-        pTemp = strstr(data, "HTTP/1.1 ");
-        if (!pTemp) {
-            pTemp = strstr(data, "HTTP/1.0 ");
-        }
-        if (!pTemp) {
-            kerror(("Can not get Response code\n"));
-            rc = PGEC_HEADER;
-            goto done;
-        }
-        resp_code = atoi(pTemp + 9);
-        if (resp_code < 200 || resp_code >= 300) {
-            kerror(("resp_code tell an error\n"));
-            rc = PGEC_RESP_CODE;
-            goto done;
-        }
-
-        /* Get Buffer Length */
-        pTemp = strstr(data, "Content-Length: ");
-        if (!pTemp) {
-            kerror(("Can not get content length\n"));
-            rc = PGEC_CONTENT_LEN;
-            goto done;
-        }
-
-        dat_len = atoi(pTemp + 16);
-        cur_len = *a_datlen;
-        if (!*a_datbuf) {
-            if (dat_len > cur_len) {
-                *a_datbuf = (kchar*)kmem_alloz(cur_len + 1);
-                dat_len = cur_len;
-            } else {
-                *a_datbuf = (kchar*)kmem_alloz(dat_len + 1);
-                dat_len = dat_len;
-            }
-        }
-        pNext = *a_datbuf;
-        if (!pNext) {
-            kerror(("Can not alloc memory\n"));
-            rc = PGEC_MEMORY;
-            goto done;
-        }
-
-        cur_len = 0;
-
-        /* Copy the first part of data */
-        pTemp = strstr(data, "\r\n\r\n");
-
-        lft_len = ret - (pTemp + 4 - data);
-
-        if (lft_len < dat_len) {
-            memcpy(pNext, pTemp + 4, lft_len);
-            pNext += lft_len;
-            cur_len += lft_len;
-        } else {
-            memcpy(pNext, pTemp + 4, dat_len);
-            pNext += dat_len;
-            cur_len += dat_len;
-        }
-        kassert(cur_len <= dat_len || !"bad cur_len or all_en");
-
-        /*
-         * Then got the rest data
-         */
-        klog(("hget: cur_len:%d, dat_len:%d\n", cur_len, dat_len));
-        if (cur_len < dat_len) {
-            resp_code = 1;
-            while ((-1 == (ret = recv(sockfd, data, DATA_LEN, 0))) && (EINTR == errno));
-            if (-1 == ret) {
-                kerror(("hget: recv failed: %d\n", socket_last_error()));
-            }
-            if (0 == ret) {
-                kerror(("hget: recv failed: socket closed.\n"));
-            }
-            klog(("hget: recv_count: %d, ret:%d\n", resp_code++, ret));
-            klog(("hget: cont-data:%s\n", (ret > 0) ? data : "(nil)"));
-            while (ret > 0) {
-
-                lft_len = ret;
-
-                if (lft_len < (dat_len - cur_len)) {
-                    memcpy(pNext, data, lft_len);
-                    pNext += lft_len;
-                    cur_len += lft_len;
-                } else {
-                    memcpy(pNext, data, dat_len - cur_len);
-                    pNext += dat_len - cur_len;
-                    cur_len += dat_len - cur_len;
-                }
-                kassert(cur_len <= dat_len || !"bad cur_len or all_en");
-
-                if (cur_len < dat_len) {
-                    while ((-1 == (ret = recv(sockfd, data, DATA_LEN, 0))) && (EINTR == errno));
-                    klog(("hget: recv_count: %d, ret:%d\n", resp_code++, ret));
-                    klog(("hget: cont-data:%s\n", (ret > 0) ? data : "(nil)"));
-                } else {
-                    break;
-                }
-            }
-        }
-
-        *a_datlen = cur_len;
-        rc = PGEC_SUCCESS;
-    }
-
-done:
-    hget_free_socket(sockfd);
-
-    if (a_socket) {
-        *a_socket = -1;
-    }
-
-    klog(("hget: retcode is : %d\n", rc));
-    return rc;
 }
 
 #if defined(HGET_TEST)

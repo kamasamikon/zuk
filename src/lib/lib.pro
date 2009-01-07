@@ -5,5 +5,4 @@ SUBDIRS += kacoo \
     xmldoc \
     kmc \
     kmm \
-    sg \
     textconv
