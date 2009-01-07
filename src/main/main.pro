@@ -7,6 +7,9 @@ DESTDIR = ../../output
 QMAKE_LFLAGS += -Wl,-rpath,"'\$\${ORIGIN}'"
 QMAKE_LFLAGS += -Wl,-rpath,"'\$\${ORIGIN}/lib'"
 
+QMAKE_CXXFLAGS = -Wall -g `pkg-config --cflags --libs gtk+-2.0 libglade-2.0`
+QMAKE_CFLAGS = -Wall -g `pkg-config --cflags --libs gtk+-2.0 libglade-2.0`
+
 win32:DEFINES += __WIN32__ WIN32
 unix:DEFINES += __UNIX__
 
@@ -47,7 +50,8 @@ HEADERS += options.h sysdeps.h
 SOURCES += options.c sysdeps.c zuk_fw.cpp zuk_main.cpp
 
 unix:LIBS += -L/usr/lib
-unix:LIBS += -lexpat
+unix:LIBS += -lexpat `pkg-config --libs gtk+-2.0 libglade-2.0`
+
 LIBS += -L../../output
 LIBS += -lkacoo
 LIBS += -lkmm
