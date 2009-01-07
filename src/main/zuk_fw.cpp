@@ -31,6 +31,49 @@
 
 #include "zuk_main.h"
 
+ui.main
+ui.main.title
+ui.main.menu    "main.menu.tools.option"
+ui.main.body
+
+/* one for one module */
+class mwi {
+
+public:
+    QWidget *newWidget(kchar *name);
+    QString getUiText();
+    ...;
+
+private:
+
+    kchar *modname;     /* playlist, ui, etc */
+
+    QScriptEngine engine;
+    QUiLoader uiLoader;
+
+    QString uiText;
+    QString scriptText;
+    QString themeText;
+
+    kuint type;         /* popup, main, float */
+
+    QWidget *widget;
+};
+
+int set_main/cfg()
+{
+    uimod = kmm_get("ui");
+
+    main = uimod->newWidget("main", "");
+
+    for (int i = 0; i < modcnt; i++) {
+        wmi = new wmi();
+    }
+
+    trigger = cutin_wmi->newWidget("config", "trigger");
+    context = cutin_wmi->newWidget("config", "context");
+}
+
 QScriptValue mySpecialQObjectConstructor(QScriptContext *context, QScriptEngine *engine)
 {
     static int i = 0;
@@ -50,24 +93,6 @@ QScriptValue mySpecialQObjectConstructor(QScriptContext *context, QScriptEngine 
     // return engine->newQObject(object, QScriptEngine::ScriptOwnership);
     return engine->newQObject(object, QScriptEngine::QtOwnership);
 }
-
-
-class mwi {
-    kchar *modname;     /* playlist, ui, etc */
-
-    QScriptEngine engine;
-    QUiLoader uiLoader;
-
-    QString uiText;
-    QString scriptText;
-    QString themeText;
-
-    kuint type;         /* popup, main, float */
-
-    QWidget *widget;
-
-    QWidget *newWidget(kchar *name);
-};
 
 // kim_addint("i.wmi.evt.win", add_or_del, [name of entry, e.g. "i.mod.mwi.win"], knil)
 
