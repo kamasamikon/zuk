@@ -149,8 +149,7 @@ kint hget_connect(kint a_prot, const kchar *a_user, const kchar *a_pass,
         klog(("hget_connect: gethostbyname\n"));
         host_ent = gethostbyname(a_host);
         if (!host_ent) {
-            kerror(("hget_connect: gethostbyname : ng : url(%s%s:%d)\n", a_host, a_path, a_port));
-            kerror(("hget_connect: gethostbyname failed: %d\n", socket_last_error()));
+            kerror(("hget_connect: gethostbyname : ng (%d): url(%s%s:%d)\n", socket_last_error(), a_host, a_path, a_port));
             return PGEC_HOST;
         }
         ip_addr = *((kulong*)host_ent->h_addr);
@@ -159,8 +158,7 @@ kint hget_connect(kint a_prot, const kchar *a_user, const kchar *a_pass,
     klog(("hget_connect: socket\n"));
     sockfd = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP);
     if (-1 == sockfd) {
-        kerror(("hget_connect: socket : ng : url(%s%s:%d)\n", a_host, a_path, a_port));
-        kerror(("hget_connect: create socket failed: %d\n", socket_last_error()));
+        kerror(("hget_connect: socket : ng (%d): url(%s%s:%d)\n", socket_last_error(), a_host, a_path, a_port));
         return PGEC_SOCKET;
     }
 
@@ -190,8 +188,7 @@ kint hget_connect(kint a_prot, const kchar *a_user, const kchar *a_pass,
             *a_socket = -1;
         }
 
-        kerror(("hget_connect: connect : ng : url(%s%s:%d)\n", a_host, a_path, a_port));
-        kerror(("hget_connect: connect failed: %d\n", socket_last_error()));
+        kerror(("hget_connect: connect : ng (%d): url(%s%s:%d)\n", socket_last_error(), a_host, a_path, a_port));
         hget_free_socket(sockfd);
         return PGEC_CONNECT;
     }
