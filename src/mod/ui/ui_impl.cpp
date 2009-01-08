@@ -22,37 +22,9 @@ static kchar *__g_mod_dir = knil;
 
 /////////////////////////////////////////////////////////////////////////////
 // support routines
-
-/////////////////////////////////////////////////////////////////////////////
-// ktmr routines
-
-/////////////////////////////////////////////////////////////////////////////
-// kimat routines
-
-/////////////////////////////////////////////////////////////////////////////
-// watch routines
-
-/////////////////////////////////////////////////////////////////////////////
-// kmsg dispatch
-
-/////////////////////////////////////////////////////////////////////////////
-// standard KMM routines
-/**
- * \brief
- *
- * o ui first, watch all the other modules window.
- * o ui last, scan all the modules to find window.
- */
-extern "C" EXPORT_FUN void mm_hey(KIM *im)
+static void ui_create_window(KIM *im)
 {
-    /* XXX */
-    klog(("into ui hey, THIS SHOULD BE FIRST MOD TO BE CALLED!\n"));
-    SET_GLOBALS(im);
-
     GtkWidget *main_win, *button[8], *vbox;
-
-    /* called by main */
-    /* gtk_init(&argc, &argv); */
 
     main_win = gtk_window_new(GTK_WINDOW_TOPLEVEL);
     gtk_window_set_title(GTK_WINDOW(main_win), "zuk");
@@ -76,11 +48,44 @@ extern "C" EXPORT_FUN void mm_hey(KIM *im)
     kim_addptr(im, "p.ui.window.main", (kvoid*)main_win, RF_AUTOSET, knil, knil);
 
     g_signal_connect(G_OBJECT(main_win), "destroy", G_CALLBACK(gtk_main_quit), NULL);
-    gtk_widget_show_all(main_win);
-
-    /* called by main */
-    /* gtk_main(); */
 }
+
+/////////////////////////////////////////////////////////////////////////////
+// ktmr routines
+
+/////////////////////////////////////////////////////////////////////////////
+// kimat routines
+static kint imat_ui_ui_show(struct _KIM *im, struct _KRtiRec *rec, kuchar reason)
+{
+    GtkWidget *window = (GtkWidget*)kim_getptr(im, "p.ui.window.main", knil);
+    gtk_widget_show_all(window);
+}
+
+/////////////////////////////////////////////////////////////////////////////
+// watch routines
+
+/////////////////////////////////////////////////////////////////////////////
+// kmsg dispatch
+
+/////////////////////////////////////////////////////////////////////////////
+// standard KMM routines
+/**
+ * \brief
+ *
+ * o ui first, watch all the other modules window.
+ * o ui last, scan all the modules to find window.
+ */
+extern "C" EXPORT_FUN void mm_hey(KIM *im)
+{
+    /* XXX */
+    klog(("into ui hey, THIS SHOULD BE FIRST MOD TO BE CALLED!\n"));
+    SET_GLOBALS(im);
+
+    ui_create_window(im);
+
+    kim_addint(im, "i.ui.show", 0, RF_AUTOSET, imat_ui_ui_show, knil);
+}
+
 
 extern "C" EXPORT_FUN void mm_bye(KIM *im)
 {

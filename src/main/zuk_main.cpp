@@ -375,6 +375,11 @@ kint zuk_init(KIM *im, kint argc, kchar **argv)
     klog(("kmm_load_modules end\n"));
 }
 
+kint zuk_show(KIM *im, kint argc, kchar **argv)
+{
+    return kim_setint(im, "i.ui.show", 1, knil, knil);
+}
+
 kint zuk_final(KIM *im, kint argc, kchar **argv)
 {
     if (__g_mm) {

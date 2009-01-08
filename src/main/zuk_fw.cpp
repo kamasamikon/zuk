@@ -41,6 +41,8 @@ int main(int argc, char *argv[])
     printf("zuk_init(im, argc, argv);\n");
     zuk_init(im, argc, argv);
 
+    zuk_show(im, argc, argv);
+
     // kim_addptr(im, "p.ui.window.main", (kvoid*)main_win, RF_AUTOSET, knil, knil);
     window = (GtkWidget*)kim_getptr(im, "p.ui.window.main", knil);
     gtk_widget_show_all(window);
