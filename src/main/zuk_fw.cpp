@@ -24,9 +24,12 @@ int main(int argc, char *argv[])
     int retval;
     GtkWidget *window;
 
-    printf("QApplication app(argc, argv);\n");
+    kdbg_init();
+
+    printf("gtk_init(&argc, &argv);\n");
     gtk_init(&argc, &argv);
 
+    printf("KIM *im = kim_new(knil);\n");
     KIM *im = kim_new(knil);
     kim_start(im);
 
@@ -35,12 +38,12 @@ int main(int argc, char *argv[])
 
     g_signal_connect(G_OBJECT(window), "destroy", G_CALLBACK(gtk_main_quit), NULL);
 
-    printf("zuk_init(argc, argv);\n");
+    printf("zuk_init(im, argc, argv);\n");
     zuk_init(im, argc, argv);
 
     gtk_widget_show_all(window);
 
-    printf("retval = app.exec();\n");
+    printf("gtk_main();\n");
     gtk_main();
 
     printf("zuk_final(argc, argv);\n");

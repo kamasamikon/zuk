@@ -16,7 +16,7 @@ SSDIR=`dirname $THE_PATH`                                   # Script's dir
 # Log file
 LOG_FILE="/dev/stderr"
 # Debug file
-DBG_FILE="/dev/null"
+DBG_FILE="/dev/stderr"
 
 # keep temp files, for debug
 KEEP_TEMP="false"
@@ -36,12 +36,10 @@ show_help() {
     echo -e ""
     echo -e " Option:"
     echo -e "   --help:        Show this"
-    echo -e "   --log-level:   Set Loglevel:"
-    echo -e "                  0: no log; 1: log to ~/iv.log; 2: log to ~/iv.log.TIMESTAMP"
     echo -e "   --keep-temp:   Do not delete temp files"
-    echo -e "   --show-debug:  Show debug message"
     echo -e ""
 }
+
 kill_junk_apps() {
     echo "(II) kill_junk_apps" &> $DBG_FILE
     killall -9 mb_loading &> /dev/null
@@ -53,10 +51,10 @@ kill_junk_apps() {
 set_log_file() {
     echo "(II) set_log_file: LL is $LOG_LEVEL" &> $DBG_FILE
     if [ "$LOG_LEVEL" == "1" ]; then
-        LOG_FILE="$HOME/iv.log"
+        LOG_FILE="$HOME/zuk.log"
         touch $LOG_FILE
     elif [ "$LOG_LEVEL" == "2" ]; then
-        LOG_FILE="$HOME/iv.log.`date +%y%m%d.%H%M%S`"
+        LOG_FILE="$HOME/zuk.log.`date +%y%m%d.%H%M%S`"
         touch $LOG_FILE
     else
         LOG_FILE="/dev/null"
