@@ -49,13 +49,29 @@ extern "C" EXPORT_FUN void mm_hey(KIM *im)
     klog(("into ui hey, THIS SHOULD BE FIRST MOD TO BE CALLED!\n"));
     SET_GLOBALS(im);
 
-    GtkWidget *main_win;
+    GtkWidget *main_win, *button[8], *vbox;
 
     /* called by main */
     /* gtk_init(&argc, &argv); */
 
     main_win = gtk_window_new(GTK_WINDOW_TOPLEVEL);
     gtk_window_set_title(GTK_WINDOW(main_win), "zuk");
+    gtk_widget_set_size_request(GTK_WIDGET(main_win), 320, 240);
+
+    vbox = gtk_vbox_new(TRUE, 1);
+
+    for (int i = 0; i < 8; i++) {
+        kchar label[111];
+
+        sprintf(label, "Shit %c", 'A' + i);
+        button[i] = gtk_button_new_with_label(label);
+
+        gtk_box_pack_start(GTK_BOX(vbox), button[i], FALSE, FALSE, 0);
+
+        g_signal_connect(G_OBJECT(button[i]), "clicked", G_CALLBACK(gtk_main_quit), NULL);
+    }
+
+    gtk_container_add(GTK_CONTAINER(main_win), vbox);
 
     kim_addptr(im, "p.ui.window.main", (kvoid*)main_win, RF_AUTOSET, knil, knil);
 
@@ -78,14 +94,23 @@ extern "C" EXPORT_FUN void mm_guid(KIM *im, char **retguid)
 
 extern "C" EXPORT_FUN void jc_ui_get_script(KIM *im, kchar *ar0, kchar *ar1, kchar *ar2, kchar *ar3, kchar **pVarResult)
 {
-    kchar path[1024], *buf = knil, **ret = (kchar**)pVarResult;
-    kint retlen = 0;
+    kchar **ret = (kchar**)pVarResult;
+    GtkWidget *main_win;
 
     if (!ret)
         return;
 
-    *ret = "";
-    sprintf(path, "%s/ui/pl.js", __g_mod_dir);
-    *ret = buf;
+    /* called by main */
+    /* gtk_init(&argc, &argv); */
+
+    main_win = gtk_window_new(GTK_WINDOW_TOPLEVEL);
+    gtk_window_set_title(GTK_WINDOW(main_win), "zuk");
+
+    // kim_addptr(im, "p.ui.window.main", (kvoid*)main_win, RF_AUTOSET, knil, knil);
+
+    g_signal_connect(G_OBJECT(main_win), "destroy", G_CALLBACK(gtk_main_quit), NULL);
+    gtk_widget_show_all(main_win);
+
+    *ret = (kchar*)main_win;
 }
 
