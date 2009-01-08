@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module id="ui" homepage="" updateurl="" ver="1.0.1">
+    <name>default ui</name>
+    <desc>default ui</desc>
+    <type>0</type>
+    <state>1</state>
+    <platform id="linux" maxver="2.6.99" minver="2.6.0">
+        <target id="zuk" maxver="1.1.0" minver="1.0.0" />
+        <entrance>ui</entrance>
+    </platform>
+</module>
+

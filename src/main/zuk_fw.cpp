@@ -33,19 +33,11 @@ int main(int argc, char *argv[])
     KIM *im = kim_new(knil);
     kim_start(im);
 
-    // window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
-    // gtk_window_set_title(GTK_WINDOW(window), "zuk");
-
-    // g_signal_connect(G_OBJECT(window), "destroy", G_CALLBACK(gtk_main_quit), NULL);
-
     printf("zuk_init(im, argc, argv);\n");
     zuk_init(im, argc, argv);
 
+    printf("zuk_show(im, argc, argv);\n");
     zuk_show(im, argc, argv);
-
-    // kim_addptr(im, "p.ui.window.main", (kvoid*)main_win, RF_AUTOSET, knil, knil);
-    window = (GtkWidget*)kim_getptr(im, "p.ui.window.main", knil);
-    gtk_widget_show_all(window);
 
     printf("gtk_main();\n");
     gtk_main();

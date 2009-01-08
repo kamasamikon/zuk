@@ -25,12 +25,52 @@ static kchar *__g_mod_dir = knil;
 static void ui_create_window(KIM *im)
 {
     GtkWidget *main_win, *button[8], *vbox;
+    GtkWidget *menubar, *file, *tools, *help, *filemenu, *toolsmenu, *helpmenu;
+    GtkAccelGroup *group;
+
 
     main_win = gtk_window_new(GTK_WINDOW_TOPLEVEL);
     gtk_window_set_title(GTK_WINDOW(main_win), "zuk");
     gtk_widget_set_size_request(GTK_WIDGET(main_win), 320, 240);
 
+    group = gtk_accel_group_new();
+    menubar = gtk_menu_bar_new();
+    file = gtk_menu_item_new_with_mnemonic("_File");
+    tools = gtk_menu_item_new_with_mnemonic("_Tools");
+    help = gtk_menu_item_new_with_mnemonic("_Help");
+    filemenu = gtk_menu_new();
+    toolsmenu = gtk_menu_new();
+    helpmenu = gtk_menu_new();
+
+    gtk_menu_item_set_submenu(GTK_MENU_ITEM(file), filemenu);
+    gtk_menu_item_set_submenu(GTK_MENU_ITEM(tools), toolsmenu);
+    gtk_menu_item_set_submenu(GTK_MENU_ITEM(help), helpmenu);
+
+    gtk_menu_shell_append(GTK_MENU_SHELL(menubar), file);
+    gtk_menu_shell_append(GTK_MENU_SHELL(menubar), tools);
+    gtk_menu_shell_append(GTK_MENU_SHELL(menubar), help);
+
+    /* Create the File menu content. */
+    GtkWidget *open = gtk_image_menu_item_new_from_stock(GTK_STOCK_OPEN, group);
+    GtkWidget *sep = gtk_separator_menu_item_new();
+    GtkWidget *exit = gtk_image_menu_item_new_from_stock(GTK_STOCK_OPEN, group);
+    gtk_menu_shell_append(GTK_MENU_SHELL(filemenu), open);
+    gtk_menu_shell_append(GTK_MENU_SHELL(filemenu), sep);
+    gtk_menu_shell_append(GTK_MENU_SHELL(filemenu), exit);
+
+    /* Create the Edit menu content. */
+    GtkWidget *option = gtk_image_menu_item_new_from_stock(GTK_STOCK_CUT, group);
+    gtk_menu_shell_append(GTK_MENU_SHELL(toolsmenu), option);
+
+    /* Create the Help menu content. */
+    GtkWidget *contents = gtk_image_menu_item_new_from_stock(GTK_STOCK_HELP, group);
+    GtkWidget *about = gtk_image_menu_item_new_from_stock(GTK_STOCK_ABOUT, group);
+    gtk_menu_shell_append(GTK_MENU_SHELL(helpmenu), contents);
+    gtk_menu_shell_append(GTK_MENU_SHELL(helpmenu), about);
+
     vbox = gtk_vbox_new(TRUE, 1);
+
+    gtk_box_pack_start(GTK_BOX(vbox), menubar, FALSE, FALSE, 0);
 
     for (int i = 0; i < 8; i++) {
         kchar label[111];
@@ -38,14 +78,18 @@ static void ui_create_window(KIM *im)
         sprintf(label, "Shit %c", 'A' + i);
         button[i] = gtk_button_new_with_label(label);
 
-        gtk_box_pack_start(GTK_BOX(vbox), button[i], FALSE, FALSE, 0);
+        gtk_box_pack_start(GTK_BOX(vbox), button[i], FALSE, TRUE, 0);
 
         g_signal_connect(G_OBJECT(button[i]), "clicked", G_CALLBACK(gtk_main_quit), NULL);
     }
 
+
     gtk_container_add(GTK_CONTAINER(main_win), vbox);
 
     kim_addptr(im, "p.ui.window.main", (kvoid*)main_win, RF_AUTOSET, knil, knil);
+
+    kim_addptr(im, "p.ui.window.main.menu", (kvoid*)main_win, RF_AUTOSET, knil, knil);
+    kim_addptr(im, "p.ui.window.main.menu", (kvoid*)main_win, RF_AUTOSET, knil, knil);
 
     g_signal_connect(G_OBJECT(main_win), "destroy", G_CALLBACK(gtk_main_quit), NULL);
 }
@@ -57,8 +101,15 @@ static void ui_create_window(KIM *im)
 // kimat routines
 static kint imat_ui_ui_show(struct _KIM *im, struct _KRtiRec *rec, kuchar reason)
 {
+    kint show = (kint)REC_SET(rec);
     GtkWidget *window = (GtkWidget*)kim_getptr(im, "p.ui.window.main", knil);
-    gtk_widget_show_all(window);
+
+    if (show)
+        gtk_widget_show_all(window);
+    else
+        gtk_widget_hide_all(window);
+
+    return 0;
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -70,14 +121,10 @@ static kint imat_ui_ui_show(struct _KIM *im, struct _KRtiRec *rec, kuchar reason
 /////////////////////////////////////////////////////////////////////////////
 // standard KMM routines
 /**
- * \brief
- *
- * o ui first, watch all the other modules window.
- * o ui last, scan all the modules to find window.
+ * \brief UI module should startup first, so that it can watch other's module's window.
  */
 extern "C" EXPORT_FUN void mm_hey(KIM *im)
 {
-    /* XXX */
     klog(("into ui hey, THIS SHOULD BE FIRST MOD TO BE CALLED!\n"));
     SET_GLOBALS(im);
 
