@@ -16,6 +16,9 @@
 
 #include "zuk_main.h"
 
+/**
+ * every mod register the window (with type), ui mod provider the frame
+ */
 int main(int argc, char *argv[])
 {
     int retval;
@@ -24,13 +27,16 @@ int main(int argc, char *argv[])
     printf("QApplication app(argc, argv);\n");
     gtk_init(&argc, &argv);
 
+    KIM *im = kim_new(knil);
+    kim_start(im);
+
     window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
     gtk_window_set_title(GTK_WINDOW(window), "zuk");
 
     g_signal_connect(G_OBJECT(window), "destroy", G_CALLBACK(gtk_main_quit), NULL);
 
     printf("zuk_init(argc, argv);\n");
-    zuk_init(argc, argv);
+    zuk_init(im, argc, argv);
 
     gtk_widget_show_all(window);
 
@@ -38,7 +44,9 @@ int main(int argc, char *argv[])
     gtk_main();
 
     printf("zuk_final(argc, argv);\n");
-    zuk_final(argc, argv);
+    zuk_final(im, argc, argv);
+
+    kim_del(im);
 
     printf("main:: return:%d\n", retval);
     return retval;
