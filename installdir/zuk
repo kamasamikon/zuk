@@ -45,8 +45,6 @@ kill_junk_apps() {
     killall -9 mb_loading &> /dev/null
     killall -9 mb_upalert &> /dev/null
     killall -9 mb_quiting &> /dev/null
-    killall -9 mplayer &> /dev/null
-    killall -9 cmmb_demux &> /dev/null
 }
 set_log_file() {
     echo "(II) set_log_file: LL is $LOG_LEVEL" &> $DBG_FILE
