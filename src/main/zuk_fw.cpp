@@ -26,6 +26,20 @@ int main(int argc, char *argv[])
 
     kdbg_init();
 
+    /* Initialize GThread before calling any Glib or GTK+ functions. */
+    // g_thread_init(NULL);
+
+#ifdef ENABLE_NLS
+    bindtextdomain(PACKAGE, LOCALEDIR);
+    bind_textdomain_codeset(PACKAGE, "UTF-8");
+    textdomain(PACKAGE);
+#endif
+
+#ifdef HAVE_SETLOCALE
+    /* Locale initialization is not complete here.  See gtk_init_check() */
+    setlocale(LC_ALL, "");
+#endif
+
     printf("gtk_init(&argc, &argv);\n");
     gtk_init(&argc, &argv);
 

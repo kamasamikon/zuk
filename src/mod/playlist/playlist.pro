@@ -5,6 +5,7 @@
 TEMPLATE = lib
 CONFIG += debug_and_release
 CONFIG += dll
+CONFIG -= qt
 
 QMAKE_LFLAGS += -Wl,-rpath,"'\$\${ORIGIN}'"
 QMAKE_LFLAGS += -Wl,-rpath,"'\$\${ORIGIN}/../../lib'"

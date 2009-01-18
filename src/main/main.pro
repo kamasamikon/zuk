@@ -4,6 +4,8 @@
 TEMPLATE = app
 DESTDIR = ../../output
 
+CONFIG -= qt
+
 QMAKE_LFLAGS += -Wl,-rpath,"'\$\${ORIGIN}'"
 QMAKE_LFLAGS += -Wl,-rpath,"'\$\${ORIGIN}/lib'"
 
@@ -23,9 +25,6 @@ contains(DEFINES, __MID__) {
 
 win32:TARGET = zuk
 unix:TARGET = zuk.bin
-
-CONFIG += qt debug_and_release uitools
-QT += webkit network script
 
 DEPENDPATH += .
 INCLUDEPATH += . \

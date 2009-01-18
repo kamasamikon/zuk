@@ -377,7 +377,7 @@ kint zuk_init(KIM *im, kint argc, kchar **argv)
 
 kint zuk_show(KIM *im, kint argc, kchar **argv)
 {
-    return kim_setint(im, "i.ui.show", 1, knil, knil);
+    return kim_setint(im, "i.ui.act.show", 1, knil, knil);
 }
 
 kint zuk_final(KIM *im, kint argc, kchar **argv)
