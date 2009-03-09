@@ -28,16 +28,22 @@ extern "C" {
 #define ATRSN_GET               (kuchar)0x04            /**< Get */
 #define ATRSN_RST               (kuchar)0x05            /**< Reset */
 
-struct _KRtiRec;
-struct _KIM;
+typedef struct _KIM KIM;
+typedef struct _KRtiRec KRtiRec;
+typedef struct _KRtiWatch KRtiWatch;
+
 
 /* AT can adjust the rec's field */
-typedef kint (*ATPROC)(struct _KIM *im, struct _KRtiRec *rec, kuchar reason);
+typedef kint (*ATPROC)(KIM *im, KRtiRec *rec, kuchar reason);
 
 /* WATCH can NOT adjust the rec's field */
-typedef kint (*WCHPROC)(struct _KIM *im, const struct _KRtiRec *rec, kvoid* ua, kvoid* ub, kuchar type);
+typedef kint (*WCHPROC)(KIM *im, KRtiRec *rec, kvoid* ua, kvoid* ub, kuchar type);
 
-typedef struct _KRtiWatch
+/* for quick type watch function */
+#define IMWCH(f) (f)(KIM *im, KRtiRec *rec, void *ua, void *ub, kuchar type)
+#define IMAT(f) (f)(KIM *im, KRtiRec *rec, kuchar reason)
+
+struct _KRtiWatch
 {
     K_dlist_entry abwchentry;   /**< queue to KRtiRec::bwchhdr/awchhdr */
     WCHPROC wch;
@@ -45,12 +51,12 @@ typedef struct _KRtiWatch
     kvoid* ub;                  /**< usr arg */
     kchar *forid;               /**< watch what event */
     kchar *desc;
-} KRtiWatch;
+};
 
 #define WCH_UA(_wch_) (_wch_)->ua
 #define WCH_UB(_wch_) (_wch_)->ub
 
-typedef struct _KRtiRec
+struct _KRtiRec
 {
     kchar *id;                  /**< identifier */
     kchar *desc;
@@ -75,7 +81,7 @@ typedef struct _KRtiRec
     K_dlist_entry awchhdr;      /**< after watch header */
 
     kuint flg;                  /**< RECFLG_XXX */
-} KRtiRec;
+};
 
 #define REC_SET(_rec_) (_rec_)->val                 /**< val set by kim_setXXX */
 
@@ -90,7 +96,7 @@ typedef struct _KRtiRec
 #define REC_UA(_rec_) (_rec_)->ua
 #define REC_UB(_rec_) (_rec_)->ub
 
-typedef struct _KIM
+struct _KIM
 {
     K_dlist_entry rechdr;
 
@@ -101,7 +107,7 @@ typedef struct _KIM
     } nywch;
 
     kbean lck;                      /**< lck to protect rechdr, ahdr, bhdr */
-} KIM;
+};
 
 KRtiRec* kim_chkrec(KIM *im, const kchar *id);
 

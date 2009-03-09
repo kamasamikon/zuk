@@ -9,7 +9,6 @@
 #include <ktsk.h>
 #include <kstr.h>
 #include <ktmr.h>
-#include <ksal.h>
 
 #include <textconv.h>
 
@@ -17,8 +16,6 @@
 
 static char guid[] = "7D378382-9351-4f4e-BF83-4FF20C456B6D";
 static kbean __g_worker_thread = knil;
-
-static kchar *__g_mod_dir = knil;
 
 static kint __g_try_scan_when_mod_loaded = 0;
 static kint __g_try_scan_when_dev_defreeze = 0;
@@ -30,25 +27,6 @@ static int __g_chSearchingRef = 0;
 
 static kbean __g_sig_tmr = knil;
 
-static kbean __g_wch_playbarGeometry = knil;
-static kbean __g_wch_channelSwitchStart = knil;
-static kbean __g_wch_channelSwitchEnd = knil;
-static kbean __g_wch_deviceNew = knil;
-static kbean __g_wch_deviceDel = knil;
-static kbean __g_wch_deviceFroze = knil;
-static kbean __g_wch_channelChg = knil;
-static kbean __g_wch_channelNew = knil;
-static kbean __g_wch_channelFroze = knil;
-static kbean __g_wch_channelDel = knil;
-static kbean __g_wch_channelSearchStart = knil;
-static kbean __g_wch_channelSearchStep = knil;
-static kbean __g_wch_channelSearchEnd = knil;
-static kbean __g_wch_mod_loaded = knil;
-static kbean __g_wch_mod_unload = knil;
-static kbean __g_wch_liveadComplete = knil;
-static kbean __g_wch_imsAcDisconnect = knil;
-static kbean __g_wch_imsJcDisconnect = knil;
-
 /////////////////////////////////////////////////////////////////////////////
 // defines
 #define KMPL_SCAN                   0x00000001
@@ -58,17 +36,18 @@ static kbean __g_wch_imsJcDisconnect = knil;
 static kvoid update_urls(kbool add)
 {
     kchar fnbuf[1024], *utf8;
+    kchar *modDir;
 
+    modDir = kim_getstr(__g_im, "s.env.path.moduleDir", knil);
     const kchar *lang = kim_getstr(__g_im, "s.env.language", knil);
-    if (strncmp(lang, "zh_", 3)) {
+    if (strncmp(lang, "zh_", 3))
         lang = "en";
-    }
 
     /* the loading page */
-    sprintf(fnbuf, "%s\\playlist\\page\\live\\loading.png", __g_mod_dir);
+    sprintf(fnbuf, "%s\\playlist\\page\\live\\loading.png", modDir);
     kstr_subs(fnbuf, '\\', kvfs_path_sep());
     if (!kvfs_exist(fnbuf)) {
-        sprintf(fnbuf, "%s\\playlist\\page\\default\\%s\\loading.png", __g_mod_dir, lang);
+        sprintf(fnbuf, "%s\\playlist\\page\\default\\%s\\loading.png", modDir, lang);
         kstr_subs(fnbuf, '\\', kvfs_path_sep());
     }
 
@@ -77,18 +56,17 @@ static kvoid update_urls(kbool add)
     sprintf(fnbuf, "file://%s", utf8);
     kmem_free_s(utf8);
 
-    if (add) {
+    if (add)
         kim_addstr(__g_im, "s.playlist.url.loading", fnbuf, RF_AUTOSET, knil, knil);
-    } else {
+    else
         kim_setstr(__g_im, "s.playlist.url.loading", fnbuf, knil, knil);
-    }
 
 
     /* not no_device page */
-    sprintf(fnbuf, "%s\\playlist\\page\\live\\no_device.png", __g_mod_dir);
+    sprintf(fnbuf, "%s\\playlist\\page\\live\\no_device.png", modDir);
     kstr_subs(fnbuf, '\\', kvfs_path_sep());
     if (!kvfs_exist(fnbuf)) {
-        sprintf(fnbuf, "%s\\playlist\\page\\default\\%s\\no_device.png", __g_mod_dir, lang);
+        sprintf(fnbuf, "%s\\playlist\\page\\default\\%s\\no_device.png", modDir, lang);
         kstr_subs(fnbuf, '\\', kvfs_path_sep());
     }
 
@@ -97,17 +75,16 @@ static kvoid update_urls(kbool add)
     sprintf(fnbuf, "file://%s", utf8);
     kmem_free_s(utf8);
 
-    if (add) {
+    if (add)
         kim_addstr(__g_im, "s.playlist.url.no_device", fnbuf, RF_AUTOSET, knil, knil);
-    } else {
+    else
         kim_setstr(__g_im, "s.playlist.url.no_device", fnbuf, knil, knil);
-    }
 
     /* not scanning page */
-    sprintf(fnbuf, "%s\\playlist\\page\\live\\scanning.png", __g_mod_dir);
+    sprintf(fnbuf, "%s\\playlist\\page\\live\\scanning.png", modDir);
     kstr_subs(fnbuf, '\\', kvfs_path_sep());
     if (!kvfs_exist(fnbuf)) {
-        sprintf(fnbuf, "%s\\playlist\\page\\default\\%s\\scanning.png", __g_mod_dir, lang);
+        sprintf(fnbuf, "%s\\playlist\\page\\default\\%s\\scanning.png", modDir, lang);
         kstr_subs(fnbuf, '\\', kvfs_path_sep());
     }
 
@@ -116,17 +93,16 @@ static kvoid update_urls(kbool add)
     sprintf(fnbuf, "file://%s", utf8);
     kmem_free_s(utf8);
 
-    if (add) {
+    if (add)
         kim_addstr(__g_im, "s.playlist.url.scanning", fnbuf, RF_AUTOSET, knil, knil);
-    } else {
+    else
         kim_setstr(__g_im, "s.playlist.url.scanning", fnbuf, knil, knil);
-    }
 
     /* not scanning_failed page */
-    sprintf(fnbuf, "%s\\playlist\\page\\live\\scanning_failed.png", __g_mod_dir);
+    sprintf(fnbuf, "%s\\playlist\\page\\live\\scanning_failed.png", modDir);
     kstr_subs(fnbuf, '\\', kvfs_path_sep());
     if (!kvfs_exist(fnbuf)) {
-        sprintf(fnbuf, "%s\\playlist\\page\\default\\%s\\scanning_failed.png", __g_mod_dir, lang);
+        sprintf(fnbuf, "%s\\playlist\\page\\default\\%s\\scanning_failed.png", modDir, lang);
         kstr_subs(fnbuf, '\\', kvfs_path_sep());
     }
 
@@ -135,17 +111,16 @@ static kvoid update_urls(kbool add)
     sprintf(fnbuf, "file://%s", utf8);
     kmem_free_s(utf8);
 
-    if (add) {
+    if (add)
         kim_addstr(__g_im, "s.playlist.url.scanning_failed", fnbuf, RF_AUTOSET, knil, knil);
-    } else {
+    else
         kim_setstr(__g_im, "s.playlist.url.scanning_failed", fnbuf, knil, knil);
-    }
 
     /* no live program */
-    sprintf(fnbuf, "%s\\playlist\\page\\live\\no_prg_live.png", __g_mod_dir);
+    sprintf(fnbuf, "%s\\playlist\\page\\live\\no_prg_live.png", modDir);
     kstr_subs(fnbuf, '\\', kvfs_path_sep());
     if (!kvfs_exist(fnbuf)) {
-        sprintf(fnbuf, "%s\\playlist\\page\\default\\%s\\no_prg_live.png", __g_mod_dir, lang);
+        sprintf(fnbuf, "%s\\playlist\\page\\default\\%s\\no_prg_live.png", modDir, lang);
         kstr_subs(fnbuf, '\\', kvfs_path_sep());
     }
 
@@ -154,18 +129,16 @@ static kvoid update_urls(kbool add)
     sprintf(fnbuf, "file://%s", utf8);
     kmem_free_s(utf8);
 
-    if (add) {
+    if (add)
         kim_addstr(__g_im, "s.playlist.url.no_prg_live", fnbuf, RF_AUTOSET, knil, knil);
-    } else {
+    else
         kim_setstr(__g_im, "s.playlist.url.no_prg_live", fnbuf, knil, knil);
-    }
-
 
     /* no live program */
-    sprintf(fnbuf, "%s\\playlist\\page\\live\\no_prg_vod.png", __g_mod_dir);
+    sprintf(fnbuf, "%s\\playlist\\page\\live\\no_prg_vod.png", modDir);
     kstr_subs(fnbuf, '\\', kvfs_path_sep());
     if (!kvfs_exist(fnbuf)) {
-        sprintf(fnbuf, "%s\\playlist\\page\\default\\%s\\no_prg_vod.png", __g_mod_dir, lang);
+        sprintf(fnbuf, "%s\\playlist\\page\\default\\%s\\no_prg_vod.png", modDir, lang);
         kstr_subs(fnbuf, '\\', kvfs_path_sep());
     }
 
@@ -174,18 +147,17 @@ static kvoid update_urls(kbool add)
     sprintf(fnbuf, "file://%s", utf8);
     kmem_free_s(utf8);
 
-    if (add) {
+    if (add)
         kim_addstr(__g_im, "s.playlist.url.no_prg_vod", fnbuf, RF_AUTOSET, knil, knil);
-    } else {
+    else
         kim_setstr(__g_im, "s.playlist.url.no_prg_vod", fnbuf, knil, knil);
-    }
 
 
     /* no live program */
-    sprintf(fnbuf, "%s\\playlist\\page\\live\\no_prg_rec.png", __g_mod_dir);
+    sprintf(fnbuf, "%s\\playlist\\page\\live\\no_prg_rec.png", modDir);
     kstr_subs(fnbuf, '\\', kvfs_path_sep());
     if (!kvfs_exist(fnbuf)) {
-        sprintf(fnbuf, "%s\\playlist\\page\\default\\%s\\no_prg_rec.png", __g_mod_dir, lang);
+        sprintf(fnbuf, "%s\\playlist\\page\\default\\%s\\no_prg_rec.png", modDir, lang);
         kstr_subs(fnbuf, '\\', kvfs_path_sep());
     }
 
@@ -194,11 +166,10 @@ static kvoid update_urls(kbool add)
     sprintf(fnbuf, "file://%s", utf8);
     kmem_free_s(utf8);
 
-    if (add) {
+    if (add)
         kim_addstr(__g_im, "s.playlist.url.no_prg_rec", fnbuf, RF_AUTOSET, knil, knil);
-    } else {
+    else
         kim_setstr(__g_im, "s.playlist.url.no_prg_rec", fnbuf, knil, knil);
-    }
 }
 
 
@@ -209,18 +180,17 @@ static kvoid update_urls(kbool add)
  */
 kint pltmr_sig_checker(kvoid *a_ar0, kvoid *a_ar1, kvoid *a_ar2, kvoid *a_ar3)
 {
-    if (__g_unloading) {
+    if (__g_unloading)
         return -1;
-    }
 
     kchar *hash = kim_getstr(__g_im, "s.playlist.channel.current", knil);
     KMediaDevice *dev;
     KMediaChannel *ch;
     kint amp;
 
-    if (hash && (ch = __g_mc->getMediaChannelFromChannel(hash)) && (dev = ch->getDevice()) && (EC_OK == dev->getSignalAmp(&amp))) {
+    if (hash && (ch = __g_mc->getMediaChannelFromChannel(hash)) && (dev = ch->getDevice()) && (EC_OK == dev->getSignalAmp(&amp)))
         kim_setint(__g_im, "i.playlist.media.signal", amp, knil, knil);
-    }
+
     return 0;
 }
 
@@ -229,215 +199,126 @@ kint pltmr_sig_checker(kvoid *a_ar0, kvoid *a_ar1, kvoid *a_ar2, kvoid *a_ar3)
 
 /////////////////////////////////////////////////////////////////////////////
 // watch routines
-int plwch_playbarGeometry(struct _KIM *im, const struct _KRtiRec *rec, void* ua, void* ub, unsigned char type)
+int IMWCH(plwch_channelSwitchStart)
 {
-    if (__g_unloading) {
+    if (__g_unloading)
         return -1;
-    }
-
-    kchar *gm = REC_CUR_STR(rec);
-    kint x, y, w, h;
-
-    gm += 1;
-    x = strtoul(gm, 0, 16);
-
-    gm += (1 + 8);
-    y = strtoul(gm, 0, 16);
-
-    gm += (1 + 8);
-    w = strtoul(gm, 0, 16);
-
-    gm += (1 + 8);
-    h = strtoul(gm, 0, 16);
-
-    kchar *hash = kim_getstr(__g_im, "s.playlist.channel.current", knil);
-    KMediaDevice *dev;
-    KMediaChannel *ch;
-    KMC_RECT rc;
-
-    if (hash && (ch = __g_mc->getMediaChannelFromChannel(hash)) && (EC_OK == ch->getOutputWindowRect(&rc))) {
-        if ((x != rc.left) || (y != rc.top) || (w != (rc.right - rc.left)) || (h != (rc.bottom - rc.top))) {
-            rc.left = x;
-            rc.top = y;
-            rc.right = rc.left + w;
-            rc.bottom = rc.top + h;
-            ch->setOutputWindowRect(&rc);
-        }
-    }
-    return 0;
-}
-int plwch_channelSwitchStart(struct _KIM *im, const struct _KRtiRec *rec, void* ua, void* ub, unsigned char type)
-{
-    if (__g_unloading) {
-        return -1;
-    }
 
     char* hash = (char*)REC_UA(rec);
-    klog(("plwch_channelSwitchStart:%s\n", hash));
     ktmr_kill(__g_sig_tmr);
     kim_setint(im, "i.playlist.media.signal", -1, knil, knil);
     return 0;
 }
-int plwch_channelSwitchEnd(struct _KIM *im, const struct _KRtiRec *rec, void* ua, void* ub, unsigned char type)
+int IMWCH(plwch_channelSwitchEnd)
 {
-    if (__g_unloading) {
+    if (__g_unloading)
         return -1;
-    }
 
     char* hash = (char*)REC_UA(rec);
     int error = (int)REC_UB(rec), amp;
     klog(("plwch_channelSwitchEnd:%s:%d\n", hash, error));
 
-    if (error) {
-    } else {
+    if (!error) {
         KMediaDevice *dev;
         KMediaChannel *ch;
-        if ((ch = __g_mc->getMediaChannelFromChannel(hash)) && (dev = ch->getDevice()) && (EC_OK == dev->getSignalAmp(&amp))) {
+        if ((ch = __g_mc->getMediaChannelFromChannel(hash)) && (dev = ch->getDevice()) && (EC_OK == dev->getSignalAmp(&amp)))
             kim_setint(im, "i.playlist.media.signal", amp, knil, knil);
-        }
 
         __g_sig_tmr = ktmr_set(knil, 5000, ktrue, pltmr_sig_checker, knil, knil, knil, knil);
     }
     return 0;
 }
-int plwch_deviceNew(struct _KIM *im, const struct _KRtiRec *rec, void* ua, void* ub, unsigned char type)
+int IMWCH(plwch_deviceNew)
 {
-    if (__g_unloading) {
+    if (__g_unloading)
         return -1;
-    }
 
-    /* TODO save and mark not scan */
-    klog(("plwch_deviceNew\n"));
     char* hash = (char*)REC_UA(rec);
     return 0;
 }
-int plwch_deviceDel(struct _KIM *im, const struct _KRtiRec *rec, void* ua, void* ub, unsigned char type)
+int IMWCH(plwch_deviceDel)
 {
-    if (__g_unloading) {
+    if (__g_unloading)
         return -1;
-    }
 
-    klog(("plwch_deviceDel\n"));
     char* hash = (char*)REC_UA(rec);
     return 0;
 }
-int plwch_deviceFroze(struct _KIM *im, const struct _KRtiRec *rec, void* ua, void* ub, unsigned char type)
+int IMWCH(plwch_deviceFroze)
 {
-    if (__g_unloading) {
+    if (__g_unloading)
         return -1;
-    }
 
     char* hash = (char*)REC_UA(rec);
     int param = (int)REC_UB(rec);
     klog(("plwch_deviceFroze:hash:%s, ub:%x\n", hash, param));
 
-    if (param & 0x80000000) {
-    } else {
-        if (__g_try_scan_when_dev_defreeze) {
-            kchar **chlist;
-            KMediaDevice *dev;
+    if (param & 0x80000000)
+        ;
+    else if (__g_try_scan_when_dev_defreeze) {
+        kchar **chlist;
+        KMediaDevice *dev;
 
-            if (dev = __g_mc->getMediaDeviceFromDevice(hash)) {
-                chlist = dev->getMediaChannelList();
-                if (!chlist || !chlist[0]) {
-                    kmsg_post(__g_worker_thread, KMPL_SCAN, kstr_dup(hash), (kvoid*)ktrue, knil, knil);
-                    dev->freeMemory(chlist);
-                }
+        if (dev = __g_mc->getMediaDeviceFromDevice(hash)) {
+            chlist = dev->getMediaChannelList();
+            if (!chlist || !chlist[0]) {
+                kmsg_post(__g_worker_thread, KMPL_SCAN, kstr_dup(hash), (kvoid*)ktrue, knil, knil);
+                dev->freeMemory(chlist);
             }
         }
     }
     return 0;
 }
-int plwch_channelNew(struct _KIM *im, const struct _KRtiRec *rec, void* ua, void* ub, unsigned char type)
+int IMWCH(plwch_channelNew)
 {
-    if (__g_unloading) {
+    if (__g_unloading)
         return -1;
-    }
 
-    klog(("plwch_channelNew\n"));
     char* hash = (char*)REC_UA(rec);
     return 0;
 }
-int plwch_channelDel(struct _KIM *im, const struct _KRtiRec *rec, void* ua, void* ub, unsigned char type)
+int IMWCH(plwch_channelDel)
 {
-    if (__g_unloading) {
+    if (__g_unloading)
         return -1;
-    }
 
-    klog(("plwch_channelDel\n"));
     char* hash = (char*)REC_UA(rec);
     return 0;
 }
-int plwch_channelFroze(struct _KIM *im, const struct _KRtiRec *rec, void* ua, void* ub, unsigned char type)
+int IMWCH(plwch_channelFroze)
 {
-    if (__g_unloading) {
+    if (__g_unloading)
         return -1;
-    }
 
-    klog(("plwch_channelFroze\n"));
     char* hash = (char*)REC_UA(rec);
     if (REC_UB(rec)) {
     } else {
     }
     return 0;
 }
-int plwch_channelSearchStart(struct _KIM *im, const struct _KRtiRec *rec, void* ua, void* ub, unsigned char type)
-{
-    if (__g_unloading) {
-        return -1;
-    }
-
-    char *hash = (char*)REC_UA(rec);
-    klog(("plwch_channelSearchStart:%s\n", hash));
-    return 0;
-}
-int plwch_channelSearchStep(struct _KIM *im, const struct _KRtiRec *rec, void* ua, void* ub, unsigned char type)
-{
-    if (__g_unloading) {
-        return -1;
-    }
-
-    return 0;
-}
-int plwch_channelSearchEnd(struct _KIM *im, const struct _KRtiRec *rec, void* ua, void* ub, unsigned char type)
-{
-    if (__g_unloading) {
-        return -1;
-    }
-
-    char *hash = (char*)REC_UA(rec);
-    KMediaDevice *dev;
-    klog(("plwch_channelSearchEnd:%s\n", hash));
-
-    if (dev = __g_mc->getMediaDeviceFromDevice(hash)) {
-        dev->stop();
-    }
-
-    return 0;
-}
-static int plwch_mod_unload(struct _KIM *im, const struct _KRtiRec *rec, void* ua, void* ub, unsigned char type)
+static int IMWCH(plwch_mod_unload)
 {
     __g_unloading = ktrue;
     ktmr_kill(__g_sig_tmr);
     return 0;
 }
+
 /**
  * @brief if some device has channels do not scan it, because scan will cause the old channel deleted.
  */
-static int plwch_mod_loaded(struct _KIM *im, const struct _KRtiRec *rec, void* ua, void* ub, unsigned char type)
+static int IMWCH(plwch_mod_loaded)
 {
     kchar **devlist, **chlist;
     KMediaDevice *dev;
 
-    if (!__g_try_scan_when_mod_loaded) {
+    if (!__g_try_scan_when_mod_loaded)
         return 0;
-    }
 
     devlist = __g_mc->getMediaDeviceList();
-    if (!devlist) {
+    if (!devlist)
         return 0;
-    }
-    for (int i = 0; devlist[i]; i++) {
+
+    for (int i = 0; devlist[i]; i++)
         if (dev = __g_mc->getMediaDeviceFromDevice(devlist[i])) {
             chlist = dev->getMediaChannelList();
             if (!chlist || !chlist[0]) {
@@ -445,18 +326,18 @@ static int plwch_mod_loaded(struct _KIM *im, const struct _KRtiRec *rec, void* u
                 dev->freeMemory(chlist);
             }
         }
-    }
-    if (devlist) {
+
+    if (devlist)
         __g_mc->freeMemory(devlist);
-    }
+
     return 0;
 }
 
-int plwch_liveadComplete(struct _KIM *im, const struct _KRtiRec *rec, void* ua, void* ub, unsigned char type)
+int IMWCH(plwch_liveadComplete)
 {
-    if (__g_unloading) {
+    if (__g_unloading)
         return -1;
-    }
+
 
     kchar * fromDir = (char*)REC_CUR_STR(rec);
     kchar * moduleDir = kim_getstr(im, "s.env.path.moduleDir", knil);
@@ -487,17 +368,6 @@ int plwch_liveadComplete(struct _KIM *im, const struct _KRtiRec *rec, void* ua, 
     return 0;
 }
 
-int plwch_imsDisconnect(struct _KIM *im, const struct _KRtiRec *rec, void* ua, void* ub, unsigned char type)
-{
-    kchar *hash = kim_getstr(__g_im, "s.playlist.channel.current", knil);
-    KMediaChannel *ch;
-
-    if (hash && (ch = __g_mc->getMediaChannelFromChannel(hash))) {
-        ch->setChannel(kfalse);
-        ch->setPlayState(KMCPS_STOP);
-    }
-    return 0;
-}
 
 /////////////////////////////////////////////////////////////////////////////
 // kmsg dispatch
@@ -513,17 +383,16 @@ static kint om_scan(kbean a_tsk, kuint a_msg, kvoid *a_ar0, kvoid *a_ar1, kvoid 
     if ((!__g_unloading) && (!a_rsn)) {
         if (start) {
             if (devHash && (dev = __g_mc->getMediaDeviceFromDevice(devHash))) {
-                if (!dev->isStarted()) {
+                if (!dev->isStarted())
                     dev->start();
-                }
+
                 ret = dev->updateChannelList();
             } else if (!devHash) {
                 devlist = __g_mc->getMediaDeviceList();
                 for (i = 0; devlist[i]; i++) {
                     if (dev = __g_mc->getMediaDeviceFromDevice(devHash)) {
-                        if (!dev->isStarted()) {
+                        if (!dev->isStarted())
                             dev->start();
-                        }
                         ret = dev->updateChannelList();
                     }
                 }
@@ -531,27 +400,65 @@ static kint om_scan(kbean a_tsk, kuint a_msg, kvoid *a_ar0, kvoid *a_ar1, kvoid 
         } else {
             if (devHash && (dev = __g_mc->getMediaDeviceFromDevice(devHash))) {
                 ret = dev->cancelUpdateChannelList();
-                if (dev->isStarted()) {
+                if (dev->isStarted())
                     dev->stop();
-                }
             } else if (!devHash) {
                 devlist = __g_mc->getMediaDeviceList();
                 for (i = 0; devlist[i]; i++) {
                     if (dev = __g_mc->getMediaDeviceFromDevice(devHash)) {
                         ret = dev->cancelUpdateChannelList();
-                        if (dev->isStarted()) {
+                        if (dev->isStarted())
                             dev->stop();
-                        }
                     }
                 }
             }
         }
     }
-    if (success) {
+    if (success)
         *success = (EC_OK == ret) ? ktrue : kfalse;
-    }
+
     kmem_free_s(a_ar0);
     return 0;
+}
+
+/////////////////////////////////////////////////////////////////////////////
+// watches
+static struct _wchmap {
+    kbean bean;
+    kchar ab;
+    kchar *name;
+    WCHPROC proc;
+} __g_wchmap[] = {
+    { knil, 'b', "i.kmc.evt.channel.switchStart", plwch_channelSwitchStart },
+    { knil, 'b', "i.kmc.evt.channel.switchEnd", plwch_channelSwitchEnd },
+    { knil, 'b', "i.kmc.evt.device.new", plwch_deviceNew },
+    { knil, 'b', "i.kmc.evt.device.del", plwch_deviceDel },
+    { knil, 'b', "i.kmc.evt.device.froze", plwch_deviceFroze },
+    { knil, 'b', "i.kmc.evt.channel.new", plwch_channelNew },
+    { knil, 'b', "i.kmc.evt.channel.chg", plwch_channelNew },
+    { knil, 'b', "i.kmc.evt.channel.froze", plwch_channelFroze },
+    { knil, 'b', "i.kmc.evt.channel.del", plwch_channelDel },
+    { knil, 'b', "i.kmm.evt.modulesLoaded", plwch_mod_loaded },
+    { knil, 'b', "i.kmm.evt.modulesUnload", plwch_mod_unload },
+    { knil, 'a', "s.livead.evt.dataComplete", plwch_liveadComplete },
+};
+
+static void add_im_watches()
+{
+    for (int i = 0; i < sizeof(__g_wchmap) / sizeof(struct _wchmap); i++)
+        if (__g_wchmap[i].ab == 'a')
+            __g_wchmap[i].bean = kim_addawch(__g_im, __g_wchmap[i].name, __g_wchmap[i].proc, knil, knil, knil);
+        else
+            __g_wchmap[i].bean = kim_addbwch(__g_im, __g_wchmap[i].name, __g_wchmap[i].proc, knil, knil, knil);
+}
+
+static void del_im_watches()
+{
+    for (int i = 0; i < sizeof(__g_wchmap) / sizeof(struct _wchmap); i++)
+        if (__g_wchmap[i].ab == 'a')
+            kim_delawch(__g_im, __g_wchmap[i].bean);
+        else
+            kim_delbwch(__g_im, __g_wchmap[i].bean);
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -568,30 +475,27 @@ extern "C" EXPORT_FUN void mm_hey(KIM *im)
 
     ktmr_init();
 
-    __g_mod_dir = kim_getstr(__g_im, "s.env.path.moduleDir", knil);
-
     char iniPath[1024];
-    sprintf(iniPath, "%s\\playlist\\main.ini", kim_getstr(im, "s.env.path.moduleDir", knil));
+    sprintf(iniPath, "%s\\playlist\\playlist.ini", kim_getstr(im, "s.env.path.moduleDir", knil));
     kstr_subs(iniPath, '\\', kvfs_path_sep());
 
-    if (!kini_getint("general", "autoPlay", &__g_plrti.autoPlay, iniPath)) {
+    if (!kini_getint("general", "autoPlay", &__g_plrti.autoPlay, iniPath))
         __g_plrti.autoPlay = 1;
-    }
-    if (!kini_getint("general", "loopPlay", &__g_plrti.loopPlay, iniPath)) {
-        __g_plrti.loopPlay = 1;
-    }
-    if (!kini_getint("general", "randomPlay", &__g_plrti.randomPlay, iniPath)) {
-        __g_plrti.randomPlay = 0;
-    }
 
-    if (!kini_getint("channel", "volume", &__g_plrti.volume, iniPath)) {
+    if (!kini_getint("general", "loopPlay", &__g_plrti.loopPlay, iniPath))
+        __g_plrti.loopPlay = 1;
+
+    if (!kini_getint("general", "randomPlay", &__g_plrti.randomPlay, iniPath))
+        __g_plrti.randomPlay = 0;
+
+    if (!kini_getint("channel", "volume", &__g_plrti.volume, iniPath))
         __g_plrti.volume = 50;
-    }
+
     kim_addint(im, "i.playlist.media.volume", __g_plrti.volume, RF_AUTOSET, knil, knil);
 
-    if (!kini_getint("channel", "mute", &__g_plrti.mute, iniPath)) {
+    if (!kini_getint("channel", "mute", &__g_plrti.mute, iniPath))
         __g_plrti.mute = 0;
-    }
+
     kim_addint(im, "i.playlist.media.mute", __g_plrti.mute, RF_AUTOSET, knil, knil);
 
     char retValue[64];
@@ -607,12 +511,10 @@ extern "C" EXPORT_FUN void mm_hey(KIM *im)
 
     kim_addstr(im, "s.playlist.device.current", knil, 0, knil, "devhash");
 
-    if (!kini_getint("scan", "try_when_loaded", &__g_try_scan_when_mod_loaded, iniPath)) {
+    if (!kini_getint("scan", "try_when_loaded", &__g_try_scan_when_mod_loaded, iniPath))
         __g_try_scan_when_mod_loaded = 0;
-    }
-    if (!kini_getint("scan", "try_when_defreeze", &__g_try_scan_when_dev_defreeze, iniPath)) {
+    if (!kini_getint("scan", "try_when_defreeze", &__g_try_scan_when_dev_defreeze, iniPath))
         __g_try_scan_when_dev_defreeze = 0;
-    }
 
     void loadui(KIM *im);
     // XXX loadui(im);
@@ -622,44 +524,16 @@ extern "C" EXPORT_FUN void mm_hey(KIM *im)
     // kim
     /* show or hide the media window */
     kim_addint(im, "i.playlist.media.show", 0, RF_AUTOSET, knil, knil);
-    /* url for current channel */
-    kim_addstr(im, "s.playlist.media.url", knil, RF_AUTOSET, knil, knil);
     /* current channel */
     kim_addint(im, "i.playlist.media.progress", knil, 0, knil, knil);
     /* current channel */
     kim_addint(im, "i.playlist.media.speed", 100, RF_AUTOSET, knil, knil);
     /* current channel, 0 - 99, < 0 means not support */
     kim_addint(im, "i.playlist.media.signal", -1, RF_AUTOSET, knil, knil);
-    /* current channel */
-    kim_addint(im, "i.playlist.media.embed", 0, RF_AUTOSET, knil, knil);
 
     // kmc watches
     /* if container change the size, video should resize too */
-    __g_wch_playbarGeometry = kim_addawch(im, "s.playbar.geometry", plwch_playbarGeometry, knil, knil, knil);
-
-    __g_wch_channelSwitchStart = kim_addbwch(im, "i.kmc.evt.channel.switchStart", plwch_channelSwitchStart, knil, knil, knil);
-    __g_wch_channelSwitchEnd = kim_addbwch(im, "i.kmc.evt.channel.switchEnd", plwch_channelSwitchEnd, knil, knil, knil);
-
-    __g_wch_deviceNew = kim_addbwch(im, "i.kmc.evt.device.new", plwch_deviceNew, knil, knil, knil);
-    __g_wch_deviceDel = kim_addbwch(im, "i.kmc.evt.device.del", plwch_deviceDel, knil, knil, knil);
-    __g_wch_deviceFroze = kim_addbwch(im, "i.kmc.evt.device.froze", plwch_deviceFroze, knil, knil, knil);
-
-    __g_wch_channelNew = kim_addbwch(im, "i.kmc.evt.channel.new", plwch_channelNew, knil, knil, knil);
-    __g_wch_channelChg = kim_addbwch(im, "i.kmc.evt.channel.chg", plwch_channelNew, knil, knil, knil);
-    __g_wch_channelFroze = kim_addbwch(im, "i.kmc.evt.channel.froze", plwch_channelFroze, knil, knil, knil);
-    __g_wch_channelDel = kim_addbwch(im, "i.kmc.evt.channel.del", plwch_channelDel, knil, knil, knil);
-
-    __g_wch_channelSearchStart = kim_addbwch(im, "i.kmc.evt.channel.searchStart", plwch_channelSearchStart, knil, knil, knil);
-    __g_wch_channelSearchStep = kim_addbwch(im, "i.kmc.evt.channel.searchStep", plwch_channelSearchStep, knil, knil, knil);
-    __g_wch_channelSearchEnd = kim_addbwch(im, "i.kmc.evt.channel.searchEnd", plwch_channelSearchEnd, knil, knil, knil);
-
-    __g_wch_mod_loaded = kim_addbwch(im, "i.kmm.evt.modulesLoaded", plwch_mod_loaded, knil, knil, knil);
-    __g_wch_mod_unload = kim_addbwch(im, "i.kmm.evt.modulesUnload", plwch_mod_unload, knil, knil, knil);
-
-    __g_wch_liveadComplete = kim_addawch(im, "s.livead.evt.dataComplete", plwch_liveadComplete, knil, knil, "Live AD data changed");
-
-    __g_wch_imsAcDisconnect = kim_addawch(im, "i.kimstub.ac.disconnect", plwch_imsDisconnect, knil, knil, knil);
-    __g_wch_imsJcDisconnect = kim_addawch(im, "i.kimstub.jc.disconnect", plwch_imsDisconnect, knil, knil, knil);
+    add_im_watches();
 
     // worker thread
     __g_worker_thread = ktsk_new("playlist", knil, knil, knil, knil, knil);
@@ -676,13 +550,12 @@ extern "C" EXPORT_FUN void mm_bye(KIM *im)
     klog(("into playlist bye\n"));
 
     /* quit worker thread */
-    if (__g_worker_thread) {
+    if (__g_worker_thread)
         ktsk_del(__g_worker_thread);
-    }
 
     // save settings
     char iniPath[1024], *tmp;
-    sprintf(iniPath, "%s\\playlist\\main.ini", kim_getstr(im, "s.env.path.moduleDir", knil));
+    sprintf(iniPath, "%s\\playlist\\playlist.ini", kim_getstr(im, "s.env.path.moduleDir", knil));
     kstr_subs(iniPath, '\\', kvfs_path_sep());
 
     kini_setint("general", "autoPlay", __g_plrti.autoPlay, iniPath);
@@ -695,30 +568,11 @@ extern "C" EXPORT_FUN void mm_bye(KIM *im)
     tmp = kim_getstr(__g_im, "s.playlist.channel.current", knil);
     kini_setstr("channel", "curChannel", tmp ? tmp : "", iniPath);
 
-    kim_delawch(__g_im, __g_wch_imsAcDisconnect);
-    kim_delawch(__g_im, __g_wch_imsJcDisconnect);
-    kim_delawch(__g_im, __g_wch_liveadComplete);
-    kim_delbwch(__g_im, __g_wch_mod_loaded);
-    kim_delbwch(__g_im, __g_wch_mod_unload);
-    kim_delbwch(__g_im, __g_wch_channelSearchEnd);
-    kim_delbwch(__g_im, __g_wch_channelSearchStep);
-    kim_delbwch(__g_im, __g_wch_channelSearchStart);
-    kim_delbwch(__g_im, __g_wch_channelDel);
-    kim_delbwch(__g_im, __g_wch_channelFroze);
-    kim_delbwch(__g_im, __g_wch_channelChg);
-    kim_delbwch(__g_im, __g_wch_channelNew);
-    kim_delbwch(__g_im, __g_wch_deviceFroze);
-    kim_delbwch(__g_im, __g_wch_deviceDel);
-    kim_delbwch(__g_im, __g_wch_deviceNew);
-    kim_delbwch(__g_im, __g_wch_channelSwitchEnd);
-    kim_delbwch(__g_im, __g_wch_channelSwitchStart);
-    kim_delawch(__g_im, __g_wch_playbarGeometry);
+    del_im_watches();
 
-    kim_delint(__g_im, "i.playlist.media.embed");
     kim_delint(__g_im, "i.playlist.media.signal");
     kim_delint(__g_im, "i.playlist.media.speed");
     kim_delint(__g_im, "i.playlist.media.progress");
-    kim_delstr(__g_im, "s.playlist.media.url");
     kim_delint(__g_im, "i.playlist.media.show");
     kim_delstr(__g_im, "s.playlist.device.current");
     kim_delstr(__g_im, "s.playlist.channel.autoplay");
@@ -741,71 +595,9 @@ extern "C" EXPORT_FUN void mm_guid(KIM *im, char **retguid)
     klog(("into playlist guid, %s\n", guid));
     *retguid = guid;
 }
+
 extern "C" EXPORT_FUN void jc_playlist_device_scan(KIM *im, kchar *ar0, kchar *ar1, kchar *ar2, kchar *ar3, kchar **pVarResult)
 {
     kmsg_send(__g_worker_thread, KMPL_SCAN, kstr_dup(ar0), ar1, ar2, ar3);
-}
-
-static kbool read_file(const kchar *a_path, kchar **a_buf, kint *a_buflen)
-{
-    kchar *buf = knil;
-    kint retlen = 0x7FFFFFFF;
-    kbean f;
-
-    if (!(f = kvfs_open(a_path, "rb", 0)))
-        return kfalse;
-
-    kvfs_read(f, (kvoid**)&buf, &retlen);
-
-    if (buf && retlen > 0)
-        buf[retlen] = '\0';
-
-    *a_buf = buf;
-    *a_buflen = retlen;
-
-    kvfs_close(f);
-    return ktrue;
-}
-
-extern "C" EXPORT_FUN void jc_playlist_get_script(KIM *im, kchar *ar0, kchar *ar1, kchar *ar2, kchar *ar3, kchar **pVarResult)
-{
-    kchar path[1024], *buf = knil, **ret = (kchar**)pVarResult;
-    kint retlen = 0;
-
-    if (!ret)
-        return;
-
-    *ret = "";
-    sprintf(path, "%s/playlist/pl.js", __g_mod_dir);
-    if (read_file(path, &buf, &retlen) && buf && retlen > 0)
-        *ret = buf;
-}
-
-extern "C" EXPORT_FUN void jc_playlist_get_ui(KIM *im, kchar *ar0, kchar *ar1, kchar *ar2, kchar *ar3, kchar **pVarResult)
-{
-    kchar path[1024], *buf = knil, **ret = (kchar**)pVarResult;
-    kint retlen = 0;
-
-    if (!ret)
-        return;
-
-    *ret = "";
-    sprintf(path, "%s/playlist/pl.ui", __g_mod_dir);
-    if (read_file(path, &buf, &retlen) && buf && retlen > 0)
-        *ret = buf;
-}
-
-extern "C" EXPORT_FUN void jc_playlist_get_theme(KIM *im, kchar *ar0, kchar *ar1, kchar *ar2, kchar *ar3, kchar **pVarResult)
-{
-    kchar path[1024], *buf = knil, **ret = (kchar**)pVarResult;
-    kint retlen = 0;
-
-    if (!ret)
-        return;
-
-    *ret = "";
-    sprintf(path, "%s/playlist/pl.qss", __g_mod_dir);
-    if (read_file(path, &buf, &retlen) && buf && retlen > 0)
-        *ret = buf;
 }
 

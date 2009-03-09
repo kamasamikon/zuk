@@ -38,13 +38,6 @@
 #include "sysdeps.h"
 #include "options.h"
 
-#if defined(__WIN32__) || defined(__WINCE__)
-#include "revision.c"
-#else
-#include <unistd.h>
-extern int __g_app_rev;
-#endif
-
 static KMM* __g_mm = knil;
 static KMediaContainer* __g_mc = knil;
 
@@ -60,9 +53,9 @@ static kbool get_sysinfo(KIM *im)
     OSVERSIONINFO ovf;
     ZeroMemory(&ovf, sizeof(ovf));
     ovf.dwOSVersionInfoSize = sizeof(ovf);
-    if (!GetVersionEx(&ovf)) {
+    if (!GetVersionEx(&ovf))
         return kfalse;
-    }
+
     switch (ovf.dwPlatformId) {
         case VER_PLATFORM_WIN32s:
             strncpy(osid, "Win32s", sizeof(osid) - 1);
@@ -90,9 +83,9 @@ static kbool get_sysinfo(KIM *im)
 #else
     memset(osid, '\0', sizeof(osid));
     s = popen("uname -s", "r");
-    if (!s) {
+    if (!s)
         return kfalse;
-    }
+
     fread(osid, sizeof(char), sizeof(osid), s);
     kstr_subs(osid, '\r', '\n');
     kstr_subs(osid, '\n', '\0');
@@ -101,9 +94,9 @@ static kbool get_sysinfo(KIM *im)
 
     memset(osver, '\0', sizeof(osver));
     s = popen("uname -r", "r");
-    if (!s) {
+    if (!s)
         return kfalse;
-    }
+
     fread(osver, sizeof(char), sizeof(osver), s);
     kstr_subs(osver, '-', '\0');
     kim_addstr(im, "s.env.os.ver", osver, RF_AUTOSET, knil, "version");
@@ -218,83 +211,18 @@ quit:
     return rc;
 }
 
-/**
- * @brief main
- *
- * @return 0: normal quit, 1: normal reboot
- */
-kint zuk_init(KIM *im, kint argc, kchar **argv)
+static kint fill_path_im_env(KIM *im, kint argc, kchar **argv)
 {
-    kbean loading_application = knil;
-
-    zuk_opt *opt;
-    kint i;
-
-    kchar *o, buffer[1024], instdir[1024], inipath[1024], ps[2] = { 0 };
-
+    kchar buffer[1024], instdir[1024], ps[2] = { 0 };
     ps[0] = kvfs_path_sep();
 
     /* install dir, where the application in */
     kvfs_cwd(buffer, sizeof(buffer));
     ksal_exedir(buffer, argv, instdir);
-    sprintf(inipath, "%s%smain.ini", instdir, ps);
-
-    opt = zuk_opt_init();
-    read_ini_opt(opt, inipath);
-    read_arg_opt(opt, argc, argv);
-
-    if (read_opt(opt, "help")) {
-        show_help(opt);
-        zuk_opt_final(opt);
-        return 0;
-    }
-
-    /* TODO check single instance */
-    if ((o = read_opt(opt, "skip-single")) && ('1' == o[0])) {
-        /* TODO mark single instance */
-    }
-
-    /* TODO install update */
-    if ((o = read_opt(opt, "skip-update")) && ('1' == o[0])) {
-    }
-
-    if ((o = read_opt(opt, "show-loading")) && ('1' == o[0])) {
-        sprintf(buffer, "%s%sz-loading", instdir, ps);
-        ksal_exec(kfalse, kfalse, &loading_application, 0, buffer, 0);
-        kim_addptr(im, "p.misc.app.bean.loading", loading_application, RF_AUTOSET, knil, knil);
-    }
-
-    /* initialize the timer, needed by SubscriberId */
-    ktmr_init();
 
     /* install dir, where the application in */
     kim_addstr(im, "s.env.path.instDir", instdir, RF_AUTOSET, knil, "Install directory of program");
     klog(("instdir: %s\n", buffer));
-
-    /* set "x.env.os.xxx" */
-    if (kfalse == get_sysinfo(im)) {
-        return -1;
-    }
-
-    /* application info */
-    if (kfalse == check_application(im)) {
-        return -1;
-    }
-
-    /* system depends init */
-    zuk_sysdeps_start(im, argc, argv);
-
-    /* KMC */
-    klog(("kmc_init\n"));
-    KMediaContainer *mc = new KMediaContainer(im, "K Media Container");
-    __g_mc = mc;
-    kim_addptr(im, "p.sys.kmc", mc, RF_AUTOSET, NULL, "K Media Container");
-
-    /* KMM */
-    klog(("kmm_init\n"));
-    kbean mm = kmm_init(im);
-    __g_mm = (KMM*)mm;
-    kim_addptr(im, "p.sys.kmm", mm, RF_AUTOSET, knil, "K Module Manager");
 
     /* modules's dir */
     sprintf(buffer, "%s%smodules", instdir, ps);
@@ -311,21 +239,20 @@ kint zuk_init(KIM *im, kint argc, kchar **argv)
     kstr_subs(buffer, kvfs_path_sep(), '/');
     kim_addstr(im, "s.env.path.help", buffer, RF_AUTOSET, knil, knil);
 
+    return 0;
+}
+
+static kint fill_lang_im_env(KIM *im, kint argc, kchar **argv)
+{
+    kchar buffer[1024], instdir[1024], ps[2] = { 0 };
     /* App Data dir */
 #if defined(__WIN32__)
-    sprintf(buffer, "%s\\i-Vision", getenv("APPDATA"));
+    sprintf(buffer, "%s\\dyi", getenv("APPDATA"));
 #elif defined(__UNIX__)
     sprintf(buffer, "%s/.zuk/appdata", getenv("HOME"));
 #endif
     kvfs_mkdir(buffer);
     kim_addstr(im, "s.env.path.appDataDir", buffer, RF_AUTOSET, knil, "user application data directory");
-
-    /* Loading settings for main.ini */
-    if (kini_getstr("general", "zone", buffer, sizeof(buffer), inipath)) {
-        kim_addstr(im, "s.env.zone", buffer, RF_AUTOSET, knil, "Current region");
-    } else {
-        kim_addstr(im, "s.env.zone", "", RF_AUTOSET, knil, "Current region");
-    }
 
     /* make nl_langinfo works correctly */
     setlocale(LC_ALL, "");
@@ -352,9 +279,8 @@ kint zuk_init(KIM *im, kint argc, kchar **argv)
     kim_addstr(im, "s.env.language", buffer, RF_AUTOSET, knil, "language");
 
     const kchar *codeset;
-    if (!(codeset = nl_langinfo(CODESET))) {
+    if (!(codeset = nl_langinfo(CODESET)))
         codeset = "";
-    }
     kim_addstr(im, "s.env.encoding", (kchar*)codeset, RF_AUTOSET, knil, "codepage");
 #endif
 
@@ -363,6 +289,87 @@ kint zuk_init(KIM *im, kint argc, kchar **argv)
     strcpy(buffer, getenv("LANG"));
     setlocale(LC_MESSAGES, buffer);
 #endif
+}
+
+
+/**
+ * @brief main
+ *
+ * @return 0: normal quit, 1: normal reboot
+ */
+kint zuk_init(KIM *im, kint argc, kchar **argv)
+{
+    kbean loading_application = knil;
+
+    zuk_opt *opt;
+    kint i;
+
+    kchar *o, buffer[1024], *instdir, inipath[1024], ps[2] = { 0 };
+    ps[0] = kvfs_path_sep();
+
+    fill_path_im_env(im, argc, argv);
+
+    instdir = kim_getstr(im, "s.env.path.instdir", knil);
+
+    /* install dir, where the application in */
+    kvfs_cwd(buffer, sizeof(buffer));
+    sprintf(inipath, "%s%smain.ini", instdir, ps);
+
+    opt = zuk_opt_init();
+    read_ini_opt(opt, inipath);
+    read_arg_opt(opt, argc, argv);
+
+    if (read_opt(opt, "help")) {
+        show_help(opt);
+        zuk_opt_final(opt);
+        return 0;
+    }
+
+    if (o = read_opt(opt, "log-level"))
+        kdbg_init(atoi(o));
+
+    /* TODO check single instance */
+    if ((o = read_opt(opt, "skip-single")) && ('1' == o[0])) {
+        /* TODO mark single instance */
+    }
+
+    /* TODO install update */
+    if ((o = read_opt(opt, "skip-update")) && ('1' == o[0])) {
+    }
+
+    if ((o = read_opt(opt, "show-loading")) && ('1' == o[0])) {
+        sprintf(buffer, "%s%sz-loading", instdir, ps);
+        ksal_exec(kfalse, kfalse, &loading_application, 0, buffer, 0);
+        kim_addptr(im, "p.misc.app.bean.loading", loading_application, RF_AUTOSET, knil, knil);
+    }
+
+    /* initialize the timer, needed by SubscriberId */
+    ktmr_init();
+
+    /* set "x.env.os.xxx" */
+    if (kfalse == get_sysinfo(im))
+        return -1;
+
+    /* application info */
+    if (kfalse == check_application(im))
+        return -1;
+
+    /* system depends init */
+    zuk_sysdeps_start(im, argc, argv);
+
+    /* KMC */
+    klog(("kmc_init\n"));
+    KMediaContainer *mc = new KMediaContainer(im, "K Media Container");
+    __g_mc = mc;
+    kim_addptr(im, "p.sys.kmc", mc, RF_AUTOSET, NULL, "K Media Container");
+
+    /* KMM */
+    klog(("kmm_init\n"));
+    kbean mm = kmm_init(im);
+    __g_mm = (KMM*)mm;
+    kim_addptr(im, "p.sys.kmm", mm, RF_AUTOSET, knil, "K Module Manager");
+
+    fill_lang_im_env(im, argc, argv);
 
 #if defined(KCFG_GETTEXT)
     bindtextdomain("zuk", buffer);
@@ -377,17 +384,16 @@ kint zuk_init(KIM *im, kint argc, kchar **argv)
 
 kint zuk_show(KIM *im, kint argc, kchar **argv)
 {
-    return kim_setint(im, "i.ui.show", 1, knil, knil);
+    return kim_setint(im, "i.ui.act.show", 1, knil, knil);
 }
 
 kint zuk_final(KIM *im, kint argc, kchar **argv)
 {
-    if (__g_mm) {
+    if (__g_mm)
         kmm_final(__g_mm);
-    }
-    if (__g_mc) {
+
+    if (__g_mc)
         delete __g_mc;
-    }
 
     ktmr_final();
 

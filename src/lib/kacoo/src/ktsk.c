@@ -29,8 +29,8 @@ typedef struct _kmsg_slot {
 
 typedef struct _kmsg {
     K_dlist_entry ent;              /**< used for queue into ktsk::msg_qhdr */
-    kuint serial;                    /**< uniq id, auto inc when each new msg */
-    kuint flg;                        /**< DYNMEM, POST, */
+    kuint serial;                   /**< uniq id, auto inc when each new msg */
+    kuint flg;                      /**< DYNMEM, POST, */
 
     kuint msg;
     kvoid *ar0, *ar1, *ar2, *ar3;

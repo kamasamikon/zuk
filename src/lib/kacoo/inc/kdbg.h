@@ -4,24 +4,20 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-#include <stdio.h>
 
 #include <ksal.h>
 
 /*---------------------------------------------------------------------------------
  * debug message mask
  */
-#define DBG_LOG         0x00000001          /**< show log */
-#define DBG_ERR         0x00000002          /**< show error */
-#define DBG_FAT         0x00000004          /**< show fatal error */
-#define DBG_ASS         0x00000008          /**< show assert message */
-#define DBG_BRK         0x00000010          /**< raise debug trap when assert failed */
-#define DBG_TIM         0x00000020          /**< time stamp for log etc */
+#define DBG_LOG         0x00000001
+#define DBG_ERR         0x00000002
+#define DBG_FAT         0x00000004
+#define DBG_TIME        0x00000080
 
 static kuint __gc_kdbg_level = (kuint)-1;
-static kchar __gc_strtime[100] = "";
 
-kuint kdbg_init();
+kuint kdbg_init(kuint a_level);
 kuint kdbg_getlevel(const kchar *a_file);
 
 #define GET_DBG_LEVEL() do { \
@@ -30,24 +26,17 @@ kuint kdbg_getlevel(const kchar *a_file);
     } \
 } while (0)
 
-/* GET_DBG_TIME should be used after GET_DBG_LEVEL */
-#define GET_DBG_TIME() do { \
-    if (__gc_kdbg_level & DBG_TIM) { \
-        sprintf(__gc_strtime, ":%d", ksal_cur_time()); \
-    } else { \
-        __gc_strtime[0] = '\0'; \
-    } \
-} while (0)
-
-
 #if defined(DBG_HIDE_LOG) || defined(DBG_HIDE_CUR_LOG)
 #define klog(x) do {} while (0)
 #else
 #define klog(x) do { \
     GET_DBG_LEVEL(); \
-    GET_DBG_TIME(); \
     if (__gc_kdbg_level & DBG_LOG) { \
-        kprintf("[klog%s]-", __gc_strtime); \
+        if (__gc_kdbg_level & DBG_TIME) { \
+            kprintf("[klog:%u]-", ksal_get_tick()); \
+        } else { \
+            kprintf("[klog]-"); \
+        } \
         kprintf x ; \
     } \
 } while (0)
@@ -58,9 +47,12 @@ kuint kdbg_getlevel(const kchar *a_file);
 #else
 #define kerror(x) do { \
     GET_DBG_LEVEL(); \
-    GET_DBG_TIME(); \
     if (__gc_kdbg_level & DBG_ERR) { \
-        kprintf("[kerr%s]-", __gc_strtime); \
+        if (__gc_kdbg_level & DBG_TIME) { \
+            kprintf("[kerr:%u]-", ksal_get_tick()); \
+        } else { \
+            kprintf("[kerr]-"); \
+        } \
         kprintf x ; \
     } \
 } while (0)
@@ -71,9 +63,12 @@ kuint kdbg_getlevel(const kchar *a_file);
 #else
 #define kfatal(x) do { \
     GET_DBG_LEVEL(); \
-    GET_DBG_TIME(); \
     if (__gc_kdbg_level & DBG_FAT) { \
-        kprintf("[kfat%s]-", __gc_strtime); \
+        if (__gc_kdbg_level & DBG_TIME) { \
+            kprintf("[kfat:%u]-", ksal_get_tick()); \
+        } else { \
+            kprintf("[kfat]-"); \
+        } \
         kprintf x ; \
     } \
 } while (0)
@@ -81,18 +76,21 @@ kuint kdbg_getlevel(const kchar *a_file);
 
 #if defined(DBG_HIDE_ASSERT) || defined(DBG_HIDE_ASSERT)
 #define kassert(x) do {} while (0)
+#elif defined(DBG_ASSERT_AS_ERR)
+#define kassert(_x_) \
+    do { \
+        if (!(_x_)) { \
+            kprintf("\n\n\tkassert failed!!!\n\t[%s], \n\tFILE:%s, LINES:%d\n\n", \
+                #_x_, __FILE__, __LINE__); \
+        } \
+    } while (0)
 #else
 #define kassert(_x_) \
     do { \
-        GET_DBG_LEVEL(); \
-        GET_DBG_TIME(); \
-        if ((__gc_kdbg_level & DBG_ASS) && (!(_x_))) { \
-            kprintf("\n\n\tkassert failed!%s!!\n\t[%s], \n\tFILE:%s, LINES:%d\n\n", \
-                __gc_strtime, #_x_, __FILE__, __LINE__); \
-            \
-            if (__gc_kdbg_level & DBG_BRK) { \
-                kdbgbrk(); \
-            } \
+        if (!(_x_)) { \
+            kprintf("\n\n\tkassert failed!!!\n\t[%s], \n\tFILE:%s, LINES:%d\n\n", \
+                #_x_, __FILE__, __LINE__); \
+            kdbgbrk(); \
         } \
     } while (0)
 #endif
