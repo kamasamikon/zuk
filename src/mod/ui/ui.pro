@@ -23,8 +23,8 @@ LIBS += -L../../../output -lkacoo -lkmc -ltextconv
 DESTDIR = ../../../installdir/modules/ui
 QMAKE_POST_LINK =
 
-INCLUDEPATH += . ../inc ../../lib/textconv ../../lib/kacoo/inc ../../lib/kacoo/lib/inc ../../lib/kmm ../../lib/kmc ../../lib/inc ../../lib/xmldoc
-DEPENDPATH += . ../inc ../../lib/textconv ../../lib/kacoo/inc ../../lib/kacoo/lib/inc ../../lib/kmm ../../lib/kmc ../../lib/inc ../../lib/xmldoc
+INCLUDEPATH += . ../inc ../../lib/textconv ../../lib/kacoo/inc ../../lib/kacoo/lib/inc ../../lib/kmm ../../lib/kmc ../../lib/inc ../../lib/kacoo/lib/xmldoc
+DEPENDPATH += . ../inc ../../lib/textconv ../../lib/kacoo/inc ../../lib/kacoo/lib/inc ../../lib/kmm ../../lib/kmc ../../lib/inc ../../lib/kacoo/lib/xmldoc
 
 # Input
 HEADERS +=

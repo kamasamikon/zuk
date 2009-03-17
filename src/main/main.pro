@@ -32,7 +32,7 @@ INCLUDEPATH += . \
     ../lib/inc \
     ../lib/kacoo/inc \
     ../lib/kacoo/lib/inc \
-    ../lib/xmldoc \
+    ../lib/kacoo/lib/xmldoc \
     ../lib/textconv
 
 INCLUDEPATH += ../lib/kmm \
