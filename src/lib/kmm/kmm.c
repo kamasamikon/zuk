@@ -22,6 +22,8 @@ typedef void (*MM_CFG)(KIM *im);
 /** \brief Get GUID of a module */
 typedef void (*MM_GUID)(KIM *im, kchar **retguid);
 
+static kint kmm_call_entrance(kbean a_mm);
+
 /*------------------------------------------------------------------------------
  * Type
  */
@@ -47,6 +49,7 @@ typedef void (*MM_GUID)(KIM *im, kchar **retguid);
 #define KLastError() GetLastError()
 #else
 #include <dlfcn.h>
+#include <errno.h>
 #define KLoadLibrary(modname) dlopen(modname, RTLD_LAZY)
 #define KUnLoadLibrary(handle) dlclose(handle)
 #define KGetProcAddress(handle, name) dlsym(handle, name)
@@ -75,14 +78,12 @@ kint kmm_final(kbean a_mm)
     KMM *mm = (KMM*)a_mm;
 
     kmm_clear_proc_cache(a_mm);
-
     kmm_unload_modules(a_mm);
 
     kim_delint(mm->im, "i.kmm.evt.modulesLoaded");
     kim_delint(mm->im, "i.kmm.evt.modulesUnload");
 
     kmem_free(a_mm);
-
     return 0;
 }
 
@@ -98,9 +99,8 @@ static kint kmm_get_mod_cnt(kchar *a_path)
     fd = kvfs_findfirst(fullpath, &finfo);
     if (fd) {
         do {
-            if (0 != strcmp(finfo.name, ".") && 0 !=strcmp(finfo.name, "..")) {
+            if (0 != strcmp(finfo.name, ".") && 0 !=strcmp(finfo.name, ".."))
                 modcnt++;
-            }
         } while (-1 != kvfs_findnext(fd, &finfo));
 
         kvfs_findclose(fd);
@@ -139,9 +139,8 @@ kint kmm_load_modules(kbean a_mm)
     language = kim_getstr(mm->im, "s.env.language", knil);
 
     mm->mod.cnt = kmm_get_mod_cnt(moddir);
-    if (mm->mod.cnt <= 0) {
+    if (mm->mod.cnt <= 0)
         return -1;
-    }
 
     /* fill current os version */
     major = minor = rev = 0;
@@ -195,12 +194,10 @@ kint kmm_load_modules(kbean a_mm)
                 xmldoc_parse(doc, buf, buflen);
                 kmem_free(buf);
 
-                if (!(node = xmldoc_gotoNode(doc, "module", 0))) {
+                if (!(node = xmldoc_gotoNode(doc, "module", 0)))
                     continue;
-                }
-                if (!(val = xmlnode_get_attr_value(node, "id"))) {
+                if (!(val = xmlnode_get_attr_value(node, "id")))
                     continue;
-                }
 
                 mm->mod.arr[index].basepath = kstr_dup(modpath);
 
@@ -221,48 +218,47 @@ kint kmm_load_modules(kbean a_mm)
                 kint k, cnt = xmldoc_getNodeCnt(doc, "name");
                 for (k = 0; k < cnt; k++) {
                     node = xmldoc_getNode(doc, "name", k);
-                    if (!(val = xmlnode_get_attr_value(node, "lang"))) {
+                    if (!(val = xmlnode_get_attr_value(node, "lang")))
                         /* Save default name */
                         modname = node->text;
-                    } else if (language == val) {
+                    else if (language == val) {
                         mm->mod.arr[index].name = kstr_dup(node->text);
                         break;
                     }
                 }
-                if (k == cnt) {
+                if (k == cnt)
                     mm->mod.arr[index].name = kstr_dup(modname);
-                }
 
                 /* Fill desc */
                 kchar *moddesc = "";
                 cnt = xmldoc_getNodeCnt(doc, "desc");
                 for (k = 0; k < cnt; k++) {
                     node = xmldoc_getNode(doc, "desc", k);
-                    if (!(val = xmlnode_get_attr_value(node, "lang"))) {
+                    if (!(val = xmlnode_get_attr_value(node, "lang")))
                         /* Save default desc */
                         moddesc = node->text;
-                    } else if (language == val) {
+                    else if (language == val) {
                         mm->mod.arr[index].desc = kstr_dup(node->text);
                         break;
                     }
                 }
-                if (k == cnt) {
+                if (k == cnt)
                     mm->mod.arr[index].desc = kstr_dup(moddesc);
-                }
+
 
                 /* Fill type */
-                if (!(node = xmldoc_getNode(doc, "type", 0))) {
+                if (!(node = xmldoc_getNode(doc, "type", 0)))
                     continue;
-                }
+
                 mm->mod.arr[index].type = (kuchar)strtoul(node->text, 0, 10);
-                if (mm->maxtype < mm->mod.arr[index].type) {
+                if (mm->maxtype < mm->mod.arr[index].type)
                     mm->maxtype = mm->mod.arr[index].type;
-                }
+
 
                 /* Fill state */
-                if (!(node = xmldoc_getNode(doc, "state", 0))) {
+                if (!(node = xmldoc_getNode(doc, "state", 0)))
                     continue;
-                }
+
                 mm->mod.arr[index].state = (kuchar)strtoul(node->text, 0, 10);
 
                 if (MS_IS_DIS == mm->mod.arr[index].state) {
@@ -339,38 +335,35 @@ kint kmm_load_modules(kbean a_mm)
                     for (kk = 0; kk < cnt; kk++) {
                         node = xmldoc_gotoNode(doc, "target", kk);
 
-                        if (!(val = xmlnode_get_attr_value(node, "id")) || kstr_cmp(val, appname, 0)) {
+                        if (!(val = xmlnode_get_attr_value(node, "id")) || kstr_cmp(val, appname, 0))
                             goto next_ta_loop;
-                        }
 
                         /* current wanted max app version */
-                        if (!(val = xmlnode_get_attr_value(node, "maxver"))) {
+                        if (!(val = xmlnode_get_attr_value(node, "maxver")))
                             goto next_ta_loop;
-                        }
+
                         sscanf(val, "%u.%u.%u", &major, &minor, &rev);
                         app_maxver = ((major & 0xFF) << 24) + ((minor & 0xFF) << 16) + (rev & 0xFFFF);
 
                         /* current wanted min app version */
-                        if (!(val = xmlnode_get_attr_value(node, "minver"))) {
+                        if (!(val = xmlnode_get_attr_value(node, "minver")))
                             goto next_ta_loop;
-                        }
+
                         sscanf(val, "%u.%u.%u", &major, &minor, &rev);
                         app_minver = ((major & 0xFF) << 24) + ((minor & 0xFF) << 16) + (rev & 0xFFFF);
 
                         klog(("kmm_load_modules: curver:%08x, maxver:%08x, minver: %08x\n", app_curver, app_maxver, app_minver));
-                        if (app_curver >= app_minver && app_curver <= app_maxver) {
+                        if (app_curver >= app_minver && app_curver <= app_maxver)
                             ta_chkpass = ktrue;
-                        }
+
 next_ta_loop:   /* Next target */
                         node = xmldoc_gotoNode(doc, "..", 0);
-                        if (ta_chkpass) {
+                        if (ta_chkpass)
                             break;
-                        }
                     }
 next_pl_loop:   /* Next platform */
-                    if (ta_chkpass) {
+                    if (ta_chkpass)
                         break;
-                    }
 
                     /*
                      * XXX if ta_chkpass, it will skip this, it make the node in the last, and also
@@ -418,72 +411,43 @@ next_pl_loop:   /* Next platform */
         kvfs_findclose(fd);
     }
 
-    for (ii = index; ii <mm->mod.cnt; ii++) {
-        mm->mod.arr[ii].used = kfalse;
-    }
+    kmm_call_entrance(a_mm);
+
+    klog(("<<< kmm_load_modules\n"));
+    kim_setint(mm->im, "i.kmm.evt.modulesLoaded", 1, knil, knil);
+    return 0;
+}
+
+static kint kmm_call_entrance(kbean a_mm)
+{
+    KMM *mm = (KMM*)a_mm;
+    kint index = 0, type;
 
     MM_HEY hey = knil;
     MM_GUID guid = knil;
     kchar *retguid = knil;
 
-#if 0
-    /* preload list */
-    kchar *loadOrderMap[] = { "defui", "playlist", knil };
-    CString cfgline;
-    for (kint jj = 0; loadOrderMap[jj]; jj++) {
-        cfgline = loadOrderMap[jj];
-
-        for (index = 0; index <mm->mod.cnt; index++) {
-            if (mod.arr[index].loaded) {
-                continue;
-            }
-            if (cfgline == mm->mod.arr[index].id) {
-                SetCurrentDirectory(mod.arr[index].basepath);
-                if (mod.arr[index].entry.bean) {
-                    hey = (MM_BYE)KGetProcAddress(mod.arr[index].entry.bean, "mm_hey");
-                    if (hey) {
-                        hey(im);
-                    }
-                    guid = (MM_GUID)KGetProcAddress(mod.arr[index].entry.bean, "mm_guid");
-                    if (guid) {
-                        retguid = knil;
-                        guid(im, &retguid);
-                        mm->mod.arr[index].entry.soid = retguid;
-                    }
-                }
-
-                mm->mod.arr[index].loadorder = mm->loadorder++;
-                mm->mod.arr[index].loaded = ktrue;
-                break;
-            }
-        }
-    }
-#endif
-
     klog(("Call enterance mm_hey\n"));
     for (type = 0; type <= mm->maxtype; type++) {
         for (index = 0; index <mm->mod.cnt; index++) {
 
-            if (kfalse == mm->mod.arr[index].used) {
+            if (kfalse == mm->mod.arr[index].used)
                 continue;
-            }
 
-            if (mm->mod.arr[index].loaded) {
+            if (mm->mod.arr[index].loaded)
                 continue;
-            }
 
-            if (mm->mod.arr[index].type != type) {
+            if (mm->mod.arr[index].type != type)
                 continue;
-            }
 
-            klog(("process :%s\n", mm->mod.arr[index].name));
+            klog((">>> kmm:process:%s\n", mm->mod.arr[index].name));
 
             if (mm->mod.arr[index].entry.bean) {
                 kvfs_chdir(mm->mod.arr[index].basepath);
                 hey = (MM_BYE)KGetProcAddress(mm->mod.arr[index].entry.bean, "mm_hey");
-                if (hey) {
+                if (hey)
                     hey(mm->im);
-                }
+
                 guid = (MM_GUID)KGetProcAddress(mm->mod.arr[index].entry.bean, "mm_guid");
                 if (guid) {
                     retguid = knil;
@@ -493,10 +457,9 @@ next_pl_loop:   /* Next platform */
             }
             mm->mod.arr[index].loadorder = mm->loadorder++;
             mm->mod.arr[index].loaded = ktrue;
+            klog(("<<< kmm:process:%s\n", mm->mod.arr[index].name));
         }
     }
-
-    kim_setint(mm->im, "i.kmm.evt.modulesLoaded", 1, knil, knil);
 
     return 0;
 }
@@ -514,29 +477,25 @@ kint kmm_unload_modules(kbean a_mm)
 
         for (index = 0; index <mm->mod.cnt; index++) {
 
-            if (kfalse == mm->mod.arr[index].used) {
+            if (kfalse == mm->mod.arr[index].used)
                 continue;
-            }
-            if ((mm->mod.arr[index].loadorder != -1) && (mm->mod.arr[index].loadorder != loadOrder)) {
+            if ((mm->mod.arr[index].loadorder != -1) && (mm->mod.arr[index].loadorder != loadOrder))
                 continue;
-            }
 
             klog(("unloading module <%s>\n", mm->mod.arr[index].name));
-            if (mm->mod.arr[index].loaded) {
+            if (mm->mod.arr[index].loaded)
                 if (mm->mod.arr[index].entry.bean) {
                     MM_BYE bye= (MM_BYE)KGetProcAddress(mm->mod.arr[index].entry.bean, "mm_bye");
-                    if (bye) {
+                    if (bye)
                         bye(mm->im);
-                    }
                 }
-            }
+
             if (mm->mod.arr[index].used) {
                 mm->mod.arr[index].used = kfalse;
                 mm->mod.arr[index].loaded = kfalse;
 
-                if (mm->mod.arr[index].entry.bean) {
+                if (mm->mod.arr[index].entry.bean)
                     KUnLoadLibrary(mm->mod.arr[index].entry.bean);
-                }
             }
 
             kmem_free_s(mm->mod.arr[index].entry.name);
@@ -569,17 +528,13 @@ static kvoid* kmm_find_proc(kbean a_mm, kchar *a_soid, kchar *a_cname)
     kvoid* proc = knil;
     kint index;
 
-    for (index = 0; index < mm->mod.cnt; index++) {
+    for (index = 0; index < mm->mod.cnt; index++)
         if (mm->mod.arr[index].entry.bean && mm->mod.arr[index].entry.soid &&
                 !strcmp(mm->mod.arr[index].entry.soid, a_soid)) {
             proc = (kvoid*)KGetProcAddress(mm->mod.arr[index].entry.bean, a_cname);
-            if (proc) {
-                return proc;
-            } else {
-                return knil;
-            }
+            return proc;
         }
-    }
+
     kerror(("kmm_find_proc: guid:%s, cmd:%s not found!\n", a_soid, a_cname));
     return knil;
 }
@@ -603,23 +558,22 @@ static kvoid kmm_clear_proc_cache(kbean a_mm)
 static kvoid kmm_add_proc_to_cache(kbean a_mm, kchar *a_soid, kchar *a_cname, WASP_JC a_proc)
 {
     KMM *mm = (KMM*)a_mm;
+    const int grow_step = 20;
 
     kuint i;
     kvoid *arr;
-    for (i = 0; i < mm->his.cnt; i++) {
-        if (!mm->his.arr[i].soid) {
+    for (i = 0; i < mm->his.cnt; i++)
+        if (!mm->his.arr[i].soid)
             /* found a unused entry */
             break;
-        }
-    }
 
     /* not found empty entry, grow the list */
     if (i == mm->his.cnt) {
-        mm->his.cnt += 20;
+        mm->his.cnt += grow_step;
 
         arr = kmem_alloz(mm->his.cnt * sizeof(kmm_jc_his_entry));
         if (mm->his.arr) {
-            memcpy(arr, mm->his.arr, (mm->his.cnt - 20) * sizeof(kmm_jc_his_entry));
+            memcpy(arr, mm->his.arr, (mm->his.cnt - grow_step) * sizeof(kmm_jc_his_entry));
             kmem_free(mm->his.arr);
         }
         mm->his.arr = (kmm_jc_his_entry*)arr;
@@ -638,9 +592,8 @@ static WASP_JC kmm_find_proc_in_cache(kbean a_mm, kchar *a_soid, kchar *a_cname)
         soid = mm->his.arr[i].soid;
         name = mm->his.arr[i].name;
 
-        if (soid && name && !kstr_icmp(soid, a_soid, 0) && !strcmp(name, a_cname)) {
+        if (soid && name && !kstr_icmp(soid, a_soid, 0) && !strcmp(name, a_cname))
             return mm->his.arr[i].proc;
-        }
     }
     return knil;
 }
@@ -658,24 +611,22 @@ kint kmm_jc_cmd(kbean a_mm, kchar *a_cname, kchar *a_soid, kchar *a_ar0, kchar *
     KMM *mm = (KMM*)a_mm;
     WASP_JC wasp_jc;
 
-    if (a_cname) {
-        klog(("jc:guid%s, fun:%s\n", a_soid, a_cname));
+    klog(("jc:guid%s, fun:%s\n", a_soid, a_cname));
+    if (!a_cname)
+        return -1;
 
-        wasp_jc = (WASP_JC)kmm_find_proc_in_cache(a_mm, a_soid, a_cname);
-        if (!wasp_jc) {
-            wasp_jc = (WASP_JC)kmm_find_proc(a_mm, a_soid, a_cname);
-            if (wasp_jc) {
-                kmm_add_proc_to_cache(a_mm, a_soid, a_cname, wasp_jc);
-            }
-        }
-
-        if (knil != wasp_jc) {
-            wasp_jc(mm->im, a_ar0, a_ar1, a_ar2, a_ar3, a_result);
-            return 0;
-        } else {
-            kerror(("-- command :%s not found --\n", a_cname));
-        }
+    wasp_jc = (WASP_JC)kmm_find_proc_in_cache(a_mm, a_soid, a_cname);
+    if (!wasp_jc) {
+        wasp_jc = (WASP_JC)kmm_find_proc(a_mm, a_soid, a_cname);
+        if (wasp_jc)
+            kmm_add_proc_to_cache(a_mm, a_soid, a_cname, wasp_jc);
     }
+
+    if (knil != wasp_jc) {
+        wasp_jc(mm->im, a_ar0, a_ar1, a_ar2, a_ar3, a_result);
+        return 0;
+    } else
+        kerror(("-- command :%s not found --\n", a_cname));
 
     return -1;
 }

@@ -1,7 +1,7 @@
 #include <kmem.h>
 #include <kstr.h>
 
-#include "kmcprotocal.h"
+#include "kmccontainer.h"
 
 KMediaProtocal::KMediaProtocal(KMediaContainer* a_parentContainer, char* a_name, int a_type)
 {
@@ -12,10 +12,7 @@ KMediaProtocal::KMediaProtocal(KMediaContainer* a_parentContainer, char* a_name,
     desc = NULL;
     type = a_type;
 
-    // 把自己添加到上级类的列表中去
-    // XXX 设备尚未启动
     insert_dlist_tail_entry(&parentContainer->protocalHeader, &protocalEntry);
-    // kim_setptr(im, "kmcprotocal.evt.new", getHash(), ...);
 }
 
 KMediaProtocal::~KMediaProtocal(void)
@@ -34,11 +31,10 @@ KMediaProtocal::~KMediaProtocal(void)
         delete dev;
     }
 
-    // 将自己从上级类的列表剔除，要求调用该函数的时候，本实例已经停止
+    /* protocol should stopped before call this */
     remove_dlist_entry(&protocalEntry);
 }
 
-// 得到本KMC中所有的加载的设备列表，返回其哈希列表，空列表项代表结束。
 char** KMediaProtocal::getMediaDeviceList(void)
 {
     int cnt = 0, index = 0;
@@ -75,7 +71,6 @@ char** KMediaProtocal::getMediaChannelList(unsigned int class_mask)
     return NULL;
 }
 
-// 得到本KMC中所有的加载的频道列表，返回其哈希列表，空列表项代表结束。
 char** KMediaProtocal::getMediaChannelList(void)
 {
     int devCnt = 0, chCnt = 0, devIndex = 0, chIndex = 0;
@@ -127,7 +122,6 @@ char** KMediaProtocal::getMediaChannelList(void)
     return hashList;
 }
 
-// 当系统启动的时候，必须扫描各个设备，并和保存的信息进行对比
 int KMediaProtocal::scanDevice(void)
 {
     return EC_NOT_SUPPORT;

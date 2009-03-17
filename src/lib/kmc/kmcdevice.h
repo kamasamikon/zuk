@@ -5,21 +5,22 @@
 #include <stdlib.h>
 #include <sdlist.h>
 #include <kim.h>
+#include <kflg.h>
 #include "kerrcode.h"
 
-#include "kmccontainer.h"
-#include "kmcprotocal.h"
-#include "kmcchannel.h"
-
 class KMediaProtocal;
+
+#define MC_DEV_FLG_STARTED   0x00000001
+#define MC_DEV_FLG_DEFREEZED 0x00000002
+#define MC_DEV_FLG_ENABLE    0x00000004
 
 /* deviec type define
    type  =0   reserved
    1   broadcast
    2   web
    3   local::record
-
 */
+
 class KMediaDevice
 {
 public:
@@ -28,7 +29,7 @@ public:
 
     virtual void* allocMemory(unsigned int size) { return NULL; }
     virtual void freeMemory(void *ptr) {}
-    // 只计算一次即可，必须保证该哈希值得唯一性，并且在对同一事物的计算结构是相同的
+
     virtual char* getHash(void) = 0;
     const char* getName(void) { return name; }
     const char* getDesc(void) { return desc; }
@@ -37,35 +38,32 @@ public:
 
     KMediaProtocal *getProtocal(void) const { return parentProtocal; }
 
-    virtual kbool start(void) { kbool ret = started; started = true; return ret; }
-    virtual kbool stop(void) { kbool ret = started; started = false; return ret; }
-    kbool isStarted(void) { return started; }
+    virtual kbool start(void) { kuint of = flg; kflg_set(flg, MC_DEV_FLG_STARTED); return kflg_chk(of, MC_DEV_FLG_STARTED) ? true : false; }
+    virtual kbool stop(void) { kuint of = flg; kflg_clr(flg, MC_DEV_FLG_STARTED); return kflg_chk(of, MC_DEV_FLG_STARTED) ? true : false; }
+    kbool isStarted(void) { return kflg_chk(flg, MC_DEV_FLG_STARTED) ? true : false; }
+
+    kbool freeze(void) { kuint of = flg; kflg_set(flg, MC_DEV_FLG_DEFREEZED); return kflg_chk(of, MC_DEV_FLG_DEFREEZED) ? true : false; }
+    kbool defreeze(void) { kuint of = flg; kflg_clr(flg, MC_DEV_FLG_DEFREEZED); return kflg_chk(of, MC_DEV_FLG_DEFREEZED) ? true : false; }
+    kbool isFreeze(void) { return kflg_chk(flg, MC_DEV_FLG_DEFREEZED) ? true : false; }
 
     virtual int remove(void) { return EC_NOT_SUPPORT; }
 
-    // 得到本KMC中所有的加载的频道列表，返回其哈希列表，空列表项代表结束。
+    /** all channel hash belong to this device, with 0 end */
     char** getMediaChannelList(void);
     char** getMediaChannelList(unsigned int class_mask);
 
-    // 信号强度 0 <= a_amp < 100
-    virtual int setSignalAmp(int a_amp);
-    virtual int getSignalAmp(int *a_pamp);
+    /**  0 <= a_amp < 100 */
+    virtual int setSignalAmp(int a_amp) { return EC_NOT_SUPPORT; }
+    virtual int getSignalAmp(int *a_pamp) { return EC_NOT_SUPPORT; }
 
-    // 相当于手工搜台
-    // 在系统启动的时候，只是取缓存而生成频道列表
-    virtual int updateChannelList(void);    // 相当于搜台了
-    virtual int updateChannelList(unsigned int class_mask, unsigned int type_mask);    // 指定搜索类别或方法
-    virtual int cancelUpdateChannelList(void);
+    virtual int updateChannelList(void) { return EC_NOT_SUPPORT; }
+    virtual int updateChannelList(unsigned int class_mask, unsigned int type_mask) { return EC_NOT_SUPPORT; }
+    virtual int cancelUpdateChannelList(void) { return EC_NOT_SUPPORT; }
 
 public:
-    // XXX the list must be public.
-    //
-    // 保存属于本设备的所有的频道，频道实例化时把自己增加到该链表中
     K_dlist_entry channelHeader;
-
-    // 列表项，排入parentProtocal->deviceHeader;
     K_dlist_entry deviceEntry;
-protected:
+
     char* desc;
     int  type;
 
@@ -73,10 +71,7 @@ private:
     KMediaProtocal* parentProtocal;
     char* name;
 
-
-    kbool started;
-    kbool isEnable;
-    kbool isPresent;
+    kuint flg;
 };
 
 #endif /*KMCDEVICE_H_*/
