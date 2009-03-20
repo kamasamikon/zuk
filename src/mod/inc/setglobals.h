@@ -1,3 +1,4 @@
+/* vim:set et sw=4 sts=4: */
 
 #ifndef __SET_GLOBALS_H__
 #define __SET_GLOBALS_H__

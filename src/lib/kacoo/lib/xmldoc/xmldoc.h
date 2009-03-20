@@ -1,3 +1,4 @@
+/* vim:set et sw=4 sts=4: */
 #ifndef __XMLDOC_H__
 #define __XMLDOC_H__
 

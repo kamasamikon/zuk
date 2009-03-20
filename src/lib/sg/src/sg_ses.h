@@ -1,3 +1,4 @@
+/* vim:set et sw=4 sts=4: */
 
 #ifndef __ESGSES_H__
 #define __ESGSES_H__

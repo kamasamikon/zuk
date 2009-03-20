@@ -1,3 +1,4 @@
+/* vim:set et sw=4 sts=4: */
 
 #include <ktypes.h>
 #include <sdlist.h>

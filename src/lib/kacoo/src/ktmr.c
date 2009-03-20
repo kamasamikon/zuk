@@ -1,3 +1,4 @@
+/* vim:set et sw=4 sts=4: */
 #include <ksal.h>
 
 #include <kflg.h>

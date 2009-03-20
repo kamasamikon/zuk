@@ -1,14 +1,4 @@
-/* zpipe.c: example of proper use of zlib's inflate() and deflate()
-   Not copyrighted -- provided to the public domain
-   Version 1.2  9 November 2004  Mark Adler */
-
-/* Version history:
-   1.0  30 Oct 2004  First version
-   1.1   8 Nov 2004  Add void casting for unused return values
-                     Use switch statement for inflate() return values
-   1.2   9 Nov 2004  Add assertions to document zlib guarantees
-   1.3   6 Apr 2005  Remove incorrect assertion in inf()
- */
+/* vim:set et sw=4 sts=4: */
 
 #include <stdio.h>
 #include <string.h>
@@ -17,12 +7,6 @@
 
 #define CHUNK 16384
 
-/* Compress from file source to file dest until EOF on source.
-   def() returns Z_OK on success, Z_MEM_ERROR if memory could not be
-   allocated for processing, Z_STREAM_ERROR if an invalid compression
-   level is supplied, Z_VERSION_ERROR if the version of zlib.h and the
-   version of the library linked do not match, or Z_ERRNO if there is
-   an error reading or writing the files. */
 int def(FILE *source, FILE *dest, int level)
 {
     int ret, flush;
@@ -73,12 +57,6 @@ int def(FILE *source, FILE *dest, int level)
     return Z_OK;
 }
 
-/* Decompress from file source to file dest until stream ends or EOF.
-   inf() returns Z_OK on success, Z_MEM_ERROR if memory could not be
-   allocated for processing, Z_DATA_ERROR if the deflate data is
-   invalid or incomplete, Z_VERSION_ERROR if the version of zlib.h and
-   the version of the library linked do not match, or Z_ERRNO if there
-   is an error reading or writing the files. */
 int inf(FILE *source, FILE *dest)
 {
     int ret;
@@ -192,3 +170,4 @@ int main(int argc, char **argv)
         return 1;
     }
 }
+

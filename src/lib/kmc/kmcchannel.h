@@ -1,3 +1,4 @@
+/* vim:set et sw=4 sts=4: */
 #ifndef KMCCHANNEL_H_
 #define KMCCHANNEL_H_
 

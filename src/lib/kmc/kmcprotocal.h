@@ -1,3 +1,4 @@
+/* vim:set et sw=4 sts=4: */
 #ifndef KMCPROTOCAL_H_
 #define KMCPROTOCAL_H_
 

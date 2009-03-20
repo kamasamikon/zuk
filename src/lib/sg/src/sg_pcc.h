@@ -1,3 +1,4 @@
+/* vim:set et sw=4 sts=4: */
 
 #ifndef __sg_pcc_H__
 #define __sg_pcc_H__

@@ -1,3 +1,4 @@
+/* vim:set et sw=4 sts=4: */
 /* #include "vld.h" */
 #include <ksal.h>
 #include <stdio.h>

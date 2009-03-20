@@ -1,3 +1,4 @@
+/* vim:set et sw=4 sts=4: */
 #include <locale.h>
 #include <stdio.h>
 #include <string.h>

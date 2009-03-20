@@ -1,3 +1,4 @@
+/* vim:set et sw=4 sts=4: */
 #define DBG_HIDE_CUR_LOG
 
 #include <string.h>

@@ -1,3 +1,4 @@
+/* vim:set et sw=4 sts=4: */
 #ifndef __IPADDR_H__
 #define __IPADDR_H__
 

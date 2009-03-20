@@ -1,3 +1,4 @@
+/* vim:set et sw=4 sts=4: */
 #include "esgfile.h"
 #include "ksupport.h"
 #include <kmem.h>

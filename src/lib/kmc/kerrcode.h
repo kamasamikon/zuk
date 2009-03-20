@@ -1,3 +1,4 @@
+/* vim:set et sw=4 sts=4: */
 #ifndef KERRCODE_H_
 #define KERRCODE_H_
 

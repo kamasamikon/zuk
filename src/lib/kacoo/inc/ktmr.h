@@ -1,3 +1,4 @@
+/* vim:set et sw=4 sts=4: */
 #ifndef __TIMER_H__
 #define __TIMER_H__
 
