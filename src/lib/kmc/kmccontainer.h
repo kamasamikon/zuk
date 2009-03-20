@@ -17,9 +17,6 @@ public:
     KMediaContainer(KIM* im, char* a_name);
     virtual ~KMediaContainer(void);
 
-    virtual void* allocMemory(unsigned int size) { return NULL; }
-    virtual void freeMemory(void *ptr) {}
-
     const char* getName(void) { return name; }
 
     KMediaProtocal* getMediaProtocalFromProtocal(char* protHash);

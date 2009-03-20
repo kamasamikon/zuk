@@ -88,9 +88,6 @@ public:
     KMediaChannel(KMediaDevice* a_parentDevice, char* a_name);
     virtual ~KMediaChannel(void);
 
-    virtual void* allocMemory(kint size) { return knil; }
-    virtual void freeMemory(void *ptr) {}
-
     virtual char* getHash(void) = 0;
     const char* getName(void) { return name; }
 
@@ -110,7 +107,6 @@ public:
     virtual int remove(void) { return EC_NOT_SUPPORT; }
 
 public:
-
     virtual int getChannelInfo(KMC_ChannelInfo * serviceInfo) { return EC_NOT_SUPPORT; }
     virtual int getChannelPreviewInfo(KMC_PREVIEW_TYPE infoType, KMC_PreviewInfo *previewInfo) { return EC_NOT_SUPPORT; }
 
