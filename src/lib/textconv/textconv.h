@@ -1,3 +1,4 @@
+/* vim:set et sw=4 sts=4: */
 #ifndef __TEXT_CONV_H__
 #define __TEXT_CONV_H__
 

@@ -1,3 +1,4 @@
+/* vim:set et sw=4 sts=4: */
 #include <kcfg.h>                           /**< KCFG_ENCCONV_STATIC_BUFFER */
 
 #include <stdio.h>

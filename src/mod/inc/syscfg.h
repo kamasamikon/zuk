@@ -1,3 +1,4 @@
+/* vim:set et sw=4 sts=4: */
 
 #ifndef __SYS_CFG_H__
 #define __SYS_CFG_H__

@@ -1,3 +1,4 @@
+/* vim:set et sw=4 sts=4: */
 #include <syscfg.h>
 #include <setglobals.h>
 
@@ -19,6 +20,29 @@ static kchar *__g_mod_dir = knil;
 
 /////////////////////////////////////////////////////////////////////////////
 // defines
+static void on_about_activate(GtkAction *action, GtkWidget *window)
+{
+    const gchar *authors[] = {
+        "auv <kamasamikon@gmail.com>",
+        NULL
+    };
+
+    const gchar *documentors[] = {
+        "auv <kamasamikon@gmail.com>",
+        NULL
+    };
+
+    gtk_show_about_dialog(GTK_WINDOW(window),
+            "name", "zuk! zuk!",
+            "version", "0.0.1",
+            "copyright", "(C) 1997-2009 DYI",
+            "website", "http://www.zuk.org",
+            "comments", "zuk.",
+            "authors", authors,
+            "documenters", documentors,
+            "title", "About zuk!",
+            NULL);
+}
 
 /////////////////////////////////////////////////////////////////////////////
 // support routines
@@ -62,6 +86,8 @@ static GtkWidget *ui_ui_window_main_menubar_create(KIM *im)
     gtk_menu_shell_append(GTK_MENU_SHELL(helpmenu), contents);
     gtk_menu_shell_append(GTK_MENU_SHELL(helpmenu), about);
 
+    g_signal_connect((gpointer)about, "activate", G_CALLBACK(on_about_activate), NULL);
+
     return menubar;
 }
 
@@ -70,10 +96,10 @@ static GtkWidget *ui_ui_window_main_create(KIM *im)
     GtkWidget *main_win, *button[3], *vbox;
 
     main_win = gtk_window_new(GTK_WINDOW_TOPLEVEL);
-    gtk_window_set_title(GTK_WINDOW(main_win), "zuk! zuk");
+    gtk_window_set_title(GTK_WINDOW(main_win), "zuk! zuk!");
     gtk_widget_set_size_request(GTK_WIDGET(main_win), 320, 240);
 
-    vbox = gtk_vbox_new(TRUE, 1);
+    vbox = gtk_vbox_new(FALSE, 0);
 
     GtkWidget *win_main_menubar = ui_ui_window_main_menubar_create(im);
     kim_addptr(im, "p.ui.ui.window.main.menubar", (kvoid*)win_main_menubar, RF_AUTOSET, knil, knil);
@@ -172,19 +198,19 @@ static GtkWidget *ui_ui_window_opt_create(KIM *im)
     GtkWidget *win_opt, *vbox;
 
     win_opt = gtk_window_new(GTK_WINDOW_TOPLEVEL);
-    gtk_window_set_title(GTK_WINDOW(win_opt), "opt");
+    gtk_window_set_title(GTK_WINDOW(win_opt), "optn");
     gtk_widget_set_size_request(GTK_WIDGET(win_opt), 320, 240);
 
     vbox = gtk_vbox_new(TRUE, 1);
 
     /* add trigger bar */
     GtkWidget *win_opt_trigger = ui_ui_window_opt_trigger_create(im);
-    kim_addptr(im, "p.ui.ui.window.opt.trigger", (kvoid*)win_opt_trigger, RF_AUTOSET, knil, knil);
+    kim_addptr(im, "p.ui.ui.window.optn.trigger", (kvoid*)win_opt_trigger, RF_AUTOSET, knil, knil);
     gtk_box_pack_start(GTK_BOX(vbox), win_opt_trigger, FALSE, FALSE, 0);
 
     /* add content bar */
     GtkWidget *win_opt_content = ui_ui_window_opt_content_create(im);
-    kim_addptr(im, "p.ui.ui.window.opt.content", (kvoid*)win_opt_content, RF_AUTOSET, knil, knil);
+    kim_addptr(im, "p.ui.ui.window.optn.content", (kvoid*)win_opt_content, RF_AUTOSET, knil, knil);
     gtk_box_pack_start(GTK_BOX(vbox), win_opt_content, FALSE, FALSE, 0);
 
     gtk_container_add(GTK_CONTAINER(win_opt), vbox);
@@ -253,9 +279,9 @@ static GtkWidget *ui_ui_window_media_create(KIM *im)
  *
  * main window.             p.ui.ui.window.main
  *      menu bar            p.ui.ui.window.main.menubar
- * opt window.              p.ui.ui.window.opt
- *      trigger/tool bar    p.ui.ui.window.opt.trigger
- *      content             p.ui.ui.window.opt.content
+ * optn window.             p.ui.ui.window.optn
+ *      trigger/tool bar    p.ui.ui.window.optn.trigger
+ *      content             p.ui.ui.window.optn.content
  * info window.             p.ui.ui.window.info
  *      trigger/tool bar    p.ui.ui.window.info.trigger
  *      content             p.ui.ui.window.info.content
@@ -274,7 +300,7 @@ static void ui_create_ui(KIM *im)
     kim_addptr(im, "p.ui.ui.window.media", (kvoid*)win_media, RF_AUTOSET, knil, knil);
 
     GtkWidget *win_opt = ui_ui_window_opt_create(im);
-    kim_addptr(im, "p.ui.ui.window.opt", (kvoid*)win_opt, RF_AUTOSET, knil, knil);
+    kim_addptr(im, "p.ui.ui.window.optn", (kvoid*)win_opt, RF_AUTOSET, knil, knil);
 }
 
 /////////////////////////////////////////////////////////////////////////////

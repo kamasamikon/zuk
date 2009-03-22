@@ -16,8 +16,8 @@ LIBS += -lkacoo -lxmldoc
 
 DESTDIR = ../../../output
 
-INCLUDEPATH += . ../kacoo/inc ../kacoo/lib/inc ../xmldoc
-DEPENDPATH  += . ../kacoo/inc ../kacoo/lib/inc ../xmldoc 
+INCLUDEPATH += . ../kacoo/inc ../kacoo/lib/xmldoc
+DEPENDPATH  += . ../kacoo/inc ../kacoo/lib/xmldoc 
 
 # Input
 SOURCES += kmm.c

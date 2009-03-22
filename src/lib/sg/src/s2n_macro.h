@@ -1,3 +1,4 @@
+/* vim:set et sw=4 sts=4: */
 
 #ifndef __S2N_MACRO_H__
 #define __S2N_MACRO_H__

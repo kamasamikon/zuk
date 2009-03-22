@@ -1,3 +1,4 @@
+/* vim:set et sw=4 sts=4: */
 #ifndef  __KMC_DEFINES_H__
 #define  __KMC_DEFINES_H__
 
@@ -87,6 +88,8 @@ typedef struct _KMC_CHANNEL_ATTRIBUTE_INFO_
 
 typedef struct _KMC_ChannelInfo_
 {
+    kchar hash[33];                         /*  hash for KMediaChannel */
+
     KMC_SERVICE_BASE_INFO serviceBaseInfo;      //Service基本数据
     kchar           *description;           //指向频道描述的指针
     kchar           *parentRating;          //指向频道内容分类等级(字符串)的指针

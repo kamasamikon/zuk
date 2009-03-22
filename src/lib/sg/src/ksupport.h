@@ -1,3 +1,4 @@
+/* vim:set et sw=4 sts=4: */
 #ifndef __KSUPPORT_H__
 #define __KSUPPORT_H__
 

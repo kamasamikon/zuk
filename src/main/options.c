@@ -1,3 +1,4 @@
+/* vim:set et sw=4 sts=4: */
 #include <stdio.h>
 
 #include <kini.h>
@@ -8,6 +9,7 @@
 static zuk_opt zukopts[] =
 {
     { "help", 'n', "Show help the quit", knil },
+    { "log-level", 'i', "log level", knil },
     { "skip-update", 'b', "[y/*n]: skip update install when boot", "0" },
     { "fullscreen", 'b', "[y/*n]: auto fullscreen when boot", "0" },
     { "maximize", 'b', "[y/*n]: auto fullscreen when boot", "0" },

@@ -1,3 +1,4 @@
+/* vim:set et sw=4 sts=4: */
 #ifndef  _DAV_FILE_RECEIVE_API_H_
 #define  _DAV_FILE_RECEIVE_API_H_
 

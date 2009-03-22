@@ -1,3 +1,4 @@
+/* vim:set et sw=4 sts=4: */
 #ifndef __HGET_H__
 #define __HGET_H__
 

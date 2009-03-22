@@ -1,3 +1,4 @@
+/* vim:set et sw=4 sts=4: */
 #include "ivisa_plfm.h"
 #include <stdio.h>
 #include <time.h>

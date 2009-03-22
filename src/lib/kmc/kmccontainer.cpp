@@ -1,49 +1,42 @@
+/* vim:set et sw=4 sts=4: */
 #include <kmem.h>
 #include <kstr.h>
 #include <kdbg.h>
 
 #include "kmccontainer.h"
 
-// XXX 参数是否有问题？
-//
-// 只负责初始化本类实例，协议加载由协议模块完成
 KMediaContainer::KMediaContainer(KIM* im, char* a_name)
 {
     this->im = im;
     init_dlist_head(&protocalHeader);
     name = kstr_dup(a_name);
 
-    /*
-     * 以下事件随时都可能发生
-     */
-
-    /* 切换动作已经开始 */
+    /* channel switch has just started */
     kim_addint(im, "i.kmc.evt.channel.switchStart", 0, 0, NULL, "转到一个新的频道, ua = channelHash");
-    /* 切换动作已经结束 */
+    /* channel switch has just end */
     kim_addint(im, "i.kmc.evt.channel.switchEnd", 0, 0, NULL, "新频道开始播放, ua = channelHash");
-    // var :channelHash
 
     kim_addint(im, "i.kmc.evt.protocol.new", 0, 0, NULL, "创建新的协议，并已经添加到系统中, ua = protocolHash");
     kim_addint(im, "i.kmc.evt.protocol.del", 0, 0, NULL, "将要删除协议，该事件后删除, ua = protocolHash");
-    // var :protHash
 
     kim_addint(im, "i.kmc.evt.device.new", 0, 0, NULL, "创建新的设备，并已经添加到系统中, ua = deviceHash");
     kim_addint(im, "i.kmc.evt.device.froze", 0, 0, NULL, "该设备已经冻结，, ua = deviceHash, (ub = ture) == 冻结, (ub = false) == 解冻");
     kim_addint(im, "i.kmc.evt.device.del", 0, 0, NULL, "将要删除设备, 该事件后删除, ua = deviceHash");
-    // var :devHash
+
+    kim_addint(im, "i.kmc.evt.device.searchStart", 0, 0, NULL, "对某一协议扫描设备已经开始, ua = protocolHash");
+    kim_addint(im, "i.kmc.evt.device.searchStep", 0, 0, NULL, "正在扫描, ua = protocolHash, ub = percent");
+    kim_addint(im, "i.kmc.evt.device.searchEnd", 0, 0, NULL, "对某一协议扫描设备完成已经完成, ua = protocolHash");
 
     kim_addint(im, "i.kmc.evt.channel.new", 0, 0, NULL, "创建新的频道，并已经添加到系统中, ua = channelHash ");
     kim_addint(im, "i.kmc.evt.channel.froze", 0, 0, NULL, "该频道已经冻结，, ua = channelHash,  (ub = ture) == 冻结, (ub = false) == 解冻");
     kim_addint(im, "i.kmc.evt.channel.chg", 0, 0, NULL, "频道的数据已经更新, ua = channelHash ");
     kim_addint(im, "i.kmc.evt.channel.del", 0, 0, NULL, "将要删除频道, 该事件后删除, ua = channelHash ");
-    // var :channelHash
 
     kim_addint(im, "i.kmc.evt.channel.searchStart", 0, 0, NULL, "对某一设备扫描频道已经开始, ua = deviceHash");
     kim_addint(im, "i.kmc.evt.channel.searchStep", 0, 0, NULL, "正在扫描, ua = deviceHash, ub = percent");
     kim_addint(im, "i.kmc.evt.channel.searchEnd", 0, 0, NULL, "对某一设备扫描频道完成已经完成, ua = deviceHash");
 
     // about record
-    // var :channelHash
     kim_addint(im, "i.kmc.evt.channel.RecordStart", 0, 0, NULL, "开始设置录制频道, ua = channelHash");
     kim_addint(im, "i.kmc.evt.channel.RecordTime", 0, 0, NULL, "可录制节目时间长度更新, ua = channelHash");
     kim_addint(im, "i.kmc.evt.channel.RecordEnd", 0, 0, NULL, "开始录制或失败, ua = channelHash");
@@ -100,6 +93,9 @@ KMediaContainer::~KMediaContainer(void)
     kim_delint(im, "i.kmc.evt.device.new");
     kim_delint(im, "i.kmc.evt.device.froze");
     kim_delint(im, "i.kmc.evt.device.del");
+    kim_delint(im, "i.kmc.evt.device.searchStart");
+    kim_delint(im, "i.kmc.evt.device.searchStep");
+    kim_delint(im, "i.kmc.evt.device.searchEnd");
     kim_delint(im, "i.kmc.evt.channel.new");
     kim_delint(im, "i.kmc.evt.channel.froze");
     kim_delint(im, "i.kmc.evt.channel.chg");
