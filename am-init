@@ -1,0 +1,9 @@
+touch NEWS
+touch README
+touch AUTHORS
+touch ChangeLog
+
+aclocal
+utoconf
+libtoolize --force --automake --copy
+automake --copy --add-missing --gnu
