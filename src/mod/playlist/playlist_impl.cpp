@@ -264,7 +264,7 @@ int IMWCH(plwch_deviceFroze)
             chlist = dev->getMediaChannelList();
             if (!chlist || !chlist[0]) {
                 kmsg_post(__g_worker_thread, KMPL_SCAN, kstr_dup(hash), (kvoid*)ktrue, knil, knil);
-                dev->freeMemory(chlist);
+                kmem_free(chlist);
             }
         }
     }
@@ -324,12 +324,12 @@ static int IMWCH(plwch_mod_loaded)
             chlist = dev->getMediaChannelList();
             if (!chlist || !chlist[0]) {
                 kmsg_post(__g_worker_thread, KMPL_SCAN, kstr_dup(devlist[i]), (kvoid*)ktrue, knil, knil);
-                dev->freeMemory(chlist);
+                kmem_free(chlist);
             }
         }
 
     if (devlist)
-        __g_mc->freeMemory(devlist);
+        kmem_free(devlist);
 
     return 0;
 }
