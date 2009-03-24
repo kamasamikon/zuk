@@ -4,6 +4,6 @@ touch AUTHORS
 touch ChangeLog
 
 aclocal
-utoconf
+autoconf
 libtoolize --force --automake --copy
 automake --copy --add-missing --gnu
