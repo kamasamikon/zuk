@@ -13,3 +13,9 @@ GTK_CFLAGS=`pkg-config --cflags gtk+-2.0`
 libmclocal_la_LDFLAGS = ${GST_LIBS} ${GTK_LIBS}
 libmclocal_la_CFLAGS = ${GST_CFLAGS} ${GTK_CFLAGS}
 
+
+libmclocal_la_CFLAGS += -Wall 
+libmclocal_la_CFLAGS += -I../kacoo/inc -I../kacoo/lib/inc -I../kacoo/lib/xmldoc
+libmclocal_la_CFLAGS += -D__UNIX__
+
+

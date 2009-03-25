@@ -1,0 +1,3 @@
+git config color.branch auto
+git config color.diff auto
+git config color.status auto
