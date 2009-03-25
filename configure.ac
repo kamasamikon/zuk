@@ -10,23 +10,7 @@ AC_CONFIG_HEADER([config.h])
 # Checks for programs.
 AC_PROG_CXX
 AC_PROG_CC
-AC_PROG_INSTALL
-AC_PROG_LN_S
 AC_PROG_RANLIB
-
-# Checks for libraries.
-# FIXME: Replace `main' with a function in `-lexpat':
-AC_CHECK_LIB([expat], [main])
-# FIXME: Replace `main' with a function in `-lkacoo':
-AC_CHECK_LIB([kacoo], [main])
-# FIXME: Replace `main' with a function in `-lkmc':
-AC_CHECK_LIB([kmc], [main])
-# FIXME: Replace `main' with a function in `-lkmm':
-AC_CHECK_LIB([kmm], [main])
-# FIXME: Replace `main' with a function in `-ltextconv':
-AC_CHECK_LIB([textconv], [main])
-# FIXME: Replace `main' with a function in `-lxmldoc':
-AC_CHECK_LIB([xmldoc], [main])
 
 # Checks for header files.
 AC_HEADER_DIRENT
@@ -62,6 +46,7 @@ AC_CONFIG_FILES([Makefile
                  src/lib/textconv/Makefile
                  src/main/Makefile
                  src/mod/Makefile
+                 src/mod/local/Makefile
                  src/mod/playlist/Makefile
                  src/mod/ui/Makefile])
 AC_OUTPUT

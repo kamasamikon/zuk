@@ -1,4 +1,4 @@
-bin_LIBRARIES = zuk
+bin_PROGRAMS = zuk
 zuk_SOURCES = options.c sysdeps.c zuk_fw.cpp zuk_main.cpp
 
 zuk_LDFLAGS = -lrt 

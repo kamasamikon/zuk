@@ -1,5 +1,5 @@
 noinst_LIBRARIES = libsg.a
-libkmm_a_SOURCES =  \
+libsg_a_SOURCES =  \
 					src/base64.c \
 					src/http_get.c \
 					src/ipaddr.c \
@@ -40,7 +40,7 @@ libkmm_a_SOURCES =  \
 					src/sg_ses.c \
 					src/sg_zbd.c \
 					src/sg_zbd_x2s.c \
-					src/ulapi.c \
+					src/ulapi.c
 
-libkmm_a_LDFLAGS = -lrt 
-libkmm_a_CFLAGS = -Wall
+libsg_a_CFLAGS = -Wall
+
