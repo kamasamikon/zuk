@@ -3,8 +3,9 @@
 #define __KMC_LOCAL_CHANNEL_H__
 
 #include <kmccontainer.h>
+#include "local-device.h"
 
-class KMC_LocalChannel
+class KMC_LocalChannel : public KMediaChannel
 {
 public:
     KMC_LocalChannel(KMC_LocalDevice* a_parentDevice, char* a_name);
@@ -12,8 +13,8 @@ public:
 
     virtual char* getHash(void) = 0;
 
-    virtual kbool start(void) { kuint of = flg; kflg_set(flg, MC_CH_FLG_STARTED); return kflg_chk(of, MC_CH_FLG_STARTED) ? true : false; }
-    virtual kbool stop(void) { kuint of = flg; kflg_clr(flg, MC_CH_FLG_STARTED); return kflg_chk(of, MC_CH_FLG_STARTED) ? true : false; }
+    virtual kbool start(void);
+    virtual kbool stop(void);
 
     virtual kbool getCapability(KMC_CAP cap) { return kfalse; }
 

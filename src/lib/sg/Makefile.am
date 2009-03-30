@@ -43,4 +43,5 @@ libsg_a_SOURCES =  \
 					src/ulapi.c
 
 libsg_a_CFLAGS = -Wall
+libsg_a_CFLAGS += -I../kacoo/inc
 

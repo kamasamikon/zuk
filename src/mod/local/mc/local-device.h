@@ -3,8 +3,9 @@
 #define __KMC_LOCAL_DEVICE_H__
 
 #include <kmccontainer.h>
+#include "local-protocol.h"
 
-class KMC_LocalDevice
+class KMC_LocalDevice : public KMediaDevice
 {
 public:
     KMC_LocalDevice(KMC_LocalProtocol* a_parentProtocal, char* a_name);
@@ -12,8 +13,8 @@ public:
 
     virtual char* getHash(void) = 0;
 
-    virtual kbool start(void) { kuint of = flg; kflg_set(flg, MC_DEV_FLG_STARTED); return kflg_chk(of, MC_DEV_FLG_STARTED) ? true : false; }
-    virtual kbool stop(void) { kuint of = flg; kflg_clr(flg, MC_DEV_FLG_STARTED); return kflg_chk(of, MC_DEV_FLG_STARTED) ? true : false; }
+    virtual kbool start(void);
+    virtual kbool stop(void);
 
     virtual int remove(void) { return EC_NOT_SUPPORT; }
 
