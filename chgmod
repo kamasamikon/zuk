@@ -1,0 +1,1 @@
+git diff --summary --name-only | xargs chmod 644
