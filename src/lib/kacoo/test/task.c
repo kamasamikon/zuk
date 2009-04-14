@@ -64,13 +64,13 @@ int main()
     kint ch;
 
     // release
-    kbean tsk_rel = ktsk_new(knil, knil, 1, 2, 3, "tsk_rel");
+    kbean tsk_rel = ktsk_new(knil, knil, 0, 0, 1, 2, 3, "tsk_rel");
 
     // get
-    kbean tsk_get1 = ktsk_new(knil, knil, 1, 2, 3, "tsk_get1");
-    kbean tsk_get2 = ktsk_new(knil, knil, 1, 2, 3, "tsk_get2");
-    kbean tsk_get3 = ktsk_new(knil, knil, 1, 2, 3, "tsk_get3");
-    kbean tsk_get4 = ktsk_new(knil, knil, 1, 2, 3, "tsk_get4");
+    kbean tsk_get1 = ktsk_new(knil, knil, 0, 0, 1, 2, 3, "tsk_get1");
+    kbean tsk_get2 = ktsk_new(knil, knil, 0, 0, 1, 2, 3, "tsk_get2");
+    kbean tsk_get3 = ktsk_new(knil, knil, 0, 0, 1, 2, 3, "tsk_get3");
+    kbean tsk_get4 = ktsk_new(knil, knil, 0, 0, 1, 2, 3, "tsk_get4");
 
     sema = ksyn_sem_new(0);
 
@@ -106,7 +106,7 @@ int main2()
     kchar cmd[2048];
     kchar opt[2048];
 
-    kbean tsk = ktsk_new(knil, knil, 1, 2, 3, 4);
+    kbean tsk = ktsk_new(knil, knil, 0, 0, 1, 2, 3, 4);
     ktmr_init();
     kmsg_slot_set(tsk, 0x12345678, OnMsg_12345678);
     kmsg_slot_set(tsk, 0x34567890, OnMsg_34567890);

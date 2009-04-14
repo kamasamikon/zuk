@@ -261,7 +261,7 @@ static kbean __g_bdsg_tsk = knil;
 kint sg_bdsg_new(kvoid)
 {
     hg_init(4);
-    __g_bdsg_tsk = ktsk_new("bdsg", knil, knil, knil, knil, knil);
+    __g_bdsg_tsk = ktsk_new("bdsg", knil, 0, 0, knil, knil, knil, knil);
     kmsg_slot_set(__g_bdsg_tsk, KMBDSG_DATA, om_bdsg_data_received);
     kmsg_slot_set(__g_bdsg_tsk, KMSG_TIMER, om_bdsg_data_timeout);
     return 0;
