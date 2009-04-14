@@ -23,7 +23,8 @@
 int main(int argc, char *argv[])
 {
     int retval;
-    GtkWidget *window;
+
+    kdbg_init(DBG_LOG | DBG_ERR | DBG_FAT | DBG_TIME);
 
     /* Initialize GThread before calling any Glib or GTK+ functions. */
     g_thread_init(NULL);
