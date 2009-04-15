@@ -1,12 +1,11 @@
-
-lib_LTLIBRARIES = libplaylist.la
+pkglib_LTLIBRARIES = libplaylist.la
 
 libplaylist_la_SOURCES = playlist_impl.cpp
 
 GTK_LIBS=`pkg-config --libs gtk+-2.0`
 GTK_CFLAGS=`pkg-config --cflags gtk+-2.0`
 
-libplaylist_la_LDFLAGS = ${GTK_LIBS}
+libplaylist_la_LDFLAGS = ${GTK_LIBS} -module
 libplaylist_la_CFLAGS = ${GTK_CFLAGS}
 
 libplaylist_la_CFLAGS += -Wall 

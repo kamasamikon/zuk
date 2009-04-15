@@ -52,7 +52,7 @@ extern "C" EXPORT_FUN void mm_hey(KIM *im)
     kstr_subs(iniPath, '\\', kvfs_path_sep());
 
     // worker thread
-    __g_worker_thread = ktsk_new("local", knil, knil, knil, knil, knil);
+    __g_worker_thread = ktsk_new("local", knil, 0, 0, knil, knil, knil, knil);
 }
 
 extern "C" EXPORT_FUN void mm_bye(KIM *im)

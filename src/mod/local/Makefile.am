@@ -1,4 +1,4 @@
-lib_LTLIBRARIES = libmclocal.la
+pkglib_LTLIBRARIES = libmclocal.la
 
 libmclocal_la_SOURCES = \
 						local_fw.cpp \
@@ -10,7 +10,7 @@ GST_CFLAGS=`pkg-config --cflags gstreamer-0.10`
 GTK_LIBS=`pkg-config --libs gtk+-2.0`
 GTK_CFLAGS=`pkg-config --cflags gtk+-2.0`
 
-libmclocal_la_LDFLAGS = ${GST_LIBS} ${GTK_LIBS}
+libmclocal_la_LDFLAGS = ${GST_LIBS} ${GTK_LIBS} -module
 libmclocal_la_CFLAGS = ${GST_CFLAGS} ${GTK_CFLAGS}
 
 

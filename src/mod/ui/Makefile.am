@@ -1,12 +1,11 @@
-
-lib_LTLIBRARIES = libui.la
+pkglib_LTLIBRARIES = libui.la
 
 libui_la_SOURCES = ui_impl.cpp
 
 GTK_LIBS=`pkg-config --libs gtk+-2.0`
 GTK_CFLAGS=`pkg-config --cflags gtk+-2.0`
 
-libui_la_LDFLAGS = ${GTK_LIBS}
+libui_la_LDFLAGS = ${GTK_LIBS} -module
 libui_la_CFLAGS = ${GTK_CFLAGS}
 libui_la_CPPFLAGS = ${GTK_CFLAGS}
 

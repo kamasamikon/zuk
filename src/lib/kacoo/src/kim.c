@@ -13,8 +13,6 @@
 #include <kmem.h>
 #include <kstr.h>
 
-KIM *im = knil;
-
 static KRtiRec* addrec(KIM *im, const kchar *id, kuchar type, kvoid *def, kint flg, ATPROC at, const kchar *desc);
 static kint delrec(KIM *im, KRtiRec *rec);
 static kint setrec(KIM *im, KRtiRec *rec, kvoid *val, kvoid **ua, kvoid **ub);
@@ -33,9 +31,8 @@ KRtiRec* kim_chkrec(KIM *im, const kchar *id)
     entry = im->rechdr.next;
     while (entry != &im->rechdr) {
         val = FIELD_TO_STRUCTURE(entry, KRtiRec, entry);
-        if (0 == strcmp(val->id, id)) {
+        if (0 == strcmp(val->id, id))
             return val;
-        }
         entry = entry->next;
     }
     return knil;
@@ -50,9 +47,8 @@ kint kim_setflg(KIM *im, const kchar *id, kuint flg)
     if (rec) {
         rec->flg |= flg;
         return 0;
-    } else {
+    } else
         kerror(("KIM: kim_setflg: not found record : %s\n", id));
-    }
     return -1;
 }
 kint kim_clrflg(KIM *im, const kchar *id, kuint flg)
@@ -61,9 +57,8 @@ kint kim_clrflg(KIM *im, const kchar *id, kuint flg)
     if (rec) {
         rec->flg &= ~flg;
         return 0;
-    } else {
+    } else
         kerror(("KIM: kim_clrflg: not found record : %s\n", id));
-    }
     return -1;
 }
 
@@ -79,9 +74,8 @@ static KRtiRec* addrec(KIM *im, const kchar *id, kuchar type, kvoid *def, kint f
     ksyn_lck_get(im->lck);
 
     rec = kim_chkrec(im, id);
-    if (rec) {
+    if (rec)
         delrec(im, rec);
-    }
 
     rec = (KRtiRec*)kmem_alloz(sizeof(KRtiRec));
     if (rec) {
@@ -98,9 +92,8 @@ static KRtiRec* addrec(KIM *im, const kchar *id, kuchar type, kvoid *def, kint f
 
         switch (type) {
             case RT_STR:
-                if (def) {
+                if (def)
                     rec->var.def.sv = kstr_dup((kchar*)def);
-                }
                 break;
             case RT_PTR:
                 rec->var.def.pv = (kvoid*)def;
@@ -137,9 +130,8 @@ static KRtiRec* addrec(KIM *im, const kchar *id, kuchar type, kvoid *def, kint f
             }
         }
 
-        if (RF_AUTOSET & flg) {
+        if (RF_AUTOSET & flg)
             setrec(im, rec, (kvoid*)def, knil, knil);
-        }
     }
 
     ksyn_lck_rel(im->lck);
@@ -216,9 +208,8 @@ kint kim_delstr(KIM *im, const kchar *id)
     if (rec) {
         assert(RT_STR == rec->var.type);
         return delrec(im, rec);
-    } else {
+    } else
         kerror(("KIM: kim_delstr: not found record : %s\n", id));
-    }
     return -1;
 }
 kint kim_delptr(KIM *im, const kchar *id)
@@ -227,9 +218,8 @@ kint kim_delptr(KIM *im, const kchar *id)
     if (rec) {
         assert(RT_PTR == rec->var.type);
         return delrec(im, rec);
-    } else {
+    } else
         kerror(("KIM: kim_delptr: not found record : %s\n", id));
-    }
     return -1;
 }
 kint kim_delint(KIM *im, const kchar *id)
@@ -238,9 +228,8 @@ kint kim_delint(KIM *im, const kchar *id)
     if (rec) {
         assert(RT_INT == rec->var.type);
         return delrec(im, rec);
-    } else {
+    } else
         kerror(("KIM: kim_delint: not found record : %s\n", id));
-    }
     return -1;
 }
 
@@ -269,9 +258,8 @@ static kint setrec(KIM *im, KRtiRec *rec, kvoid *val, kvoid **ua, kvoid **ub)
     entry = rec->bwchhdr.next;
     while (entry != &rec->bwchhdr) {
         watch = FIELD_TO_STRUCTURE(entry, KRtiWatch, abwchentry);
-        if (watch->wch) {
+        if (watch->wch)
             watch->wch(im, rec, watch->ua, watch->ub, WT_UP);
-        }
         entry = entry->next;
     }
 
@@ -284,11 +272,10 @@ static kint setrec(KIM *im, KRtiRec *rec, kvoid *val, kvoid **ua, kvoid **ub)
     switch (rec->var.type) {
         case RT_STR:
             kmem_free_s(rec->var.use.sv);
-            if (val) {
+            if (val)
                 rec->var.use.sv = kstr_dup((kchar*)val);
-            } else {
+            else
                 rec->var.use.sv = knil;
-            }
             break;
         case RT_PTR:
             rec->var.use.pv = (kvoid*)val;
@@ -304,9 +291,8 @@ static kint setrec(KIM *im, KRtiRec *rec, kvoid *val, kvoid **ua, kvoid **ub)
     entry = rec->awchhdr.next;
     while (entry != &rec->awchhdr) {
         watch = FIELD_TO_STRUCTURE(entry, KRtiWatch, abwchentry);
-        if (watch->wch) {
+        if (watch->wch)
             watch->wch(im, rec, watch->ua, watch->ub, WT_LO);
-        }
         entry = entry->next;
     }
 
@@ -319,9 +305,8 @@ kint kim_setstr(KIM *im, const kchar *id, kchar *val, kvoid **ua, kvoid **ub)
     if (rec) {
         assert(RT_STR == rec->var.type);
         return setrec(im, rec, (kvoid*)val, ua, ub);
-    } else {
+    } else
         kerror(("KIM: kim_setstr: not found record : %s\n", id));
-    }
     return -1;
 }
 kint kim_setptr(KIM *im, const kchar *id, kvoid *val, kvoid **ua, kvoid **ub)
@@ -330,9 +315,8 @@ kint kim_setptr(KIM *im, const kchar *id, kvoid *val, kvoid **ua, kvoid **ub)
     if (rec) {
         assert(RT_PTR == rec->var.type);
         return setrec(im, rec, (kvoid*)val, ua, ub);
-    } else {
+    } else
         kerror(("KIM: kim_setptr: not found record : %s\n", id));
-    }
     return -1;
 }
 kint kim_setint(KIM *im, const kchar *id, kint val, kvoid **ua, kvoid **ub)
@@ -341,9 +325,8 @@ kint kim_setint(KIM *im, const kchar *id, kint val, kvoid **ua, kvoid **ub)
     if (rec) {
         assert(RT_INT == rec->var.type);
         return setrec(im, rec, (kvoid*)val, ua, ub);
-    } else {
+    } else
         kerror(("KIM: kim_setint: not found record : %s\n", id));
-    }
     return -1;
 }
 
@@ -382,16 +365,13 @@ kchar* kim_getstr(KIM *im, const kchar *id, kint *err)
     kint ec = -1;
     kvoid *ret = knil;
     KRtiRec *rec = kim_chkrec(im, id);
-    if (rec) {
-        if (RT_STR == rec->var.type) {
+    if (rec)
+        if (RT_STR == rec->var.type)
             ret = getrec(im, rec, &ec);
-        }
-    } else {
-        kerror(("KIM: kim_getstr: not found record : %s\n", id));
-    }
-    if (err) {
+        else
+            kerror(("KIM: kim_getstr: not found record : %s\n", id));
+    if (err)
         *err = ec;
-    }
     return (kchar*)ret;
 }
 kvoid* kim_getptr(KIM *im, const kchar *id, kint *err)
@@ -399,16 +379,13 @@ kvoid* kim_getptr(KIM *im, const kchar *id, kint *err)
     kint ec = -1;
     kvoid *ret = knil;
     KRtiRec *rec = kim_chkrec(im, id);
-    if (rec) {
-        if (RT_PTR == rec->var.type) {
+    if (rec)
+        if (RT_PTR == rec->var.type)
             ret = getrec(im, rec, &ec);
-        }
-    } else {
-        kerror(("KIM: kim_getptr: not found record : %s\n", id));
-    }
-    if (err) {
+        else
+            kerror(("KIM: kim_getptr: not found record : %s\n", id));
+    if (err)
         *err = ec;
-    }
     return (kvoid*)ret;
 }
 kint kim_getint(KIM *im, const kchar *id, kint *err)
@@ -416,16 +393,13 @@ kint kim_getint(KIM *im, const kchar *id, kint *err)
     kint ec = -1;
     kvoid *ret = knil;
     KRtiRec *rec = kim_chkrec(im, id);
-    if (rec) {
-        if (RT_INT == rec->var.type) {
+    if (rec)
+        if (RT_INT == rec->var.type)
             ret = getrec(im, rec, &ec);
-        }
-    } else {
-        kerror(("KIM: kim_getint: not found record : %s\n", id));
-    }
-    if (err) {
+        else
+            kerror(("KIM: kim_getint: not found record : %s\n", id));
+    if (err)
         *err = ec;
-    }
     return (kint)ret;
 }
 
@@ -448,21 +422,19 @@ static kbean addwch(KIM *im, const kchar *id, WCHPROC watch, kuchar type, kvoid 
         wch->ub = ub;
 
         if (rec) {
-            if (WT_LO == type) {
+            if (WT_LO == type)
                 insert_dlist_tail_entry(&rec->awchhdr, &wch->abwchentry);
-            } else {
+            else
                 insert_dlist_tail_entry(&rec->bwchhdr, &wch->abwchentry);
-            }
         } else {
             /*
              * some watch may be added before the im item added
              * so, pending these watch till the im item add
              */
-            if (WT_LO == type) {
+            if (WT_LO == type)
                 insert_dlist_tail_entry(&im->nywch.ahdr, &wch->abwchentry);
-            } else {
+            else
                 insert_dlist_tail_entry(&im->nywch.bhdr, &wch->abwchentry);
-            }
         }
     }
 
@@ -515,9 +487,8 @@ kint kim_delbwch(KIM *im, kbean watch)
  */
 KIM* kim_new(KIM *im)
 {
-    if (!im) {
+    if (!im)
         im = (KIM*)kmem_alloc(sizeof(KIM));
-    }
     if (im) {
         init_dlist_head(&im->rechdr);
         init_dlist_head(&im->nywch.bhdr);

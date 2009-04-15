@@ -286,7 +286,7 @@ kint hg_init(kint a_tskcnt)
         s->socket = -1;
 
         sprintf(name, "hg_tsk_%d", i);
-        __g_hg_tsk[i] = ktsk_new(name, knil, s, knil, knil, knil);
+        __g_hg_tsk[i] = ktsk_new(name, knil, 0, 0, s, knil, knil, knil);
         kmsg_slot_set(__g_hg_tsk[i], KMSG_HG_WAKEUP, om_hg_wakeup);
     }
     return 0;
