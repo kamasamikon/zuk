@@ -16,10 +16,10 @@ zuk_bin_LDFLAGS += -lrt -lkacoo -lkmm -lkmc -ltextconv
 zuk_bin_CFLAGS = ${GST_CFLAGS} ${GTK_CFLAGS}
 zuk_bin_CPPFLAGS = ${GST_CFLAGS} ${GTK_CFLAGS}
 
-zuk_bin_CFLAGS += -Wall
+zuk_bin_CFLAGS += -Wall -g
 zuk_bin_CFLAGS += -I../lib/kacoo/inc
 
-zuk_bin_CPPFLAGS += -Wall
+zuk_bin_CPPFLAGS += -Wall -g
 zuk_bin_CPPFLAGS += -I../lib/kacoo/inc
 
 

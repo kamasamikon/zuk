@@ -12,13 +12,13 @@ libui_la_LDFLAGS = ${GTK_LIBS} -module
 libui_la_CFLAGS = ${GTK_CFLAGS}
 libui_la_CPPFLAGS = ${GTK_CFLAGS}
 
-libui_la_CFLAGS += -Wall 
+libui_la_CFLAGS += -Wall -g
 libui_la_CFLAGS += -I../inc
 libui_la_CFLAGS += -I../../lib/kacoo/inc -I../../lib/kacoo/lib/inc -I../../lib/kacoo/lib/xmldoc
 libui_la_CFLAGS += -I../../lib/kmm -I../../lib/kmc -I../../lib/textconv
 libui_la_CFLAGS += -D__UNIX__
 
-libui_la_CPPFLAGS += -Wall 
+libui_la_CPPFLAGS += -Wall -g
 libui_la_CPPFLAGS += -I../inc
 libui_la_CPPFLAGS += -I../../lib/kacoo/inc -I../../lib/kacoo/lib/inc -I../../lib/kacoo/lib/xmldoc
 libui_la_CPPFLAGS += -I../../lib/kmm -I../../lib/kmc -I../../lib/textconv

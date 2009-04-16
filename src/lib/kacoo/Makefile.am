@@ -7,6 +7,6 @@ libkacoo_la_SOURCES = \
 					 src/kdbg.c src/kim.c src/kini.c src/kmem.c src/ksal.c \
 					 src/kstr.c src/ksyn.c src/ktmr.c src/ktsk.c src/sdlist.c
 
-libkacoo_la_CFLAGS = -Wall
+libkacoo_la_CFLAGS = -Wall -g
 libkacoo_la_CFLAGS += -I./inc -I./lib/base64 -I./lib/hget -I./lib/inc -I./lib/md5sum -I./lib/xmldoc -I./lib/ziplib
 libkacoo_la_CFLAGS += -D__UNIX__

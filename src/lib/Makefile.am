@@ -1,1 +1,1 @@
-SUBDIRS = kacoo kmc kmm textconv 
+SUBDIRS = kacoo kmc kmm textconv
