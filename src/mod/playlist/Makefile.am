@@ -12,6 +12,9 @@ GTK_CFLAGS=`pkg-config --cflags gtk+-2.0`
 libplaylist_la_LDFLAGS = ${GTK_LIBS} -module
 libplaylist_la_CFLAGS = ${GTK_CFLAGS}
 
+libplaylist_la_LDFLAGS += -L../../lib/kacoo -L../../lib/kmm -L../../lib/kmc -L../../lib/textconv
+libplaylist_la_LDFLAGS += -lrt -lkacoo -lkmm -lkmc -ltextconv
+
 libplaylist_la_CFLAGS += -Wall -g
 libplaylist_la_CFLAGS += -I../inc
 libplaylist_la_CFLAGS += -I../../lib/kacoo/inc -I../../lib/kacoo/lib/inc -I../../lib/kacoo/lib/xmldoc

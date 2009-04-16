@@ -41,7 +41,7 @@ static kvoid update_urls(kbool add)
 
     modDir = kim_getstr(__g_im, "s.env.path.moduleDir", knil);
     const kchar *lang = kim_getstr(__g_im, "s.env.language", knil);
-    if (strncmp(lang, "zh_", 3))
+    if (!lang || strncmp(lang, "zh_", 3))
         lang = "en";
 
     /* the loading page */
