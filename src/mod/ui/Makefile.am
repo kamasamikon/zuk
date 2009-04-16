@@ -1,4 +1,7 @@
-pkglib_LTLIBRARIES = libui.la
+moddir = $(prefix)/zuk/modules/ui
+dist_mod_DATA = cfg.xml main.ini
+
+mod_LTLIBRARIES = libui.la
 
 libui_la_SOURCES = ui_impl.cpp
 

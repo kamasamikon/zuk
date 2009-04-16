@@ -1,4 +1,7 @@
-pkglib_LTLIBRARIES = libmc-local.la
+moddir = $(prefix)/zuk/modules/ui
+dist_mod_DATA = cfg.xml main.ini
+
+mod_LTLIBRARIES = libmc-local.la
 
 libmc_local_la_SOURCES = \
 						local_fw.cpp \

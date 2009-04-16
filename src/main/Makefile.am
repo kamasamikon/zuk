@@ -1,9 +1,8 @@
 zukdir = $(prefix)/zuk
+dist_zuk_DATA = cfg.xml zuk main.ini
 
 zuk_PROGRAMS = zuk_bin
 zuk_bin_SOURCES = options.c sysdeps.c zuk_fw.cpp zuk_main.cpp
-
-dist_zuk_DATA = cfg.xml zuk
 
 GST_LIBS=`pkg-config --libs gstreamer-0.10` -lgstinterfaces-0.10
 GST_CFLAGS=`pkg-config --cflags gstreamer-0.10`
