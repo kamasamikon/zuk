@@ -43,7 +43,6 @@ AC_CONFIG_FILES([Makefile
                  src/lib/kacoo/Makefile
                  src/lib/kmc/Makefile
                  src/lib/kmm/Makefile
-                 src/lib/sg/Makefile
                  src/lib/textconv/Makefile
                  src/main/Makefile
                  src/mod/Makefile

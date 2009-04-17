@@ -113,7 +113,7 @@ kint sg_scan_new(sg_scan **scan, sg_mgr *mgr)
         (*scan)->mgr = mgr;
         (*scan)->scan.bdir_socket = -1;
 
-        (*scan)->worker_thread = ktsk_new("sg scan", knil, 0, 0, (kvoid*)(*scan), knil, knil, knil);
+        (*scan)->worker_thread = ktsk_new("sg scan", knil, (kvoid*)(*scan), knil, knil, knil);
         if (!(*scan)->worker_thread) {
             kerror(("Can not create task for boot strap\n"));
             if (kflg_chk((*scan)->flg, BSF_DYN_MEM)) {

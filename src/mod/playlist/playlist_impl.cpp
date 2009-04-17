@@ -41,7 +41,7 @@ static kvoid update_urls(kbool add)
 
     modDir = kim_getstr(__g_im, "s.env.path.moduleDir", knil);
     const kchar *lang = kim_getstr(__g_im, "s.env.language", knil);
-    if (strncmp(lang, "zh_", 3))
+    if (!lang || strncmp(lang, "zh_", 3))
         lang = "en";
 
     /* the loading page */
@@ -537,7 +537,7 @@ extern "C" EXPORT_FUN void mm_hey(KIM *im)
     add_im_watches();
 
     // worker thread
-    __g_worker_thread = ktsk_new("playlist", knil, knil, knil, knil, knil);
+    __g_worker_thread = ktsk_new("playlist", knil, 0, 0, knil, knil, knil, knil);
 
     /* ar0(devHash, 0 for all) */
     kmsg_slot_set(__g_worker_thread, KMPL_SCAN, om_scan);

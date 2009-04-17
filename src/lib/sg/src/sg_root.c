@@ -124,7 +124,7 @@ kint sg_root_new(sg_root **rt, sg_mgr *mgr, struct _K_pvdr *pvdr)
         (*rt)->pvdr = pvdr;
         (*rt)->mgr = mgr;
 
-        tworker = (*rt)->worker_thread = ktsk_new("sgroot", knil, 0, 0, (kvoid*)(*rt), knil, knil, knil);
+        tworker = (*rt)->worker_thread = ktsk_new("sgroot", knil, (kvoid*)(*rt), knil, knil, knil);
         if (!tworker) {
             return -1;
         }

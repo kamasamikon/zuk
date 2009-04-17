@@ -134,18 +134,19 @@ kint kmsg_slot_set(kbean a_tsk, kuint a_msg, KMSG_DISP a_disp)
     }
 
     ksyn_lck_get(tsk->msg_qlck);
-    for (i = 0; i < tsk->slot_cnt; i++)
+    for (i = 0; i < tsk->slot_cnt; i++) {
         if (tsk->slot_arr[i].msg == a_msg) {
             tsk->slot_arr[i].disp = a_disp;
             goto found;
         }
-
-    for (i = 0; i < tsk->slot_cnt; i++)
+    }
+    for (i = 0; i < tsk->slot_cnt; i++) {
         if (tsk->slot_arr[i].msg == KMSG_NULL) {
             tsk->slot_arr[i].msg = a_msg;
             tsk->slot_arr[i].disp = a_disp;
             goto found;
         }
+    }
 
     tsk->slot_cnt += SLOT_GROW_STEP;
 
@@ -189,13 +190,13 @@ kint kmsg_slot_get(kbean a_tsk, kuint a_msg, KMSG_DISP *a_disp)
     }
 
     ksyn_lck_get(tsk->msg_qlck);
-    for (i = 0; i < tsk->slot_cnt; i++)
+    for (i = 0; i < tsk->slot_cnt; i++) {
         if (tsk->slot_arr[i].msg == a_msg) {
             *a_disp = tsk->slot_arr[i].disp;
             ksyn_lck_rel(tsk->msg_qlck);
             return i;
         }
-
+    }
     ksyn_lck_rel(tsk->msg_qlck);
     return -1;
 }
@@ -231,14 +232,14 @@ kint kmsg_slot_del(kbean a_tsk, kuint a_msg)
 
         return 0;
     }
-    for (i = 0; i < tsk->slot_cnt; i++)
+    for (i = 0; i < tsk->slot_cnt; i++) {
         if (tsk->slot_arr[i].msg == a_msg) {
             tsk->slot_arr[i].msg = KMSG_NULL;
             tsk->slot_arr[i].disp = knil;
             ksyn_lck_rel(tsk->msg_qlck);
             return 0;
         }
-
+    }
     ksyn_lck_rel(tsk->msg_qlck);
     return -1;
 }
@@ -264,14 +265,18 @@ kint ktsk_get_ars(kbean a_tsk, kvoid **a_ar0, kvoid **a_ar1, kvoid **a_ar2, kvoi
         kerror(("kmsg_slot_get: bad task\n"));
         return -1;
     }
-    if (a_ar0)
+    if (a_ar0) {
         *a_ar0 = tsk->ar0;
-    if (a_ar1)
+    }
+    if (a_ar1) {
         *a_ar1 = tsk->ar1;
-    if (a_ar2)
+    }
+    if (a_ar2) {
         *a_ar2 = tsk->ar2;
-    if (a_ar3)
+    }
+    if (a_ar3) {
         *a_ar3 = tsk->ar3;
+    }
     return 0;
 }
 
@@ -290,19 +295,22 @@ static kbool ktsk_valid(kbean a_tsk)
     ktsk *tmptsk;
     K_dlist_entry *entry;
 
-    if (!a_tsk)
+    if (!a_tsk) {
         return kfalse;
+    }
 
-    if (KTSK_ALL == a_tsk)
+    if (KTSK_ALL == a_tsk) {
         return ktrue;
+    }
 
     entry = __g_tsk_hdr.next;
     while (entry != &__g_tsk_hdr) {
         tmptsk = FIELD_TO_STRUCTURE(entry, ktsk, ent);
         entry = entry->next;
 
-        if (tsk == tmptsk)
+        if (tsk == tmptsk) {
             return ktrue;
+        }
     }
     return kfalse;
 }
@@ -338,8 +346,9 @@ kbean ktsk_cur(kvoid)
         tsk = FIELD_TO_STRUCTURE(ent, ktsk, ent);
         ent = ent->next;
 
-        if (tsk->tskid == sys_tsk_cur)
+        if (tsk->tskid == sys_tsk_cur) {
             return (kbean)tsk;
+        }
     }
     return (kbean)knil;
 }
@@ -354,8 +363,9 @@ kbean ktsk_cur(kvoid)
 kbool ktsk_running(kbean a_tsk)
 {
     ktsk *tsk = (ktsk*)a_tsk;
-    if (kflg_chk(tsk->flg, KTF_QUITING))
+    if (kflg_chk(tsk->flg, KTF_QUITING)) {
         return kfalse;
+    }
     return ktrue;
 }
 
@@ -388,9 +398,9 @@ static kvoid ktsk_def_proc(kvoid)
     /* when call the user task main, the task uid must have been gotten */
     klog(("into ktsk_def_proc, tskid:%x, name:%s proc:%x\n", tsk->tskid, tsk->name, tsk->mainproc));
 
-    if (tsk->mainproc)
+    if (tsk->mainproc) {
         tsk->mainproc(tsk->ar0, tsk->ar1, tsk->ar2, tsk->ar3);
-    else {
+    } else {
         kuint msg;
         kvoid *ar0, *ar1, *ar2, *ar3;
 
@@ -440,8 +450,7 @@ static kvoid ktsk_def_proc(kvoid)
  *
  * @return Identifer to created task, knil for error.
  */
-
-kbean ktsk_new(const kchar *a_name, KTSK_PROC a_mainproc, kint a_prio, kint a_stack_size
+kbean ktsk_new(const kchar *a_name, KTSK_PROC a_mainproc,
         kvoid *a_ar0, kvoid *a_ar1, kvoid *a_ar2, kvoid *a_ar3)
 {
     ktsk *tsk = (ktsk*)kmem_alloz(sizeof(ktsk));
@@ -476,7 +485,7 @@ kbean ktsk_new(const kchar *a_name, KTSK_PROC a_mainproc, kint a_prio, kint a_st
     tsk->slot_cnt = 0;
     tsk->slot_arr = knil;
 
-    tsk->tskid = ksal_tsk_new(ktsk_def_proc, a_prio, a_stack_size, tsk);
+    tsk->tskid = ksal_tsk_new(ktsk_def_proc, 0, 0, tsk);
     kassert(tsk->tskid);
 
     insert_dlist_tail_entry(&__g_tsk_hdr, &tsk->ent);
@@ -528,19 +537,24 @@ static kvoid ktsk_free_res(kbean a_tsk)
 
     remove_dlist_entry(&tsk->ent);
 
-    if (tsk->msg_wait_sema)
+    if (tsk->msg_wait_sema) {
         ksyn_sem_del(tsk->msg_wait_sema);
+    }
 
-    if (tsk->msg_qlck)
+    if (tsk->msg_qlck) {
         ksyn_lck_del(tsk->msg_qlck);
+    }
 
-    if (tsk->msg_send_wait_sema)
+    if (tsk->msg_send_wait_sema) {
         ksyn_sem_del(tsk->msg_send_wait_sema);
+    }
 
     /** the slot_arr's dispatch must all be deregistered already */
-    kmem_free_sz(tsk->slot_arr);
+    if (tsk->slot_arr) {
+        kmem_free(tsk->slot_arr);
+    }
 
-    kmem_free_sz(tsk->name);
+    kmem_free_s(tsk->name);
     kmem_free(tsk);
 }
 
@@ -592,11 +606,12 @@ kint kmsg_send(kbean a_tsk, kuint a_msg,
             tmptsk = FIELD_TO_STRUCTURE(ent, ktsk, ent);
             ent = ent->next;
 
-            if (curtsk != tmptsk->tskid)
+            if (curtsk != tmptsk->tskid) {
                 kmsg_send(tmptsk, a_msg, a_ar0, a_ar1, a_ar2, a_ar3);
-            else
+            } else {
                 /* save current task */
                 tsk = tmptsk;
+            }
         }
         /* now for current task */
         kmsg_send(tsk, a_msg, a_ar0, a_ar1, a_ar2, a_ar3);
@@ -611,8 +626,9 @@ kint kmsg_send(kbean a_tsk, kuint a_msg,
             return -1;
         }
 
-        if (KMSG_QUIT == a_msg)
+        if (KMSG_QUIT == a_msg) {
             kmsg_windup((kbean)a_tsk);
+        }
 
         /*
          * XXX if caller is the same tsk, do not queue it.
@@ -674,24 +690,26 @@ kint kmsg_send(kbean a_tsk, kuint a_msg,
         msg.ar2 = a_ar2;
         msg.ar3 = a_ar3;
 
-        if (tsk->next_serial == 0)
+        if (tsk->next_serial == 0) {
             tsk->next_serial++;
+        }
 
         kflg_set(msg.flg, KMF_SNDMSG);
 
-        if (!kmsg_push(a_tsk, &msg))
+        if (!kmsg_push(a_tsk, &msg)) {
             /*
              * return kfalse, maybe the task quiting, abort the current
              * operation
              */
             return -1;
+        }
 
         /*
          * should wait till done
          */
-        while (!kflg_chk(msg.flg, KMF_DONE))
+        while (!kflg_chk(msg.flg, KMF_DONE)) {
             ktsk_sleep(20);
-
+        }
 #if 0    /* XXX ksyn_sem can not serialize the queue task when unlock */
         if (0 != ksyn_sem_get(tsk->msg_send_wait_sema, -1)) {
             klog(("msg %x unsuccessfully returned\n", a_msg));
@@ -762,14 +780,15 @@ kint kmsg_post(kbean a_tsk, kuint a_msg,
         msg->ar2 = a_ar2;
         msg->ar3 = a_ar3;
 
-        if (tsk->next_serial == 0)
+        if (tsk->next_serial == 0) {
             tsk->next_serial++;
+        }
 
         kflg_set(msg->flg, KMF_DYNMEM);
 
-        if (kmsg_push(tsk, msg))
+        if (kmsg_push(tsk, msg)) {
             return msg->serial;
-        else {
+        } else {
             kmem_free(msg);
             return 0;
         }
@@ -842,11 +861,12 @@ kint kmsg_disp(kbean a_tsk, kuint a_msg,
     kassert(ktsk_valid(a_tsk));
 
     slots = tsk->slot_arr;
-    for (i = 0; i < tsk->slot_cnt; i++)
+    for (i = 0; i < tsk->slot_cnt; i++) {
         if (slots[i].msg == a_msg) {
             slots[i].disp(a_tsk, a_msg, a_ar0, a_ar1, a_ar2, a_ar3, a_rsn);
             return 0;
         }
+    }
 
     return -1;
 }
@@ -999,8 +1019,9 @@ kbool kmsg_peek(kbean a_tsk, kuint *a_msg,
 
 again:
 
-    if (kflg_chk(tsk->flg, KTF_QUITING))
+    if (kflg_chk(tsk->flg, KTF_QUITING)) {
         return kfalse;
+    }
 
     klog(("start wait message\n"));
     ret = ksyn_sem_get(tsk->msg_wait_sema, -1);
@@ -1037,6 +1058,7 @@ again:
      * on normal occassion, when msg_wait_sema returns, there must exist a
      * message in the queue
      */
+
     kassert(!"should not goes to here\n");
     goto again;
 }
@@ -1054,8 +1076,9 @@ static kbool kmsg_push(kbean a_tsk, kmsg *a_msg)
     kbool ret = kfalse;
     ktsk *tsk = (ktsk*)a_tsk;
 
-    if (kflg_chk(tsk->flg, KTF_QUITING))
+    if (kflg_chk(tsk->flg, KTF_QUITING)) {
         return kfalse;
+    }
 
     init_dlist_head(&a_msg->ent);
     ksyn_lck_get(tsk->msg_qlck);

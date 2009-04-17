@@ -31,6 +31,10 @@ UPDIR="a56236b4-3609-45af-8556-d95dad4e81c"
 # applicationDir
 APPDIR=""
 
+# setup QT environment
+export LD_LIBRARY_PATH=$SSDIR/lib:$LD_LIBRARY_PATH
+export QT_PLUGIN_PATH=$SSDIR/../plugins
+
 show_help() {
     echo -e "Usage: zuk [Options]"
     echo -e ""
@@ -137,10 +141,6 @@ done
 
 if [ "$SSPATH" != "/tmp/aa86867ed41e445191d3d059bdd72870" ]; then
     cp $SSDIR/zuk /tmp/aa86867ed41e445191d3d059bdd72870
-
-    # setup QT environment
-    export LD_LIBRARY_PATH=$SSDIR/../qt:$LD_LIBRARY_PATH
-    export QT_PLUGIN_PATH=$SSDIR/../plugins
 
     chmod a+x /tmp/aa86867ed41e445191d3d059bdd72870
     /tmp/aa86867ed41e445191d3d059bdd72870 --applicationDir $SSDIR $ORG_OPT
