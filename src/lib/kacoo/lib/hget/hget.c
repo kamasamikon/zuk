@@ -1,4 +1,4 @@
-/* vim:set et sw=4 sts=4: */
+/* vim:set et sw=4 sts=4 ff=unix cino=:0: */
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -51,6 +51,7 @@ static kint socket_last_error()
  */
 kvoid hget_free_socket(SOCKET a_socket)
 {
+    klog(("hget_free_socket:%d\n", a_socket));
     if (-1 != a_socket) {
 #if (defined(__WIN32__) || defined(__WINCE__))
         shutdown(a_socket, SD_BOTH);
@@ -69,7 +70,7 @@ kint hget_parseurl(const kchar *a_url, kuint *a_prot, kchar a_user[], kchar a_pa
         kchar a_host[], kchar a_path[], kushort *a_port)
 {
     const kchar *url_cur = a_url;
-    kchar *temp;
+    kchar *temp, *end;
 
     /* get a_prot */
     *a_prot = PROT_HTTP;
@@ -81,10 +82,14 @@ kint hget_parseurl(const kchar *a_url, kuint *a_prot, kchar a_user[], kchar a_pa
         *a_prot = PROT_HTTPS;
     }
 
+    /* if not found ? assume ? in long long furtue */
+    if (!(end = strchr(url_cur, '?')))
+        end = url_cur + 80000;
+
     /* get user and pass */
     *a_user = '\0';
     *a_pass = '\0';
-    if (temp = strchr(url_cur, '@')) {
+    if ((temp = strchr(url_cur, '@')) && (temp < end)) {
         strncpy(a_user, url_cur, temp - url_cur);
         a_user[temp - url_cur] = '\0';
 
@@ -92,7 +97,7 @@ kint hget_parseurl(const kchar *a_url, kuint *a_prot, kchar a_user[], kchar a_pa
         url_cur = temp + 1;
 
         /* get pass */
-        if (temp = strchr(a_user, ':')) {
+        if ((temp = strchr(a_user, ':')) && (temp < end)) {
             /* user: auv:woshiauv to auv */
             *temp = '\0';
 
@@ -102,9 +107,8 @@ kint hget_parseurl(const kchar *a_url, kuint *a_prot, kchar a_user[], kchar a_pa
 
     /* get port */
     *a_port = 80;
-    if (temp = strchr(url_cur, ':')) {
+    if ((temp = strchr(url_cur, ':')) && (temp < end))
         *a_port = (kushort)strtoul(temp + 1, 0, 10);
-    }
 
     /* get host */
     strcpy(a_host, url_cur);
@@ -113,11 +117,10 @@ kint hget_parseurl(const kchar *a_url, kuint *a_prot, kchar a_user[], kchar a_pa
     url_cur += temp - a_host;
 
     /* get path */
-    if (temp = strchr(url_cur, '/')) {
+    if (temp = strchr(url_cur, '/'))
         strcpy(a_path, temp);
-    } else {
+    else
         strcpy(a_path, "/");
-    }
 
     return 0;
 }
@@ -139,9 +142,8 @@ kint hget_connect(kint a_prot, const kchar *a_user, const kchar *a_pass,
     signal(SIGPIPE, SIG_IGN);
 #endif
 
-    if (a_socket) {
+    if (a_socket)
         *a_socket = -1;
-    }
 
     /* Set socket parameters */
     klog(("hget_connect: inet_addr\n"));
@@ -150,7 +152,8 @@ kint hget_connect(kint a_prot, const kchar *a_user, const kchar *a_pass,
         klog(("hget_connect: gethostbyname\n"));
         host_ent = gethostbyname(a_host);
         if (!host_ent) {
-            kerror(("hget_connect: gethostbyname : ng (%d): url(%s%s:%d)\n", socket_last_error(), a_host, a_path, a_port));
+            kerror(("hget_connect: gethostbyname : ng : url(%s%s:%d)\n", a_host, a_path, a_port));
+            kerror(("hget_connect: gethostbyname failed: %d\n", socket_last_error()));
             return PGEC_HOST;
         }
         ip_addr = *((kulong*)host_ent->h_addr);
@@ -159,37 +162,35 @@ kint hget_connect(kint a_prot, const kchar *a_user, const kchar *a_pass,
     klog(("hget_connect: socket\n"));
     sockfd = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP);
     if (-1 == sockfd) {
-        kerror(("hget_connect: socket : ng (%d): url(%s%s:%d)\n", socket_last_error(), a_host, a_path, a_port));
+        kerror(("hget_connect: socket : ng : url(%s%s:%d)\n", a_host, a_path, a_port));
+        kerror(("hget_connect: create socket failed: %d\n", socket_last_error()));
         return PGEC_SOCKET;
     }
 
-    if (a_socket) {
+    if (a_socket)
         *a_socket = sockfd;
-    }
 
     /* set timeout for recv and send */
     timeout.tv_sec = 15;
     timeout.tv_usec = 0;
-    if (setsockopt(sockfd, SOL_SOCKET, SO_RCVTIMEO, (char*)&timeout, sizeof(timeout)) < 0) {
+    if (setsockopt(sockfd, SOL_SOCKET, SO_RCVTIMEO, (char*)&timeout, sizeof(timeout)) < 0)
         kerror(("hget_connect: setsockopt:SO_RCVTIMEO:%d\n", socket_last_error()));
-    }
-    if (setsockopt(sockfd, SOL_SOCKET, SO_SNDTIMEO, (char*)&timeout, sizeof(timeout)) < 0) {
+    if (setsockopt(sockfd, SOL_SOCKET, SO_SNDTIMEO, (char*)&timeout, sizeof(timeout)) < 0)
         kerror(("hget_connect: setsockopt:SO_SNDTIMEO:%d\n", socket_last_error()));
-    }
 
     addr.sin_family = AF_INET;
     addr.sin_addr.s_addr = ip_addr;
     addr.sin_port = htons(a_port);
 
     /* connect */
-    klog(("hget_connect: connect\n"));
+    klog(("hget_connect<%d>: connect\n", sockfd));
     while ((-1 == (ret = connect(sockfd, (struct sockaddr *)&addr, sizeof(addr)))) && CAN_CONTI());
     if (-1 == ret) {
-        if (a_socket) {
+        if (a_socket)
             *a_socket = -1;
-        }
 
-        kerror(("hget_connect: connect : ng (%d): url(%s%s:%d)\n", socket_last_error(), a_host, a_path, a_port));
+        kerror(("hget_connect<%d>: connect : ng : url(%s%s:%d)\n", sockfd, a_host, a_path, a_port));
+        kerror(("hget_connect<%d>: connect failed: %d\n", sockfd, socket_last_error()));
         hget_free_socket(sockfd);
         return PGEC_CONNECT;
     }
@@ -206,7 +207,7 @@ kint hget_recv(SOCKET a_socket, const kchar *a_host, const kchar *a_path,
     kchar header[PATH_LEN] = "";
 
     kchar data[DATA_LEN];
-    kint rc = PGEC_ERROR, ret = -1, resp_code, dat_len = 0, hdr_len, cur_len = 0, lft_len;
+    kint rc = PGEC_ERROR, ret = -1, resp_code, pkg_len = 0, dat_len = 0, hdr_len, cur_len = 0, lft_len;
 
     /*
      * Fill the HTTP header information
@@ -222,7 +223,7 @@ kint hget_recv(SOCKET a_socket, const kchar *a_host, const kchar *a_path,
      * "\r\n"
      * "<Msg><Cmd>GetServiceList</Cmd></Msg>"
      */
-    if (a_get) {
+    if (a_get)
         sprintf(header,
                 "GET %s HTTP/1.1\r\n"
                 "Connection: Keep-Alive\r\n"
@@ -230,7 +231,7 @@ kint hget_recv(SOCKET a_socket, const kchar *a_host, const kchar *a_path,
                 "Connection: Close\r\n\r\n",
                 a_path, a_host
                );
-    } else {
+    else
         sprintf(header,
                 "POST %s HTTP/1.1\r\n"
                 "Accept: text/xml\r\n"
@@ -241,7 +242,6 @@ kint hget_recv(SOCKET a_socket, const kchar *a_host, const kchar *a_path,
                 "%s",
                 a_path, a_cmd ? strlen(a_cmd) : 0, a_host, a_cmd ? a_cmd : ""
                );
-    }
 
     klog(("hget_recv(%d): start send\n", a_socket));
 
@@ -260,48 +260,40 @@ kint hget_recv(SOCKET a_socket, const kchar *a_host, const kchar *a_path,
     data[0] = '\0';
     do {
         cur_len += ret;
-        if (strstr(data, "\r\n\r\n")) {
+        if (strstr(data, "\r\n\r\n"))
             break;
-        }
-        while ((-1 == (ret = recv(a_socket, data + ret, DATA_LEN - ret, 0))) && CAN_CONTI()) {
+        while ((-1 == (ret = recv(a_socket, data + ret, DATA_LEN - ret, 0))) && CAN_CONTI())
             ret++;
-        }
-        if (-1 == ret) {
+        if (-1 == ret)
             kerror(("hget_recv(%d): recv failed: %d\n", a_socket, socket_last_error()));
-        }
-        if (0 == ret) {
+        if (0 == ret)
             kerror(("hget_recv(%d): recv failed: socket closed.\n", a_socket));
-        }
-        if (ret >= DATA_LEN) {
+        if (ret >= DATA_LEN)
             cur_len += ret;
-        }
     } while ((ret > 0) && (ret < DATA_LEN));
 
     ret = cur_len;
 
     if (ret > 0) {
 
-        klog(("hget_recv(%d):%d: cont-data:%s\n", a_socket, __LINE__, (ret > 0) ? data : "(nil)"));
+        /* klog(("hget_recv(%d):%d: cont-data:%s\n", a_socket, __LINE__, (ret > 0) ? data : "(nil)")); */
 
         /*
          * try to get header, only when (*a_hdrbuf != zero)
          */
-        if (*a_hdrlen < 0) {
+        if (*a_hdrlen < 0)
             *a_hdrlen = 0x7FFFFFFF;
-        }
         if (*a_hdrlen > 0) {
             cur_len = *a_hdrlen;
             pTemp = strstr(data, "\r\n\r\n");
-            hdr_len = pTemp - data;
-            if (!*a_hdrbuf) {
-                if (hdr_len > cur_len) {
+            hdr_len = pTemp - data + 4;
+            if (!*a_hdrbuf)
+                if (hdr_len > cur_len)
                     *a_hdrbuf = (kchar*)kmem_alloz(cur_len + 1);
-                } else {
+                else
                     *a_hdrbuf = (kchar*)kmem_alloz(hdr_len + 1);
-                }
-            }
             *a_hdrlen = 0;
-            if (*a_hdrbuf) {
+            if (*a_hdrbuf)
                 if (hdr_len > cur_len) {
                     memcpy(*a_hdrbuf, data, cur_len);
                     *a_hdrlen = cur_len;
@@ -309,12 +301,10 @@ kint hget_recv(SOCKET a_socket, const kchar *a_host, const kchar *a_path,
                     memcpy(*a_hdrbuf, data, hdr_len);
                     *a_hdrlen = hdr_len;
                 }
-            }
         }
 
-        if (*a_datlen < 0) {
+        if (*a_datlen < 0)
             *a_datlen = 0x7FFFFFFF;
-        }
         if (*a_datlen == 0) {
             /* not need content, return */
             rc = PGEC_SUCCESS;
@@ -323,9 +313,8 @@ kint hget_recv(SOCKET a_socket, const kchar *a_host, const kchar *a_path,
 
         /* Get Response Code */
         pTemp = strstr(data, "HTTP/1.1 ");
-        if (!pTemp) {
+        if (!pTemp)
             pTemp = strstr(data, "HTTP/1.0 ");
-        }
         if (!pTemp) {
             kerror(("hget_recv(%d): Can not get Response code\n", a_socket));
             rc = PGEC_HEADER;
@@ -346,9 +335,9 @@ kint hget_recv(SOCKET a_socket, const kchar *a_host, const kchar *a_path,
             goto done;
         }
 
-        dat_len = atoi(pTemp + 16);
+        pkg_len = dat_len = atoi(pTemp + 16);
         cur_len = *a_datlen;
-        if (!*a_datbuf) {
+        if (!*a_datbuf)
             if (dat_len > cur_len) {
                 *a_datbuf = (kchar*)kmem_alloz(cur_len + 1);
                 dat_len = cur_len;
@@ -356,7 +345,7 @@ kint hget_recv(SOCKET a_socket, const kchar *a_host, const kchar *a_path,
                 *a_datbuf = (kchar*)kmem_alloz(dat_len + 1);
                 dat_len = dat_len;
             }
-        }
+
         pNext = *a_datbuf;
         if (!pNext) {
             kerror(("hget_recv(%d): Can not alloc memory\n", a_socket));
@@ -389,12 +378,10 @@ kint hget_recv(SOCKET a_socket, const kchar *a_host, const kchar *a_path,
         if (cur_len < dat_len) {
             resp_code = 1;
             while ((-1 == (ret = recv(a_socket, data, DATA_LEN, 0))) && CAN_CONTI());
-            if (-1 == ret) {
+            if (-1 == ret)
                 kerror(("hget_recv(%d): recv failed: %d\n", a_socket, socket_last_error()));
-            }
-            if (0 == ret) {
+            if (0 == ret)
                 kerror(("hget_recv(%d): recv failed: socket closed.\n", a_socket));
-            }
 
             klog(("hget_recv(%d): dat_len:%d, cur_len:%d, recv_cnt:%d, ret:%d, err:%d\n",
                         a_socket, dat_len, cur_len, resp_code++, ret, socket_last_error()));
@@ -414,9 +401,9 @@ kint hget_recv(SOCKET a_socket, const kchar *a_host, const kchar *a_path,
                 }
                 kassert(cur_len <= dat_len || !"bad cur_len or all_en");
 
-                if (cur_len < dat_len) {
+                if (cur_len < dat_len)
                     while ((-1 == (ret = recv(a_socket, data, DATA_LEN, 0))) && CAN_CONTI());
-                } else {
+                else {
                     klog(("hget_recv(%d): all received\n", a_socket));
                     break;
                 }
@@ -431,12 +418,11 @@ kint hget_recv(SOCKET a_socket, const kchar *a_host, const kchar *a_path,
     }
 
 done:
-    if (PGEC_SUCCESS != rc) {
+    if (PGEC_SUCCESS != rc)
         kerror(("hget_recv(%d): ng : skt(%d), host(%s), path(%s), get(%d), cmd(%d)\n",
                     a_socket, a_socket, a_host, a_path, a_get, a_cmd));
-    }
 
-    klog(("hget_recv(%d): return : %d\n", a_socket, rc));
+    klog(("hget_recv(%d): pkg_len:%d, rcv_len:%d, return : %d\n", a_socket, rc, pkg_len, cur_len));
     return rc;
 }
 

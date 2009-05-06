@@ -1,4 +1,4 @@
-/* vim:set et sw=4 sts=4: */
+/* vim:set et sw=4 sts=4 ff=unix cino=:0: */
 #ifndef __HGET_H__
 #define __HGET_H__
 
@@ -18,6 +18,7 @@ extern "C" {
 #define PGEC_RECV               -8
 #define PGEC_MEMORY             -9
 #define PGEC_ERROR              -10
+#define PGEC_TRUNC              -11
 
 /* protocal http://, https://, file://, ftp:// etc */
 #define PROT_HTTP   0

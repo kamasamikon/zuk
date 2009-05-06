@@ -1,4 +1,4 @@
-/* vim:set et sw=4 sts=4: */
+/* vim:set et sw=4 sts=4 ff=unix cino=:0: */
 #ifndef __KMC_LOCAL_DEVICE_H__
 #define __KMC_LOCAL_DEVICE_H__
 

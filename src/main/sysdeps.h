@@ -1,4 +1,4 @@
-/* vim:set et sw=4 sts=4: */
+/* vim:set et sw=4 sts=4 ff=unix cino=:0: */
 #ifndef __K_SYSDEPS_H__
 #define __K_SYSDEPS_H__
 

@@ -1,4 +1,4 @@
-/* vim:set et sw=4 sts=4: */
+/* vim:set et sw=4 sts=4 ff=unix cino=:0: */
 #include <syscfg.h>
 #include <setglobals.h>
 
@@ -42,6 +42,12 @@ static void on_about_activate(GtkAction *action, GtkWidget *window)
             "documenters", documentors,
             "title", "About zuk!",
             NULL);
+}
+
+static void _show_info_window(GtkWidget *button, KIM *im)
+{
+    GtkWidget *window = (GtkWidget*)kim_getptr(im, "p.ui.ui.window.info", knil);
+    gtk_widget_show(window);
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -93,7 +99,7 @@ static GtkWidget *ui_ui_window_main_menubar_create(KIM *im)
 
 static GtkWidget *ui_ui_window_main_create(KIM *im)
 {
-    GtkWidget *main_win, *button[3], *vbox;
+    GtkWidget *main_win, *button[3], *vbox, *ctrl;
 
     main_win = gtk_window_new(GTK_WINDOW_TOPLEVEL);
     gtk_window_set_title(GTK_WINDOW(main_win), "zuk! zuk!");
@@ -104,6 +110,10 @@ static GtkWidget *ui_ui_window_main_create(KIM *im)
     GtkWidget *win_main_menubar = ui_ui_window_main_menubar_create(im);
     kim_addptr(im, "p.ui.ui.window.main.menubar", (kvoid*)win_main_menubar, RF_AUTOSET, knil, knil);
     gtk_box_pack_start(GTK_BOX(vbox), win_main_menubar, FALSE, FALSE, 0);
+
+    ctrl = gtk_button_new_with_label("show info");
+    gtk_box_pack_start(GTK_BOX(vbox), ctrl, FALSE, TRUE, 0);
+    g_signal_connect(G_OBJECT(ctrl), "clicked", G_CALLBACK(_show_info_window), im);
 
     for (int i = 0; i < G_N_ELEMENTS(button); i++) {
         kchar label[111];
