@@ -297,7 +297,7 @@ int IMWCH(plwch_channelFroze)
     }
     return 0;
 }
-static int IMWCH(plwch_mod_unload)
+static int IMWCH(plwch_modUnloadStart)
 {
     __g_unloading = ktrue;
     ktmr_kill(__g_sig_tmr);
@@ -307,7 +307,7 @@ static int IMWCH(plwch_mod_unload)
 /**
  * @brief if some device has channels do not scan it, because scan will cause the old channel deleted.
  */
-static int IMWCH(plwch_mod_loaded)
+static int IMWCH(plwch_modLoadEnd)
 {
     kchar **devlist, **chlist;
     KMediaDevice *dev;
@@ -338,7 +338,6 @@ int IMWCH(plwch_liveadComplete)
 {
     if (__g_unloading)
         return -1;
-
 
     kchar * fromDir = (char*)REC_CUR_STR(rec);
     kchar * moduleDir = kim_getstr(im, "s.env.path.moduleDir", knil);
@@ -439,8 +438,8 @@ static struct _wchmap {
     { knil, 'b', "i.kmc.evt.channel.chg", plwch_channelNew },
     { knil, 'b', "i.kmc.evt.channel.froze", plwch_channelFroze },
     { knil, 'b', "i.kmc.evt.channel.del", plwch_channelDel },
-    { knil, 'b', "i.kmm.evt.modulesLoaded", plwch_mod_loaded },
-    { knil, 'b', "i.kmm.evt.modulesUnload", plwch_mod_unload },
+    { knil, 'b', "i.kmm.evt.modLoadEnd", plwch_modLoadEnd },
+    { knil, 'b', "i.kmm.evt.modUnloadStart", plwch_modUnloadStart },
     { knil, 'a', "s.livead.evt.dataComplete", plwch_liveadComplete },
 };
 

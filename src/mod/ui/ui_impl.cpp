@@ -318,7 +318,7 @@ static void ui_create_ui(KIM *im)
 
 /////////////////////////////////////////////////////////////////////////////
 // kimat routines
-static kint imat_ui_ui_show(struct _KIM *im, struct _KRtiRec *rec, kuchar reason)
+static kint imat_ui_act_show(struct _KIM *im, struct _KRtiRec *rec, kuchar reason)
 {
     kint show = (kint)REC_SET(rec);
     GtkWidget *window = (GtkWidget*)kim_getptr(im, "p.ui.ui.window.main", knil);
@@ -349,7 +349,10 @@ extern "C" EXPORT_FUN void mm_hey(KIM *im)
 
     ui_create_ui(im);
 
-    kim_addint(im, "i.ui.act.show", 0, RF_AUTOSET, imat_ui_ui_show, knil);
+    kim_addint(im, "i.ui.act.show", 0, RF_AUTOSET, imat_ui_act_show, "(M)::show or hide UI");
+
+    // kim_addint(im, "i.ui.evt.page.new", 0, 0, imat_ui_evt_page_new, "(M):val='NA', ua='page ime-name':set immediately after created");
+    // kim_addint(im, "i.ui.evt.page.del", 0, 0, imat_ui_evt_page_del, "(M):val='NA', ua='page ime-name':set immediately before deleted");
 }
 
 
@@ -370,18 +373,5 @@ extern "C" EXPORT_FUN void jc_ui_get_script(KIM *im, kchar *ar0, kchar *ar1, kch
 
     if (!ret)
         return;
-
-    /* called by main */
-    /* gtk_init(&argc, &argv); */
-
-    main_win = gtk_window_new(GTK_WINDOW_TOPLEVEL);
-    gtk_window_set_title(GTK_WINDOW(main_win), "zuk");
-
-    // kim_addptr(im, "p.ui.window.main", (kvoid*)main_win, RF_AUTOSET, knil, knil);
-
-    g_signal_connect(G_OBJECT(main_win), "destroy", G_CALLBACK(gtk_main_quit), NULL);
-    gtk_widget_show_all(main_win);
-
-    *ret = (kchar*)main_win;
 }
 

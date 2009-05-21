@@ -66,10 +66,10 @@ kbean kmm_init(KIM *a_im)
     mm->maxtype = -1;
     mm->loadorder = 0;
 
-    /* after load */
-    kim_addint(a_im, "i.kmm.evt.modulesLoaded", 1, 0, knil, knil);
-    /* before unload */
-    kim_addint(a_im, "i.kmm.evt.modulesUnload", 1, 0, knil, knil);
+    kim_addint(a_im, "i.kmm.evt.modLoadStart", 1, 0, knil, knil);
+    kim_addint(a_im, "i.kmm.evt.modLoadEnd", 1, 0, knil, knil);
+    kim_addint(a_im, "i.kmm.evt.modUnloadStart", 1, 0, knil, knil);
+    kim_addint(a_im, "i.kmm.evt.modUnloadEnd", 1, 0, knil, knil);
 
     return (kbean)mm;
 }
@@ -81,8 +81,10 @@ kint kmm_final(kbean a_mm)
     kmm_clear_proc_cache(a_mm);
     kmm_unload_modules(a_mm);
 
-    kim_delint(mm->im, "i.kmm.evt.modulesLoaded");
-    kim_delint(mm->im, "i.kmm.evt.modulesUnload");
+    kim_delint(mm->im, "i.kmm.evt.modLoadStart");
+    kim_delint(mm->im, "i.kmm.evt.modLoadEnd");
+    kim_delint(mm->im, "i.kmm.evt.modUnloadStart");
+    kim_delint(mm->im, "i.kmm.evt.modUnloadEnd");
 
     kmem_free(a_mm);
     return 0;
@@ -142,6 +144,8 @@ kint kmm_load_modules(kbean a_mm)
     mm->mod.cnt = kmm_get_mod_cnt(moddir);
     if (mm->mod.cnt <= 0)
         return -1;
+
+    kim_setint(mm->im, "i.kmm.evt.modLoadStart", 1, knil, knil);
 
     /* fill current os version */
     major = minor = rev = 0;
@@ -415,7 +419,7 @@ next_pl_loop:   /* Next platform */
     kmm_call_entrance(a_mm);
 
     klog(("<<< kmm_load_modules\n"));
-    kim_setint(mm->im, "i.kmm.evt.modulesLoaded", 1, knil, knil);
+    kim_setint(mm->im, "i.kmm.evt.modLoadEnd", 1, knil, knil);
     return 0;
 }
 
@@ -472,7 +476,7 @@ kint kmm_unload_modules(kbean a_mm)
 
     klog(("into kmm_unload_modules\n"));
 
-    kim_setint(mm->im, "i.kmm.evt.modulesUnload", 1, knil, knil);
+    kim_setint(mm->im, "i.kmm.evt.modUnloadStart", 1, knil, knil);
 
     for (loadOrder = mm->loadorder - 1; loadOrder >= 0; loadOrder--) {
 
@@ -519,6 +523,9 @@ kint kmm_unload_modules(kbean a_mm)
         kmem_free(mm->mod.arr);
         mm->mod.arr = knil;
     }
+
+    kim_setint(mm->im, "i.kmm.evt.modUnloadEnd", 1, knil, knil);
+
     klog(("leave kmm_unload_modules\n"));
     return 0;
 }
