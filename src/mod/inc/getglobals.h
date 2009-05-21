@@ -1,4 +1,4 @@
-/* vim:set et sw=4 sts=4 ff=unix cino=:0: */
+/* vim:set et sw=4 sts=4 ff=unix: */
 
 #ifndef __GET_GLOBALS_H__
 #define __GET_GLOBALS_H__

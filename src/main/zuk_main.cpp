@@ -1,4 +1,4 @@
-/* vim:set et sw=4 sts=4 ff=unix cino=:0: */
+/* vim:set et sw=4 sts=4 ff=unix: */
 #include <locale.h>
 #include <stdio.h>
 #include <string.h>

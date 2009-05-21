@@ -1,4 +1,4 @@
-/* vim:set et sw=4 sts=4 ff=unix cino=:0: */
+/* vim:set et sw=4 sts=4 ff=unix: */
 #ifndef __KMC_LOCAL_PROTOCOL_H__
 #define __KMC_LOCAL_PROTOCOL_H__
 
