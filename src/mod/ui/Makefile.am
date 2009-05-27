@@ -3,7 +3,7 @@ dist_mod_DATA = cfg.xml main.ini
 
 mod_LTLIBRARIES = libui.la
 
-libui_la_SOURCES = ui_impl.cpp
+libui_la_SOURCES = ui_fw.cpp
 
 GTK_LIBS=`pkg-config --libs gtk+-2.0`
 GTK_CFLAGS=`pkg-config --cflags gtk+-2.0`

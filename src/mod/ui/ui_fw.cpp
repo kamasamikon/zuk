@@ -50,6 +50,14 @@ static void _show_info_window(GtkWidget *button, KIM *im)
     gtk_widget_show(window);
 }
 
+static void _show_optn_window(GtkWidget *button, KIM *im)
+{
+    GtkWidget *window = (GtkWidget*)kim_getptr(im, "p.ui.ui.window.optn", knil);
+
+    /* fill all the modules to the list */
+    gtk_widget_show(window);
+}
+
 /////////////////////////////////////////////////////////////////////////////
 // support routines
 static GtkWidget *ui_ui_window_main_menubar_create(KIM *im)
@@ -114,6 +122,10 @@ static GtkWidget *ui_ui_window_main_create(KIM *im)
     ctrl = gtk_button_new_with_label("show info");
     gtk_box_pack_start(GTK_BOX(vbox), ctrl, FALSE, TRUE, 0);
     g_signal_connect(G_OBJECT(ctrl), "clicked", G_CALLBACK(_show_info_window), im);
+
+    ctrl = gtk_button_new_with_label("show optn");
+    gtk_box_pack_start(GTK_BOX(vbox), ctrl, FALSE, TRUE, 0);
+    g_signal_connect(G_OBJECT(ctrl), "clicked", G_CALLBACK(_show_optn_window), im);
 
     for (int i = 0; i < G_N_ELEMENTS(button); i++) {
         kchar label[111];
