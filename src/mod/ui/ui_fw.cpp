@@ -325,6 +325,37 @@ static void ui_create_ui(KIM *im)
     kim_addptr(im, "p.ui.ui.window.optn", (kvoid*)win_opt, RF_AUTOSET, knil, knil);
 }
 
+static void status_icon_popup_menu_cb(GtkStatusIcon *status_icon,
+        guint button, guint activate_time, gpointer *icon)
+{
+    GtkWidget *menu_item;
+    GtkWidget *submenu;
+    gint i;
+
+    submenu = gtk_menu_new();
+
+    for (i = 0; i < 5; i++) {
+        menu_item = gtk_menu_item_new_with_label("sfasdf");
+        gtk_widget_show(menu_item);
+        gtk_menu_shell_append(GTK_MENU_SHELL(submenu), menu_item);
+    }
+
+    gtk_menu_popup (GTK_MENU (submenu), NULL, NULL, NULL,
+            NULL, NULL, activate_time);
+}
+
+static void ui_create_status_icon(KIM *im)
+{
+    GtkStatusIcon *trayIcon;
+
+    trayIcon = gtk_status_icon_new_from_file("/home/auv/right.png");
+    gtk_status_icon_set_visible(trayIcon, TRUE);
+    gtk_status_icon_set_blinking(trayIcon, TRUE);
+    gtk_status_icon_set_tooltip(trayIcon, "auv is a good v!");
+
+    g_signal_connect(trayIcon, "popup-menu", G_CALLBACK (status_icon_popup_menu_cb), NULL);
+}
+
 /////////////////////////////////////////////////////////////////////////////
 // ktmr routines
 
@@ -360,6 +391,7 @@ extern "C" EXPORT_FUN void mm_hey(KIM *im)
     SET_GLOBALS(im);
 
     ui_create_ui(im);
+    ui_create_status_icon(im);
 
     kim_addint(im, "i.ui.act.show", 0, RF_AUTOSET, imat_ui_act_show, "(M)::show or hide UI");
 
