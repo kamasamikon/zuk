@@ -6,12 +6,15 @@
 #include "MCSkel-protocol.h"
 
 KMC_MCSkelProtocol::KMC_MCSkelProtocol(KMediaContainer* a_parentContainer, char* a_name, int a_type)
-    : KMediaProtocal(a_parentContainer, a_name, a_type)
+        : KMediaProtocal(a_parentContainer, a_name, a_type)
 {
+    kchar hash[33];
+    kim_setint(__g_im, "i.kmc.evt.protocol.new", 1, (void**)(hash), (void**)this);
 }
 
 KMC_MCSkelProtocol::~KMC_MCSkelProtocol()
 {
+    kim_setint(__g_im, "i.kmc.evt.protocol.del", 1, (void**)getHash(), (void**)this);
 }
 
 int KMC_MCSkelProtocol::scanDevice()

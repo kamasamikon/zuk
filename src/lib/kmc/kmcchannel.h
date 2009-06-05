@@ -89,6 +89,7 @@ public:
     virtual ~KMediaChannel(void);
 
     virtual char* getHash(void) = 0;
+    void setHash(const char *a_hash) { if (hash[0]) kerror(("Already setHash, can not set!\n")); else memcpy(hash, a_hash, 33); }
     const char* getName(void) { return name; }
 
     KMediaDevice *getDevice(void) const { return parentDevice; }

@@ -30,6 +30,7 @@ public:
     virtual ~KMediaProtocal(void);
 
     virtual char* getHash(void) = 0;
+    void setHash(const char *a_hash) { if (hash[0]) kerror(("Already setHash, can not set!\n")); else memcpy(hash, a_hash, 33); }
     const char* getName(void) { return name; }
     const char* getDesc(void) { return desc; }
 
