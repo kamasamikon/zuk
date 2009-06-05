@@ -13,6 +13,6 @@ KMC_MCSkelDevice::KMC_MCSkelDevice(KMC_MCSkelProtocol* a_parentProtocal, char* a
 
 KMC_MCSkelDevice::~KMC_MCSkelDevice()
 {
-    kim_setint(__g_im, "i.kmc.evt.device.new", 1, (void**)(hash), (void**)this);
+    kim_setint(__g_im, "i.kmc.evt.device.del", 1, (void**)(hash), (void**)this);
 }
 
