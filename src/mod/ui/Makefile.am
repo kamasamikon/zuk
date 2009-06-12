@@ -3,7 +3,7 @@ dist_mod_DATA = cfg.xml main.ini main.glade
 
 mod_LTLIBRARIES = libui.la
 
-libui_la_SOURCES = ui_fw.cpp
+libui_la_SOURCES = ui_fw.cpp glade-palette-box.c
 
 GTK_LIBS=`pkg-config --libs gtk+-2.0`
 GTK_CFLAGS=`pkg-config --cflags gtk+-2.0`

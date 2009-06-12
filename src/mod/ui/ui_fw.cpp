@@ -15,6 +15,8 @@
 #include <gtk/gtk.h>
 #include <glade/glade.h>
 
+#include "glade-palette-box.h"
+
 static char guid[] = "52727E3B-08FD-4664-97B1-4CBABD17C985";
 
 static kchar *__g_mod_dir = knil;
@@ -50,7 +52,7 @@ extern "C" void on_winmain_menu_item_about_activate(GtkMenuItem *menuitem, gpoin
 extern "C" void on_winmain_menu_item_tool_activate(GtkMenuItem *menuitem, gpointer user_data)
 {
     GtkWidget *window_tool = (GtkWidget*)kim_getptr(__g_im, "p.ui.ui.window.tool", knil);
-    gtk_widget_show(window_tool);
+    gtk_widget_show_all(window_tool);
 }
 
 extern "C" void on_winmain_menu_item_pref_activate(GtkMenuItem *menuitem, gpointer user_data)
@@ -63,6 +65,46 @@ extern "C" void on_winmain_menu_item_pref_activate(GtkMenuItem *menuitem, gpoint
 
 /////////////////////////////////////////////////////////////////////////////
 // support routines
+
+static void fill_tool_window()
+{
+    GtkWidget *window_tool_pool = (GtkWidget*)kim_getptr(__g_im, "p.ui.ui.window.tool_pool", knil);
+
+    klog(("window_tool_pool: %x\n", window_tool_pool));
+
+    GtkWidget *box;
+    GtkWidget *button;
+
+	GtkSizeGroup *size_group;        /* All items have the same dimensions */
+
+    char label[22];
+
+    gint i;
+
+    gtk_widget_set_size_request(GTK_WIDGET(window_tool_pool), 200, 200);
+
+	box = glade_palette_box_new ();
+	size_group = gtk_size_group_new (GTK_SIZE_GROUP_BOTH);
+
+    for (i = 0; i < 15; i++) {
+        sprintf(label, "NIU:%X\n", i);
+        button = gtk_button_new_with_label(label);
+
+#if 0 /* TODO */
+        gtk_drag_source_set (button, GDK_BUTTON1_MASK | GDK_BUTTON3_MASK,
+                target_table, n_targets,
+                GDK_ACTION_COPY | GDK_ACTION_MOVE);
+#endif
+
+        gtk_size_group_add_widget (size_group, GTK_WIDGET (button));
+        gtk_container_add (GTK_CONTAINER (box), button);
+    }
+
+    gtk_container_add(GTK_CONTAINER(window_tool_pool), box);
+
+    gtk_widget_show_all(GTK_WIDGET(window_tool_pool));
+}
+
 
 /**
  * \brief Create all the skel or container windows for modules but ui.
@@ -93,7 +135,10 @@ static void ui_create_ui(KIM *im)
     kim_addptr(im, "p.ui.ui.window.optn", (kvoid*)window_pref, RF_AUTOSET, knil, knil);
 
     GtkWidget *window_tool = glade_xml_get_widget (gxml, "window_tool");
-    kim_addptr(im, "p.ui.ui.window.optn", (kvoid*)window_tool, RF_AUTOSET, knil, knil);
+    kim_addptr(im, "p.ui.ui.window.tool", (kvoid*)window_tool, RF_AUTOSET, knil, knil);
+
+    GtkWidget *window_tool_pool = glade_xml_get_widget (gxml, "wintool_viewport_tool_pool");
+    kim_addptr(im, "p.ui.ui.window.tool_pool", (kvoid*)window_tool_pool, RF_AUTOSET, knil, knil);
 
     glade_xml_signal_autoconnect(gxml);
 
@@ -169,6 +214,8 @@ extern "C" EXPORT_FUN void mm_hey(KIM *im)
 
     ui_create_ui(im);
     ui_create_status_icon(im);
+
+    fill_tool_window();
 
     kim_addint(im, "i.ui.act.show", 0, RF_AUTOSET, imat_ui_act_show, "(M)::show or hide UI");
 
