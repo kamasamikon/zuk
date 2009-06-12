@@ -248,24 +248,23 @@ static gboolean timeout(gpointer data)
     return TRUE;
 }
 
-int main(int argc, char *argv[])
+int __not_main(int argc, char *argv[])
 {
-    gtk_init(&argc, &argv);
+    // gtk_init(&argc, &argv);
     backend_init(&argc, &argv);
 
     start();
 
-    if (argc > 1)
-        filename = g_strdup(argv[1]);
+    filename = g_strdup("/home/auv/Desktop/niaochao/MVI_0032.avi");
 
     toggle_fullscreen();
     g_idle_add(init, NULL);
     g_timeout_add(500, timeout, NULL);
 
-    gtk_main();
+    // gtk_main();
 
-    g_free(filename);
-    backend_deinit();
+    // g_free(filename);
+    // backend_deinit();
 
     return 0;
 }

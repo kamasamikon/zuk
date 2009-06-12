@@ -13,9 +13,6 @@ public:
 
     virtual char* getHash(void) = 0;
 
-    virtual kbool start(void);
-    virtual kbool stop(void);
-
     virtual int remove(void) { return EC_NOT_SUPPORT; }
 
     /**  0 <= a_amp < 100 */

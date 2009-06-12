@@ -13,9 +13,6 @@ public:
 
     virtual char* getHash(void) = 0;
 
-    virtual kbool start(void);
-    virtual kbool stop(void);
-
     virtual kbool getCapability(KMC_CAP cap) { return kfalse; }
 
     virtual int setChannel(kbool isSet) { return EC_NOT_SUPPORT; }

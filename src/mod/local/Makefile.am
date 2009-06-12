@@ -16,6 +16,8 @@ GTK_CFLAGS=`pkg-config --cflags gtk+-2.0`
 libmc_local_la_LDFLAGS = ${GST_LIBS} ${GTK_LIBS} -module
 libmc_local_la_CFLAGS = ${GST_CFLAGS} ${GTK_CFLAGS}
 
+libmc_local_la_LDFLAGS += -L../../lib/kacoo -L../../lib/kmm -L../../lib/kmc -L../../lib/textconv
+libmc_local_la_LDFLAGS += -lrt -lkacoo -lkmm -lkmc -ltextconv
 
 libmc_local_la_CFLAGS += -Wall -g
 libmc_local_la_CFLAGS += -I../inc

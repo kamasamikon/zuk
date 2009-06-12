@@ -355,6 +355,9 @@ kint zuk_init(KIM *im, kint argc, kchar **argv)
     if (kfalse == check_application(im))
         return -1;
 
+    kim_addint(im, "i.env.argc", argc, RF_AUTOSET, NULL, knil);
+    kim_addptr(im, "p.env.argv", argv, RF_AUTOSET, NULL, knil);
+
     /* system depends init */
     zuk_sysdeps_start(im, argc, argv);
 

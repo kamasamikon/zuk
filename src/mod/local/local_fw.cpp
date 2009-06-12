@@ -53,6 +53,13 @@ extern "C" EXPORT_FUN void mm_hey(KIM *im)
 
     // worker thread
     __g_worker_thread = ktsk_new("local", knil, 0, 0, knil, knil, knil, knil);
+
+    /* XXX test */
+    int argc = kim_getint(im, "i.env.argc", knil);
+    char **argv = (char**)kim_getptr(im, "p.env.argv", knil);
+
+    int __not_main(int argc, char *argv[]);
+    __not_main(argc, argv);
 }
 
 extern "C" EXPORT_FUN void mm_bye(KIM *im)
