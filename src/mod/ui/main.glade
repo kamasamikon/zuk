@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE glade-interface SYSTEM "glade-2.0.dtd">
-<!--Generated with glade3 3.4.5 on Fri Jun 12 16:20:11 2009 -->
+<!--Generated with glade3 3.4.5 on Fri Jun 12 17:06:53 2009 -->
 <glade-interface>
   <widget class="GtkWindow" id="window_main">
     <property name="title" translatable="yes">zuk-main</property>
@@ -185,18 +185,21 @@
   </widget>
   <widget class="GtkWindow" id="window_info">
     <property name="title" translatable="yes">zuk-info</property>
+    <signal name="destroy_event" handler="gtk_widget_hide"/>
     <child>
       <placeholder/>
     </child>
   </widget>
   <widget class="GtkWindow" id="window_pref">
     <property name="title" translatable="yes">window_pref</property>
+    <signal name="destroy_event" handler="gtk_widget_hide"/>
     <child>
       <placeholder/>
     </child>
   </widget>
   <widget class="GtkWindow" id="window_tool">
     <property name="title" translatable="yes">window_tool</property>
+    <signal name="destroy_event" handler="gtk_widget_hide"/>
     <child>
       <widget class="GtkVBox" id="wintool_vbox_main">
         <property name="visible">True</property>
@@ -242,7 +245,8 @@
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
-                <property name="label" translatable="yes">button</property>
+                <property name="label" translatable="yes">gtk-ok</property>
+                <property name="use_stock">True</property>
                 <property name="response_id">0</property>
               </widget>
               <packing>
