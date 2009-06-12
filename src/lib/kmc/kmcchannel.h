@@ -9,6 +9,7 @@
 #include <kstr.h>
 #include <kmem.h>
 #include <kflg.h>
+#include <kdbg.h>
 #include "kerrcode.h"
 
 #include "kmcdefines.h"
@@ -231,6 +232,8 @@ public:
 private:
     KMediaDevice* parentDevice;
     char* name;
+    char hash[33];
+
     kuint flg;
 };
 

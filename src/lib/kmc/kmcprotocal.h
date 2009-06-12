@@ -6,6 +6,7 @@
 #include <sdlist.h>
 #include <kim.h>
 #include <kflg.h>
+#include <kdbg.h>
 #include "kerrcode.h"
 
 class KMediaContainer;
@@ -59,6 +60,7 @@ protected:
 private:
     KMediaContainer* parentContainer;
     char* name;
+    char hash[33];
 
     kuint flg;
     int type;
