@@ -15,17 +15,6 @@ class KMediaContainer;
 class KMediaProtocal
 {
 public:
-    //
-    //a_type ---> 0   reserve;
-    //       ---> 1   dvb-c
-    //        ----> 2   dvb-s
-    //        ----> 3   dvb-t
-    //        ----> 4   dvb-h
-    //       ---> 5   dmb-t
-    //        ----> 6   streaming media
-    //        ----> 7      cmmb
-    //        ----> 8
-
     KMediaProtocal(KMediaContainer* a_parentContainer, char* a_name, int a_type);
     virtual ~KMediaProtocal(void);
 
