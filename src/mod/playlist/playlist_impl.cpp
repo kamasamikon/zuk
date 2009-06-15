@@ -179,7 +179,7 @@ static kvoid update_urls(kbool add)
 /**
  * @brief for playing channel check the signal
  */
-kint pltmr_sig_checker(kvoid *a_ar0, kvoid *a_ar1, kvoid *a_ar2, kvoid *a_ar3)
+kint pltmr_sig_checker(kvoid *a_ur0, kvoid *a_ur1, kvoid *a_ur2, kvoid *a_ur3)
 {
     if (__g_unloading)
         return -1;
@@ -371,11 +371,11 @@ int IMWCH(plwch_liveadComplete)
 
 /////////////////////////////////////////////////////////////////////////////
 // kmsg dispatch
-static kint om_scan(kbean a_tsk, kuint a_msg, kvoid *a_ar0, kvoid *a_ar1, kvoid *a_ar2, kvoid *a_ar3, kint a_rsn)
+static kint om_scan(kbean a_tsk, kuint a_msg, kvoid *a_ur0, kvoid *a_ur1, kvoid *a_ur2, kvoid *a_ur3, kint a_rsn)
 {
-    kchar *devHash = (kchar*)a_ar0, **devlist = knil;
-    kbool start = (kbool)a_ar1;
-    kbool *success = (kbool*)a_ar3;
+    kchar *devHash = (kchar*)a_ur0, **devlist = knil;
+    kbool start = (kbool)a_ur1;
+    kbool *success = (kbool*)a_ur3;
     kint ret = EC_NG;
     KMediaDevice *dev;
     kint i;
@@ -417,7 +417,7 @@ static kint om_scan(kbean a_tsk, kuint a_msg, kvoid *a_ar0, kvoid *a_ar1, kvoid 
     if (success)
         *success = (EC_OK == ret) ? ktrue : kfalse;
 
-    kmem_free_s(a_ar0);
+    kmem_free_s(a_ur0);
     return 0;
 }
 
@@ -538,7 +538,7 @@ extern "C" EXPORT_FUN void mm_hey(KIM *im)
     // worker thread
     __g_worker_thread = ktsk_new("playlist", knil, 0, 0, knil, knil, knil, knil);
 
-    /* ar0(devHash, 0 for all) */
+    /* ur0(devHash, 0 for all) */
     kmsg_slot_set(__g_worker_thread, KMPL_SCAN, om_scan);
 
     // ONLY, start ONCE on BOOT.
@@ -596,8 +596,8 @@ extern "C" EXPORT_FUN void mm_guid(KIM *im, char **retguid)
     *retguid = guid;
 }
 
-extern "C" EXPORT_FUN void jc_playlist_device_scan(KIM *im, kchar *ar0, kchar *ar1, kchar *ar2, kchar *ar3, kchar **pVarResult)
+extern "C" EXPORT_FUN void jc_playlist_device_scan(KIM *im, kchar *ur0, kchar *ur1, kchar *ur2, kchar *ur3, kchar **pVarResult)
 {
-    kmsg_send(__g_worker_thread, KMPL_SCAN, kstr_dup(ar0), ar1, ar2, ar3);
+    kmsg_send(__g_worker_thread, KMPL_SCAN, kstr_dup(ur0), ur1, ur2, ur3);
 }
 

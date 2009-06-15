@@ -4,38 +4,38 @@
 #include <ktmr.h>
 #include <ktsk.h>
 
-int OnMsg_12345678(kbean a_tsk, kuint msg, kvoid *ar0, kvoid *ar1, kvoid *ar2, kvoid *ar3, kint rsn)
+int OnMsg_12345678(kbean a_tsk, kuint msg, kvoid *ur0, kvoid *ur1, kvoid *ur2, kvoid *ur3, kint rsn)
 {
     static int cnt = 0;
-    printf("[%d](OnMsg_12345678) : %x : %x, %x, %x, %x\n", cnt++, msg, ar0, ar1, ar2, ar3);
-    kmsg_post(ar0, msg, ar0, 0x67, 0, 0x8768);
+    printf("[%d](OnMsg_12345678) : %x : %x, %x, %x, %x\n", cnt++, msg, ur0, ur1, ur2, ur3);
+    kmsg_post(ur0, msg, ur0, 0x67, 0, 0x8768);
 
     return 0;
 }
 
-int OnMsg_34567890(kbean a_tsk, kuint msg, kvoid *ar0, kvoid *ar1, kvoid *ar2, kvoid *ar3, kint rsn)
+int OnMsg_34567890(kbean a_tsk, kuint msg, kvoid *ur0, kvoid *ur1, kvoid *ur2, kvoid *ur3, kint rsn)
 {
     static int cnt = 0;
-    printf("[%d](OnMsg_34567890) : %x : %x, %x, %x, %x\n", cnt++, msg, ar0, ar1, ar2, ar3);
-    kmsg_post(ar0, msg, ar0, 0x67, 0, 0x8768);
-    kmsg_post(ar0, 0x55555555, 3453, 0x637, 0, 0x8768);
+    printf("[%d](OnMsg_34567890) : %x : %x, %x, %x, %x\n", cnt++, msg, ur0, ur1, ur2, ur3);
+    kmsg_post(ur0, msg, ur0, 0x67, 0, 0x8768);
+    kmsg_post(ur0, 0x55555555, 3453, 0x637, 0, 0x8768);
     return 0;
 }
 
-int OnMsg_55555555(kbean a_tsk, kuint msg, kvoid *ar0, kvoid *ar1, kvoid *ar2, kvoid *ar3, kint rsn)
+int OnMsg_55555555(kbean a_tsk, kuint msg, kvoid *ur0, kvoid *ur1, kvoid *ur2, kvoid *ur3, kint rsn)
 {
     static int cnt = 0;
-    printf("[%d](OnMsg_55555555) : %x : %x, %x, %x, %x\n", cnt++, msg, ar0, ar1, ar2, ar3);
-    if (ar1 == 0x11111111) {
-        kmsg_send(ar0, KMSG_QUIT, 1, 2, 2, 2);
+    printf("[%d](OnMsg_55555555) : %x : %x, %x, %x, %x\n", cnt++, msg, ur0, ur1, ur2, ur3);
+    if (ur1 == 0x11111111) {
+        kmsg_send(ur0, KMSG_QUIT, 1, 2, 2, 2);
     }
     return 0;
 }
 
-int OnMsg_Timer(kbean a_tsk, kuint msg, kvoid *ar0, kvoid *ar1, kvoid *ar2, kvoid *ar3, kint rsn)
+int OnMsg_Timer(kbean a_tsk, kuint msg, kvoid *ur0, kvoid *ur1, kvoid *ur2, kvoid *ur3, kint rsn)
 {
     static int cnt = 0;
-    printf("[%d](OnMsg_Timer) : %x : %x, %x, %x, %x\n", cnt++, msg, ar0, ar1, ar2, ar3);
+    printf("[%d](OnMsg_Timer) : %x : %x, %x, %x, %x\n", cnt++, msg, ur0, ur1, ur2, ur3);
     return 0;
 }
 
@@ -43,17 +43,17 @@ kbean sema;
 #define CMD_GET            0x00000002
 #define CMD_REL            0x00000003
 
-int om_get(kbean a_tsk, kuint msg, kvoid *ar0, kvoid *ar1, kvoid *ar2, kvoid *ar3, kint rsn)
+int om_get(kbean a_tsk, kuint msg, kvoid *ur0, kvoid *ur1, kvoid *ur2, kvoid *ur3, kint rsn)
 {
-    kchar *name = (kchar*)ar3;
+    kchar *name = (kchar*)ur3;
     printf("om_get: hey %s\n", name);
     ksyn_sem_get(sema, -1);
     printf("om_get: bye %s\n\n", name);
 }
 
-int om_rel(kbean a_tsk, kuint msg, kvoid *ar0, kvoid *ar1, kvoid *ar2, kvoid *ar3, kint rsn)
+int om_rel(kbean a_tsk, kuint msg, kvoid *ur0, kvoid *ur1, kvoid *ur2, kvoid *ur3, kint rsn)
 {
-    kchar *name = (kchar*)ar3;
+    kchar *name = (kchar*)ur3;
     printf("\nom_get:\n");
     ksyn_sem_rel(sema);
 }

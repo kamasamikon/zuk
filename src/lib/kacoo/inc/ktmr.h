@@ -14,8 +14,8 @@ extern "C" {
 kint ktmr_init(kvoid);
 kint ktmr_final(kvoid);
 kbean ktmr_set(kbean a_tsk, kuint a_elapse, kbool a_loop,
-        kint (*a_cbk)(kvoid *ar0, kvoid *ar1, kvoid *ar2, kvoid *ar3),
-        kvoid *a_ar0, kvoid *a_ar1, kvoid *a_ar2, kvoid *a_ar3);
+        kint (*a_cbk)(kvoid *ur0, kvoid *ur1, kvoid *ur2, kvoid *ur3),
+        kvoid *a_ur0, kvoid *a_ur1, kvoid *a_ur2, kvoid *a_ur3);
 kvoid ktmr_killall(kbean a_tsk);
 kbool ktmr_kill(kbean a_tmr);
 

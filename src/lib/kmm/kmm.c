@@ -614,7 +614,7 @@ static WASP_JC kmm_find_proc_in_cache(kbean a_mm, kchar *a_soid, kchar *a_cname)
  *
  * \return 0 for success, -1 for error(not found).
  */
-kint kmm_jc_cmd(kbean a_mm, kchar *a_cname, kchar *a_soid, kchar *a_ar0, kchar *a_ar1, kchar *a_ar2, kchar *a_ar3, kchar **a_result)
+kint kmm_jc_cmd(kbean a_mm, kchar *a_cname, kchar *a_soid, kchar *a_ur0, kchar *a_ur1, kchar *a_ur2, kchar *a_ur3, kchar **a_result)
 {
     KMM *mm = (KMM*)a_mm;
     WASP_JC wasp_jc;
@@ -631,7 +631,7 @@ kint kmm_jc_cmd(kbean a_mm, kchar *a_cname, kchar *a_soid, kchar *a_ar0, kchar *
     }
 
     if (knil != wasp_jc) {
-        wasp_jc(mm->im, a_ar0, a_ar1, a_ar2, a_ar3, a_result);
+        wasp_jc(mm->im, a_ur0, a_ur1, a_ur2, a_ur3, a_result);
         return 0;
     } else
         kerror(("-- command :%s not found --\n", a_cname));

@@ -88,7 +88,7 @@ static hg_skt *__g_hg_skt;                  /**< socket according to each task *
 static K_dlist_entry __g_req_hdr;           /**< queue for hg_req */
 static kbean __g_lck;                       /**< proteck all, include queue */
 
-static kint om_skt_tmr(kvoid *a_ar0, kvoid *a_ar1, kvoid *a_ar2, kvoid *a_ar3);
+static kint om_skt_tmr(kvoid *a_ur0, kvoid *a_ur1, kvoid *a_ur2, kvoid *a_ur3);
 
 static kint connect_and_receive(hg_skt *s, hg_req *r);
 static kvoid reset_skt_timer(hg_skt *s);
@@ -116,7 +116,7 @@ kvoid free_hg_req(hg_req *r)
  * connection.
  */
 static kint om_hg_wakeup(kbean a_tsk, kuint a_msg,
-        kvoid *a_ar0, kvoid *a_ar1, kvoid *a_ar2, kvoid *a_ar3, kint a_rsn)
+        kvoid *a_ur0, kvoid *a_ur1, kvoid *a_ur2, kvoid *a_ur3, kint a_rsn)
 {
     kvoid *tsk_ar0;
     hg_skt *s;
@@ -388,11 +388,11 @@ static kint hg_can_req(kbean a_hdl, kint a_ref, kbool a_wait)
 /**
  * \internal
  * \brief Socket idle too long, kill it.
- * \param a_ar0 a pointer
+ * \param a_ur0 a pointer
  */
-static kint om_skt_tmr(kvoid *a_ar0, kvoid *a_ar1, kvoid *a_ar2, kvoid *a_ar3)
+static kint om_skt_tmr(kvoid *a_ur0, kvoid *a_ur1, kvoid *a_ur2, kvoid *a_ur3)
 {
-    return hg_can_skt((kbean)a_ar0, (kint)a_ar1);
+    return hg_can_skt((kbean)a_ur0, (kint)a_ur1);
 }
 
 /**
