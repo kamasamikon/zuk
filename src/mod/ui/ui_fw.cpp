@@ -45,7 +45,7 @@ extern "C" void on_winmain_menu_item_about_activate(GtkMenuItem *menuitem, gpoin
             "comments", "zuk.",
             "authors", authors,
             "documenters", documentors,
-            "title", "About zuk!",
+            "title", "About zuk! zuk!",
             NULL);
 }
 
@@ -66,37 +66,76 @@ extern "C" void on_winmain_menu_item_pref_activate(GtkMenuItem *menuitem, gpoint
 /////////////////////////////////////////////////////////////////////////////
 // support routines
 
+typedef struct _K_tool_button K_tool_button;
+struct _K_tool_button
+{
+    gchar *text;
+    gchar *tool_tip;
+
+    guint type;             /**< trigger? container? */
+    gboolean multi_instance;    /**< allow multi instance */
+    GtkWidget *(fun_init)(void);
+};
+
+static GtkWidget *create_tool_widget()
+{
+    static gint index = 0;
+    gchar *labels[5] = { "a", "aa", "aaaaaaa", "sdfss", "x" };
+
+    GtkWidget *tool, *button, *vbox, *entry;
+
+    tool = gtk_button_new();
+    button = gtk_button_new_with_label(labels[index++ % 5]);
+    vbox = gtk_vbox_new(TRUE, TRUE);
+    entry = gtk_entry_new();
+
+    gtk_container_add(GTK_CONTAINER(tool), vbox);
+    gtk_box_pack_start(GTK_BOX(vbox), button, TRUE, TRUE, 0);
+    gtk_box_pack_start(GTK_BOX(vbox), entry, TRUE, TRUE, 0);
+
+    return tool;
+}
+
+enum {
+    TARGET_STRING,
+    TARGET_ROOTWIN
+};
+static GtkTargetEntry target_table[] = {
+    { "STRING",     0, TARGET_STRING },
+    { "text/plain", 0, TARGET_STRING },
+    { "application/x-rootwindow-drop", 0, TARGET_ROOTWIN }
+};
+
+static guint n_targets = sizeof(target_table) / sizeof(target_table[0]);
+
 static void fill_tool_window()
 {
     GtkWidget *window_tool_pool = (GtkWidget*)kim_getptr(__g_im, "p.ui.ui.window.tool_pool", knil);
 
-    klog(("window_tool_pool: %x\n", window_tool_pool));
-
     GtkWidget *box;
     GtkWidget *button;
 
-	GtkSizeGroup *size_group;        /* All items have the same dimensions */
-
     char label[22];
-
     gint i;
 
     gtk_widget_set_size_request(GTK_WIDGET(window_tool_pool), 200, 200);
 
 	box = glade_palette_box_new ();
-	size_group = gtk_size_group_new (GTK_SIZE_GROUP_BOTH);
+
+    /* FIXME: set border other than 0 can make layout mess some time */
+    gtk_container_set_border_width(GTK_CONTAINER(box), 0);
 
     for (i = 0; i < 15; i++) {
-        sprintf(label, "NIU:%X\n", i);
+        sprintf(label, "NIU-NIU-NIU:%X\n", i);
         button = gtk_button_new_with_label(label);
+        button = create_tool_widget();
 
-#if 0 /* TODO */
-        gtk_drag_source_set (button, GDK_BUTTON1_MASK | GDK_BUTTON3_MASK,
+#if 10 /* TODO */
+        gtk_drag_source_set (button, GdkModifierType(GDK_BUTTON1_MASK | GDK_BUTTON3_MASK),
                 target_table, n_targets,
-                GDK_ACTION_COPY | GDK_ACTION_MOVE);
+                GdkDragAction(GDK_ACTION_COPY | GDK_ACTION_MOVE));
 #endif
 
-        gtk_size_group_add_widget (size_group, GTK_WIDGET (button));
         gtk_container_add (GTK_CONTAINER (box), button);
     }
 
@@ -121,6 +160,7 @@ static void ui_create_ui(KIM *im)
     kstr_subs(xmlpath, '\\', kvfs_path_sep());
 
     GladeXML *gxml = glade_xml_new (xmlpath, NULL, NULL);
+    kim_addptr(im, "p.ui.ui.glade", (kvoid*)gxml, RF_AUTOSET, knil, knil);
 
     GtkWidget *window_main = glade_xml_get_widget (gxml, "window_main");
     kim_addptr(im, "p.ui.ui.window.main", (kvoid*)window_main, RF_AUTOSET, knil, knil);
@@ -234,7 +274,7 @@ extern "C" EXPORT_FUN void mm_guid(KIM *im, char **retguid)
     *retguid = guid;
 }
 
-extern "C" EXPORT_FUN void jc_ui_get_script(KIM *im, kchar *ar0, kchar *ar1, kchar *ar2, kchar *ar3, kchar **pVarResult)
+extern "C" EXPORT_FUN void jc_ui_get_script(KIM *im, kchar *ur0, kchar *ur1, kchar *ur2, kchar *ur3, kchar **pVarResult)
 {
     kchar **ret = (kchar**)pVarResult;
     GtkWidget *main_win;
