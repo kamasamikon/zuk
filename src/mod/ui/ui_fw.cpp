@@ -21,6 +21,33 @@ static char guid[] = "52727E3B-08FD-4664-97B1-4CBABD17C985";
 
 static kchar *__g_mod_dir = knil;
 
+enum {
+    TARGET_STRING,
+    TARGET_ROOTWIN
+};
+static GtkTargetEntry target_table[] = {
+    { "STRING",     0, TARGET_STRING },
+    { "text/plain", 0, TARGET_STRING },
+    { "application/x-rootwindow-drop", 0, TARGET_ROOTWIN }
+};
+
+static guint n_targets = sizeof(target_table) / sizeof(target_table[0]);
+
+gboolean
+target_drag_drop(GtkWidget	       *widget,
+        GdkDragContext     *context,
+        gint                x,
+        gint                y,
+        guint               time) ;
+    void
+target_drag_data_received  (GtkWidget          *widget,
+        GdkDragContext     *context,
+        gint                x,
+        gint                y,
+        GtkSelectionData   *data,
+        guint               info,
+        guint               time) ;
+
 /////////////////////////////////////////////////////////////////////////////
 // defines
 extern "C" void on_winmain_menu_item_about_activate(GtkMenuItem *menuitem, gpointer user_data)
@@ -96,17 +123,144 @@ static GtkWidget *create_tool_widget()
     return tool;
 }
 
-enum {
-    TARGET_STRING,
-    TARGET_ROOTWIN
-};
-static GtkTargetEntry target_table[] = {
-    { "STRING",     0, TARGET_STRING },
-    { "text/plain", 0, TARGET_STRING },
-    { "application/x-rootwindow-drop", 0, TARGET_ROOTWIN }
+typedef struct _ToolEntry ToolEntry;
+struct _ToolEntry {
+    GtkWidget* (*create)();
+    void (*destroy)(GtkWidget*);
+
+    kuint type;         /* trigger, page, tool */
+    kchar *tool_tip;
+    kchar *name;
+    kchar *icon;
 };
 
-static guint n_targets = sizeof(target_table) / sizeof(target_table[0]);
+GtkWidget* htoolbar_create()
+{
+    GtkWidget *htbar, *button;
+    htbar = gtk_hbox_new(TRUE, 1);
+
+    button = gtk_button_new_with_label("htbar0");
+    gtk_box_pack_start(GTK_BOX(htbar), button, TRUE, FALSE, 0);
+
+    button = gtk_button_new_with_label("htbar1");
+    gtk_box_pack_start(GTK_BOX(htbar), button, TRUE, FALSE, 0);
+
+    gtk_drag_dest_set (htbar,
+            GTK_DEST_DEFAULT_ALL,
+            target_table, n_targets, /* no rootwin */
+            GdkDragAction(GDK_ACTION_COPY | GDK_ACTION_MOVE));
+    g_signal_connect (htbar, "drag_drop",
+            G_CALLBACK (target_drag_drop), htbar);
+
+    g_signal_connect (htbar, "drag_data_received",
+            G_CALLBACK (target_drag_data_received), NULL);
+
+
+    gtk_widget_show_all(htbar);
+
+    return htbar;
+}
+
+void htoolbar_destroy(GtkWidget*)
+{
+}
+
+GtkWidget* button_create()
+{
+    GtkWidget *button;
+
+    button = gtk_button_new_with_label("button");
+
+    gtk_widget_show(button);
+
+    return button;
+}
+
+void button_destroy(GtkWidget*)
+{
+}
+
+
+static void register_tool(ToolEntry *te);
+
+static ToolEntry* mk_button(kbool pub)
+{
+    ToolEntry *te = (ToolEntry*)kmem_alloz(sizeof(ToolEntry));
+    te->create = button_create;
+    te->destroy = button_destroy;
+
+    te->type = 'T';
+    te->tool_tip = "Create button";
+    te->name = "xbut";
+
+    if (pub)
+        register_tool(te);
+
+    return te;
+}
+
+static ToolEntry* mk_htoolbar(kbool pub)
+{
+    ToolEntry *te = (ToolEntry*)kmem_alloz(sizeof(ToolEntry));
+    te->create = htoolbar_create;
+    te->destroy = htoolbar_destroy;
+
+    te->type = 'T';
+    te->tool_tip = "Create vertical tool bar";
+    te->name = "VerticalToolBar";
+
+    if (pub)
+        register_tool(te);
+
+    return te;
+}
+
+GList *__g_tool_list = NULL;
+static void register_tool(ToolEntry *te)
+{
+    __g_tool_list = g_list_append(__g_tool_list, te);
+}
+
+static GtkWidget *create_tool_widget2(ToolEntry *te)
+{
+    static gint index = 0;
+    gchar *labels[5] = { "a", "aa", "aaaaaaa", "sdfss", "x" };
+
+    GtkWidget *tool, *button, *vbox, *entry;
+
+    tool = gtk_toggle_button_new();
+    gtk_widget_set_size_request(GTK_WIDGET(tool), 80, 80);
+    gtk_widget_set_tooltip_text(GTK_WIDGET(tool), te->tool_tip);
+
+    button = gtk_button_new_with_label(te->name);
+    vbox = gtk_vbox_new(TRUE, TRUE);
+    entry = gtk_entry_new();
+
+    gtk_container_add(GTK_CONTAINER(tool), vbox);
+    gtk_box_pack_start(GTK_BOX(vbox), button, TRUE, TRUE, 0);
+    gtk_box_pack_start(GTK_BOX(vbox), entry, TRUE, TRUE, 0);
+
+    return tool;
+}
+    void
+source_drag_data_get  (GtkWidget          *widget,
+        GdkDragContext     *context,
+        GtkSelectionData   *selection_data,
+        guint               info,
+        guint               time,
+        gpointer            data)
+{
+    printf("--------- source_drag_data_get \n");
+    g_print("source_drag_data_get: info : %x\n", info);
+    if (info == TARGET_ROOTWIN)
+        g_print ("I was dropped on the rootwin\n");
+    else
+        gtk_selection_data_set (selection_data,
+                selection_data->target,
+                // 8, (const guchar*)"I'm Data!", 9);
+                8, (const guchar*)data, 4);
+}
+
 
 static void fill_tool_window()
 {
@@ -117,6 +271,21 @@ static void fill_tool_window()
 
     char label[22];
     gint i;
+    GList *l;
+    ToolEntry *te;
+
+    mk_htoolbar(ktrue);
+    mk_button(ktrue);
+
+    mk_htoolbar(ktrue);
+    mk_button(ktrue);
+
+    mk_htoolbar(ktrue);
+    mk_button(ktrue);
+    mk_button(ktrue);
+    mk_button(ktrue);
+    mk_htoolbar(ktrue);
+    mk_htoolbar(ktrue);
 
     gtk_widget_set_size_request(GTK_WIDGET(window_tool_pool), 200, 200);
 
@@ -125,6 +294,25 @@ static void fill_tool_window()
     /* FIXME: set border other than 0 can make layout mess some time */
     gtk_container_set_border_width(GTK_CONTAINER(box), 0);
 
+    for (l = __g_tool_list; l; l = l->next) {
+        te = (ToolEntry*)l->data;
+        button = create_tool_widget2(te);
+
+        printf("fill_tool_window: button: %x\n", button);
+
+#if 10 /* TODO */
+        gtk_drag_source_set (button, GdkModifierType(GDK_BUTTON1_MASK | GDK_BUTTON3_MASK),
+                target_table, n_targets,
+                GdkDragAction(GDK_ACTION_COPY | GDK_ACTION_MOVE));
+#endif
+
+        g_signal_connect (button, "drag_data_get",
+                G_CALLBACK (source_drag_data_get), te);
+
+        gtk_container_add (GTK_CONTAINER (box), button);
+    }
+
+#if 0
     for (i = 0; i < 15; i++) {
         sprintf(label, "NIU-NIU-NIU:%X\n", i);
         button = gtk_button_new_with_label(label);
@@ -138,11 +326,68 @@ static void fill_tool_window()
 
         gtk_container_add (GTK_CONTAINER (box), button);
     }
+#endif
 
     gtk_container_add(GTK_CONTAINER(window_tool_pool), box);
 
     gtk_widget_show_all(GTK_WIDGET(window_tool_pool));
 }
+
+gboolean
+target_drag_drop(GtkWidget	       *widget,
+        GdkDragContext     *context,
+        gint                x,
+        gint                y,
+        guint               time)
+{
+    return FALSE;
+#if 0
+    GtkWidget *button;
+    ToolEntry *te = (ToolEntry*)data->data;
+
+    printf("--------- target_drag_drop \n");
+    printf("target_drag_drop: widget: %x\n", widget);
+
+    button = gtk_button_new_with_label("sdfsdfas");
+    button = te->create();
+    gtk_widget_show(GTK_WIDGET(button));
+    gtk_box_pack_start(GTK_BOX(widget), button, TRUE, FALSE, 0);
+    return FALSE;
+#endif
+}
+    void
+target_drag_data_received  (GtkWidget          *widget,
+        GdkDragContext     *context,
+        gint                x,
+        gint                y,
+        GtkSelectionData   *data,
+        guint               info,
+        guint               time)
+{
+    printf("--------- target_drag_data_received \n");
+    if ((data->length >= 0) && (data->format == 8))
+    {
+        g_print ("Received \"%x\" in trashcan\n", (gchar *)data->data);
+        if (1) {
+            GtkWidget *button;
+            ToolEntry *te = (ToolEntry*)data->data;
+
+            printf("--------- target_drag_drop \n");
+            printf("target_drag_drop: widget: %x\n", widget);
+
+            button = gtk_button_new_with_label("sdfsdfas");
+            button = te->create();
+            gtk_widget_show(GTK_WIDGET(button));
+            gtk_box_pack_start(GTK_BOX(widget), button, TRUE, FALSE, 0);
+        }
+
+        gtk_drag_finish (context, TRUE, FALSE, time);
+        return;
+    }
+
+    gtk_drag_finish (context, FALSE, FALSE, time);
+}
+
 
 
 /**
@@ -164,6 +409,26 @@ static void ui_create_ui(KIM *im)
 
     GtkWidget *window_main = glade_xml_get_widget (gxml, "window_main");
     kim_addptr(im, "p.ui.ui.window.main", (kvoid*)window_main, RF_AUTOSET, knil, knil);
+
+    GtkWidget *vbox_main = glade_xml_get_widget(gxml, "winmain_vbox_main");
+    printf("ui_create_ui: vbox_main: %x\n", vbox_main);
+
+    gtk_drag_dest_set (vbox_main,
+            GTK_DEST_DEFAULT_ALL,
+            target_table, n_targets, /* no rootwin */
+            GdkDragAction(GDK_ACTION_COPY | GDK_ACTION_MOVE));
+    g_signal_connect (vbox_main, "drag_drop",
+            G_CALLBACK (target_drag_drop), vbox_main);
+
+    g_signal_connect (vbox_main, "drag_data_received",
+            G_CALLBACK (target_drag_data_received), NULL);
+
+
+    if (1) {
+        GtkWidget *button;
+        button = gtk_button_new_with_label("xxyyyx");
+        gtk_box_pack_start(GTK_BOX(vbox_main), button, TRUE, FALSE, 0);
+    }
 
     GtkWidget *window_info = glade_xml_get_widget (gxml, "window_info");
     kim_addptr(im, "p.ui.ui.window.info", (kvoid*)window_info, RF_AUTOSET, knil, knil);
@@ -274,7 +539,7 @@ extern "C" EXPORT_FUN void mm_guid(KIM *im, char **retguid)
     *retguid = guid;
 }
 
-extern "C" EXPORT_FUN void jc_ui_get_script(KIM *im, kchar *ur0, kchar *ur1, kchar *ur2, kchar *ur3, kchar **pVarResult)
+extern "C" EXPORT_FUN void jc_ui_get_script(KIM *im, kchar *ar0, kchar *ar1, kchar *ar2, kchar *ar3, kchar **pVarResult)
 {
     kchar **ret = (kchar**)pVarResult;
     GtkWidget *main_win;
