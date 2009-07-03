@@ -47,12 +47,12 @@ typedef struct _ktmr {
      * a timer callback can be set. If cbk set, always call
      * the callback even if the ktmr::tsk is set.
      */
-    kint (*cbk)(kvoid *ar0, kvoid *ar1, kvoid *ar2, kvoid *ar3);
+    kint (*cbk)(kvoid *ur0, kvoid *ur1, kvoid *ur2, kvoid *ur3);
 
     /**
      * user parameters used for ktmr::cbk or for KMSG_TIMER message.
      */
-    kvoid *ar0, *ar1, *ar2, *ar3;
+    kvoid *ur0, *ur1, *ur2, *ur3;
 } ktmr;
 
 static kint __g_tmr_init_cnt = 0;
@@ -119,9 +119,9 @@ try_again:
                 tmr->proctime = cur_time;
                 ksyn_lck_rel(__g_tmr_qlck);
                 if (tmr->cbk) {
-                    tmr->cbk(tmr->ar0, tmr->ar1, tmr->ar2, tmr->ar3);
+                    tmr->cbk(tmr->ur0, tmr->ur1, tmr->ur2, tmr->ur3);
                 } else {
-                    kmsg_post(tmr->tsk, KMSG_TIMER, tmr->ar0, tmr->ar1, tmr->ar2, tmr->ar3);
+                    kmsg_post(tmr->tsk, KMSG_TIMER, tmr->ur0, tmr->ur1, tmr->ur2, tmr->ur3);
                 }
                 ksyn_lck_get(__g_tmr_qlck);
                 goto try_again;
@@ -213,16 +213,16 @@ kint ktmr_final(kvoid)
  * @param a_elapse
  * @param a_loop
  * @param a_cbk
- * @param ar0
- * @param ar1
- * @param ar2
- * @param ar3
+ * @param ur0
+ * @param ur1
+ * @param ur2
+ * @param ur3
  *
  * @return
  */
 kbean ktmr_set(kbean a_tsk, kuint a_elapse, kbool a_loop,
-        kint (*a_cbk)(kvoid *ar0, kvoid *ar1, kvoid *ar2, kvoid *ar3),
-        kvoid *a_ar0, kvoid *a_ar1, kvoid *a_ar2, kvoid *a_ar3)
+        kint (*a_cbk)(kvoid *ur0, kvoid *ur1, kvoid *ur2, kvoid *ur3),
+        kvoid *a_ur0, kvoid *a_ur1, kvoid *a_ur2, kvoid *a_ur3)
 {
     kuint flg = 0;
     ktmr *tmr;
@@ -247,10 +247,10 @@ kbean ktmr_set(kbean a_tsk, kuint a_elapse, kbool a_loop,
     tmr->time = ksal_get_tick();
     tmr->elapse = a_elapse;
     tmr->cbk = a_cbk;
-    tmr->ar0 = a_ar0;
-    tmr->ar1 = a_ar1;
-    tmr->ar2 = a_ar2;
-    tmr->ar3 = a_ar3;
+    tmr->ur0 = a_ur0;
+    tmr->ur1 = a_ur1;
+    tmr->ur2 = a_ur2;
+    tmr->ur3 = a_ur3;
 
     ksyn_lck_get(__g_tmr_qlck);
     insert_dlist_tail_entry(&__g_tmr_hdr, &tmr->ent);

@@ -37,6 +37,13 @@ AC_TYPE_SIGNAL
 AC_FUNC_VPRINTF
 AC_CHECK_FUNCS([clock_gettime getcwd gethostbyname memset mkdir nl_langinfo rmdir setlocale socket strchr strerror strrchr strstr strtol strtoul])
 
+#debug options support
+AC_ARG_ENABLE([debug],
+    [AS_HELP_STRING([--enable-debug],[debug program(default is no)])],
+    [CFLAGS="${CFLAGS} -DDEBUG -g"],
+    [CFLAGS="-O2"])
+
+
 AC_CONFIG_FILES([Makefile
                  src/Makefile
                  src/lib/Makefile

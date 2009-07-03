@@ -9,7 +9,7 @@
 extern "C" {
 #endif
 
-typedef kvoid (*WASP_JC)(KIM *a_im, kchar *a_ar0, kchar *a_ar1, kchar *a_ar2, kchar *a_ar3, kchar **a_result);
+typedef kvoid (*WASP_JC)(KIM *a_im, kchar *a_ur0, kchar *a_ur1, kchar *a_ur2, kchar *a_ur3, kchar **a_result);
 
 typedef struct _kmm_soinfo
 {
@@ -74,7 +74,7 @@ kint kmm_final(kbean a_mm);
 kint kmm_load_modules(kbean a_mm);
 kint kmm_unload_modules(kbean a_mm);
 
-kint kmm_jc_cmd(kbean a_mm, kchar *a_cname, kchar *a_soid, kchar *a_ar0, kchar *a_ar1, kchar *a_ar2, kchar *a_ar3, kchar **a_result);
+kint kmm_jc_cmd(kbean a_mm, kchar *a_cname, kchar *a_soid, kchar *a_ur0, kchar *a_ur1, kchar *a_ur2, kchar *a_ur3, kchar **a_result);
 
 #ifdef __cplusplus
 }

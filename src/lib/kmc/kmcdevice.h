@@ -7,6 +7,7 @@
 #include <sdlist.h>
 #include <kim.h>
 #include <kflg.h>
+#include <kdbg.h>
 #include "kerrcode.h"
 
 class KMediaProtocal;
@@ -29,6 +30,7 @@ public:
     virtual ~KMediaDevice(void);
 
     virtual char* getHash(void) = 0;
+    void setHash(const char *a_hash) { if (hash[0]) kerror(("Already setHash, can not set!\n")); else memcpy(hash, a_hash, 33); }
     const char* getName(void) { return name; }
     const char* getDesc(void) { return desc; }
 
@@ -68,6 +70,7 @@ public:
 private:
     KMediaProtocal* parentProtocal;
     char* name;
+    char hash[33];
 
     kuint flg;
 };

@@ -6,6 +6,7 @@
 #include <sdlist.h>
 #include <kim.h>
 #include <kflg.h>
+#include <kdbg.h>
 #include "kerrcode.h"
 
 class KMediaContainer;
@@ -19,6 +20,7 @@ public:
     virtual ~KMediaProtocal(void);
 
     virtual char* getHash(void) = 0;
+    void setHash(const char *a_hash) { if (hash[0]) kerror(("Already setHash, can not set!\n")); else memcpy(hash, a_hash, 33); }
     const char* getName(void) { return name; }
     const char* getDesc(void) { return desc; }
 
@@ -47,6 +49,7 @@ protected:
 private:
     KMediaContainer* parentContainer;
     char* name;
+    char hash[33];
 
     kuint flg;
     int type;

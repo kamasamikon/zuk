@@ -1,0 +1,46 @@
+#!/bin/bash
+
+# no readlink in MID, use other to get real path
+THE_PATH=`file -b /proc/$$/fd/255`
+THE_START=`expr index "$THE_PATH" "/"`
+THE_PATH=`expr substr "$THE_PATH" $THE_START 10000`
+THE_LENGTH=`expr length "$THE_PATH"`
+THE_PATH=${THE_PATH:0:(( $THE_LENGTH - 1 ))}
+
+SSPATH=$THE_PATH                                            # Script's path
+SSDIR=`dirname $THE_PATH`                                   # Script's dir
+
+show_help() {
+    echo -e "Usage: mc-build new-mc-module-name"
+    echo -e "    Generate new mc module, which will in ${SSDIR}/../new-mc-module-name"
+}
+
+if [ $# == '0' ]; then
+    show_help
+    exit 0
+fi
+
+MODNAME=$1
+if [ -e ${SSDIR}/../${MODNAME} ]; then
+    echo "target directory [ ${SSDIR}/../${MODNAME} ] already exist!"
+    exit 0
+fi
+
+CAPNAME=`echo $MODNAME | tr '[a-z]' '[A-Z]'`
+
+echo "cp skel to target directory"
+cp -frv ${SSDIR}/../mc-skel ${SSDIR}/../${MODNAME} 
+
+echo "goto target directory"
+cd  ${SSDIR}/../${MODNAME} 
+
+echo "delete mc-build"
+rm mc-build
+
+echo "rename"
+rename "s/mc-skel/${MODNAME}/g" *
+
+echo "renmame content"
+sed -i "s/MCSkel/${MODNAME}/g" *
+sed -i "s/MCSKEL/${CAPNAME}/g" *
+

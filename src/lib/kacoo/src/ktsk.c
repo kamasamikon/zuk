@@ -34,7 +34,7 @@ typedef struct _kmsg {
     kuint flg;                      /**< DYNMEM, POST, */
 
     kuint msg;
-    kvoid *ar0, *ar1, *ar2, *ar3;
+    kvoid *ur0, *ur1, *ur2, *ur3;
 } kmsg;
 /** @} */
 
@@ -61,7 +61,7 @@ typedef struct _ktsk {
      */
     kchar *name;
     KTSK_PROC mainproc;
-    kvoid *ar0, *ar1, *ar2, *ar3;
+    kvoid *ur0, *ur1, *ur2, *ur3;
     /** @} */
 
     kbean msg_wait_sema;
@@ -246,16 +246,16 @@ kint kmsg_slot_del(kbean a_tsk, kuint a_msg)
  * @brief Return user data saved when ktsk_new.
  *
  * @param a_tsk Target task.
- * @param a_ar0 ktsk::ar0;
- * @param a_ar1 ktsk::ar1;
- * @param a_ar2 ktsk::ar2;
- * @param a_ar3 ktsk::ar3;
+ * @param a_ur0 ktsk::ur0;
+ * @param a_ur1 ktsk::ur1;
+ * @param a_ur2 ktsk::ur2;
+ * @param a_ur3 ktsk::ur3;
  *
  * @return 0 for success, -1 for error.
  *
  * @see ::ktsk_new
  */
-kint ktsk_get_ars(kbean a_tsk, kvoid **a_ar0, kvoid **a_ar1, kvoid **a_ar2, kvoid **a_ar3)
+kint ktsk_get_ars(kbean a_tsk, kvoid **a_ur0, kvoid **a_ur1, kvoid **a_ur2, kvoid **a_ur3)
 {
     ktsk *tsk = (ktsk*)a_tsk;
 
@@ -264,14 +264,14 @@ kint ktsk_get_ars(kbean a_tsk, kvoid **a_ar0, kvoid **a_ar1, kvoid **a_ar2, kvoi
         kerror(("kmsg_slot_get: bad task\n"));
         return -1;
     }
-    if (a_ar0)
-        *a_ar0 = tsk->ar0;
-    if (a_ar1)
-        *a_ar1 = tsk->ar1;
-    if (a_ar2)
-        *a_ar2 = tsk->ar2;
-    if (a_ar3)
-        *a_ar3 = tsk->ar3;
+    if (a_ur0)
+        *a_ur0 = tsk->ur0;
+    if (a_ur1)
+        *a_ur1 = tsk->ur1;
+    if (a_ur2)
+        *a_ur2 = tsk->ur2;
+    if (a_ur3)
+        *a_ur3 = tsk->ur3;
     return 0;
 }
 
@@ -389,18 +389,18 @@ static kvoid ktsk_def_proc(kvoid)
     klog(("into ktsk_def_proc, tskid:%x, name:%s proc:%x\n", tsk->tskid, tsk->name, tsk->mainproc));
 
     if (tsk->mainproc)
-        tsk->mainproc(tsk->ar0, tsk->ar1, tsk->ar2, tsk->ar3);
+        tsk->mainproc(tsk->ur0, tsk->ur1, tsk->ur2, tsk->ur3);
     else {
         kuint msg;
-        kvoid *ar0, *ar1, *ar2, *ar3;
+        kvoid *ur0, *ur1, *ur2, *ur3;
 
-        while (kmsg_peek((kbean)tsk, &msg, &ar0, &ar1, &ar2, &ar3)) {
+        while (kmsg_peek((kbean)tsk, &msg, &ur0, &ur1, &ur2, &ur3)) {
             /*
              * loop till quit message has been processed
              */
 
             klog(("will disp: %s, %x\n", tsk->name, msg));
-            kmsg_disp((kbean)tsk, msg, ar0, ar1, ar2, ar3, KMDR_NORMAL);
+            kmsg_disp((kbean)tsk, msg, ur0, ur1, ur2, ur3, KMDR_NORMAL);
             klog(("end disp: %s, %x\n", tsk->name, msg));
 
             /* windup for the current message set by kmsg_peek */
@@ -433,16 +433,16 @@ static kvoid ktsk_def_proc(kvoid)
  *
  * @param a_name name of the task, optional.
  * @param a_mainproc User defined process function, if knil, the task run in message driven mode.
- * @param a_ar0 User data.
- * @param a_ar1 User data.
- * @param a_ar2 User data.
- * @param a_ar3 User data.
+ * @param a_ur0 User data.
+ * @param a_ur1 User data.
+ * @param a_ur2 User data.
+ * @param a_ur3 User data.
  *
  * @return Identifer to created task, knil for error.
  */
 
 kbean ktsk_new(const kchar *a_name, KTSK_PROC a_mainproc, kint a_prio, kint a_stack_size,
-        kvoid *a_ar0, kvoid *a_ar1, kvoid *a_ar2, kvoid *a_ar3)
+        kvoid *a_ur0, kvoid *a_ur1, kvoid *a_ur2, kvoid *a_ur3)
 {
     ktsk *tsk = (ktsk*)kmem_alloz(sizeof(ktsk));
     if (!tsk) {
@@ -452,10 +452,10 @@ kbean ktsk_new(const kchar *a_name, KTSK_PROC a_mainproc, kint a_prio, kint a_st
 
     tsk->name = kstr_dup(a_name);
     tsk->mainproc = a_mainproc;
-    tsk->ar0 = a_ar0;
-    tsk->ar1 = a_ar1;
-    tsk->ar2 = a_ar2;
-    tsk->ar3 = a_ar3;
+    tsk->ur0 = a_ur0;
+    tsk->ur1 = a_ur1;
+    tsk->ur2 = a_ur2;
+    tsk->ur3 = a_ur3;
 
     tsk->next_serial = 1;
 
@@ -561,15 +561,15 @@ static kvoid ktsk_free_res(kbean a_tsk)
  *
  * @param a_tsk Target task.
  * @param a_msg Message.
- * @param a_ar0 User data used for message dispatch function.
- * @param a_ar1 User data used for message dispatch function.
- * @param a_ar2 User data used for message dispatch function.
- * @param a_ar3 User data used for message dispatch function.
+ * @param a_ur0 User data used for message dispatch function.
+ * @param a_ur1 User data used for message dispatch function.
+ * @param a_ur2 User data used for message dispatch function.
+ * @param a_ur3 User data used for message dispatch function.
  *
  * @return 0 for success, -1 for error.
  */
 kint kmsg_send(kbean a_tsk, kuint a_msg,
-        kvoid *a_ar0, kvoid *a_ar1, kvoid *a_ar2, kvoid *a_ar3)
+        kvoid *a_ur0, kvoid *a_ur1, kvoid *a_ur2, kvoid *a_ur3)
 {
     ktsk *tsk = (ktsk*)a_tsk, *tmptsk;
     kbean curtsk = ksal_tsk_cur();
@@ -593,13 +593,13 @@ kint kmsg_send(kbean a_tsk, kuint a_msg,
             ent = ent->next;
 
             if (curtsk != tmptsk->tskid)
-                kmsg_send(tmptsk, a_msg, a_ar0, a_ar1, a_ar2, a_ar3);
+                kmsg_send(tmptsk, a_msg, a_ur0, a_ur1, a_ur2, a_ur3);
             else
                 /* save current task */
                 tsk = tmptsk;
         }
         /* now for current task */
-        kmsg_send(tsk, a_msg, a_ar0, a_ar1, a_ar2, a_ar3);
+        kmsg_send(tsk, a_msg, a_ur0, a_ur1, a_ur2, a_ur3);
 
     } else if (curtsk == tsk->tskid) {
         /*
@@ -622,7 +622,7 @@ kint kmsg_send(kbean a_tsk, kuint a_msg,
          * direct call. This makes that tsk->curmsg is not modified
          * and kmsg_peek is not called after kmsg_disp.
          */
-        kmsg_disp((kbean)a_tsk, a_msg, a_ar0, a_ar1, a_ar2, a_ar3, KMDR_NORMAL);
+        kmsg_disp((kbean)a_tsk, a_msg, a_ur0, a_ur1, a_ur2, a_ur3, KMDR_NORMAL);
 
         if (KMSG_QUIT == a_msg) {
             /* special for Quit message, clean all the pending message and quit */
@@ -669,10 +669,10 @@ kint kmsg_send(kbean a_tsk, kuint a_msg,
         msg.flg = 0;
         msg.serial = tsk->next_serial++;
         msg.msg = a_msg;
-        msg.ar0 = a_ar0;
-        msg.ar1 = a_ar1;
-        msg.ar2 = a_ar2;
-        msg.ar3 = a_ar3;
+        msg.ur0 = a_ur0;
+        msg.ur1 = a_ur1;
+        msg.ur2 = a_ur2;
+        msg.ur3 = a_ur3;
 
         if (tsk->next_serial == 0)
             tsk->next_serial++;
@@ -712,15 +712,15 @@ kint kmsg_send(kbean a_tsk, kuint a_msg,
  *
  * @param a_tsk Target task.
  * @param a_msg Message.
- * @param a_ar0 User data used for message dispatch function.
- * @param a_ar1 User data used for message dispatch function.
- * @param a_ar2 User data used for message dispatch function.
- * @param a_ar3 User data used for message dispatch function.
+ * @param a_ur0 User data used for message dispatch function.
+ * @param a_ur1 User data used for message dispatch function.
+ * @param a_ur2 User data used for message dispatch function.
+ * @param a_ur3 User data used for message dispatch function.
  *
  * @return Message Unique IDentify  for success, 0 for error.
  */
 kint kmsg_post(kbean a_tsk, kuint a_msg,
-        kvoid *a_ar0, kvoid *a_ar1, kvoid *a_ar2, kvoid *a_ar3)
+        kvoid *a_ur0, kvoid *a_ur1, kvoid *a_ur2, kvoid *a_ur3)
 {
     ktsk *tsk = (ktsk*)a_tsk, *tmptsk;
     kmsg *msg;
@@ -742,7 +742,7 @@ kint kmsg_post(kbean a_tsk, kuint a_msg,
             tmptsk = FIELD_TO_STRUCTURE(ent, ktsk, ent);
             ent = ent->next;
 
-            kmsg_post(tmptsk, a_msg, a_ar0, a_ar1, a_ar2, a_ar3);
+            kmsg_post(tmptsk, a_msg, a_ur0, a_ur1, a_ur2, a_ur3);
         }
         return 0;
     } else {
@@ -757,10 +757,10 @@ kint kmsg_post(kbean a_tsk, kuint a_msg,
         }
         msg->serial = tsk->next_serial++;
         msg->msg = a_msg;
-        msg->ar0 = a_ar0;
-        msg->ar1 = a_ar1;
-        msg->ar2 = a_ar2;
-        msg->ar3 = a_ar3;
+        msg->ur0 = a_ur0;
+        msg->ur1 = a_ur1;
+        msg->ur2 = a_ur2;
+        msg->ur3 = a_ur3;
 
         if (tsk->next_serial == 0)
             tsk->next_serial++;
@@ -806,7 +806,7 @@ kint kmsg_kill(kbean a_tsk, kbool a_type, kuint a_muid)
 
         if (msg->serial == a_muid && !kflg_chk(msg->flg, KMF_SNDMSG)) {
             remove_dlist_entry(&msg->ent);
-            kmsg_disp(a_tsk, msg->msg, msg->ar0, msg->ar1, msg->ar2, msg->ar3, KMDR_CANCEL);
+            kmsg_disp(a_tsk, msg->msg, msg->ur0, msg->ur1, msg->ur2, msg->ur3, KMDR_CANCEL);
             break;
         }
 
@@ -824,16 +824,16 @@ kint kmsg_kill(kbean a_tsk, kbool a_type, kuint a_muid)
  *
  * @param a_tsk Target task.
  * @param a_msg Message.
- * @param a_ar0 User data used for message dispatch function.
- * @param a_ar1 User data used for message dispatch function.
- * @param a_ar2 User data used for message dispatch function.
- * @param a_ar3 User data used for message dispatch function.
+ * @param a_ur0 User data used for message dispatch function.
+ * @param a_ur1 User data used for message dispatch function.
+ * @param a_ur2 User data used for message dispatch function.
+ * @param a_ur3 User data used for message dispatch function.
  * @param a_rsn Call reason for that message.
  *
  * @return
  */
 kint kmsg_disp(kbean a_tsk, kuint a_msg,
-        kvoid *a_ar0, kvoid *a_ar1, kvoid *a_ar2, kvoid *a_ar3, kint a_rsn)
+        kvoid *a_ur0, kvoid *a_ur1, kvoid *a_ur2, kvoid *a_ur3, kint a_rsn)
 {
     ktsk *tsk = (ktsk*)a_tsk;
     kuint i;
@@ -844,7 +844,7 @@ kint kmsg_disp(kbean a_tsk, kuint a_msg,
     slots = tsk->slot_arr;
     for (i = 0; i < tsk->slot_cnt; i++)
         if (slots[i].msg == a_msg) {
-            slots[i].disp(a_tsk, a_msg, a_ar0, a_ar1, a_ar2, a_ar3, a_rsn);
+            slots[i].disp(a_tsk, a_msg, a_ur0, a_ur1, a_ur2, a_ur3, a_rsn);
             return 0;
         }
 
@@ -880,7 +880,7 @@ static kbool kmsg_cleanup(kbean a_tsk)
 
         curmsg = FIELD_TO_STRUCTURE(ent, kmsg, ent);
 
-        kmsg_disp(a_tsk, curmsg->msg, curmsg->ar0, curmsg->ar1, curmsg->ar2, curmsg->ar3, KMDR_CANCEL);
+        kmsg_disp(a_tsk, curmsg->msg, curmsg->ur0, curmsg->ur1, curmsg->ur2, curmsg->ur3, KMDR_CANCEL);
 
         flg = curmsg->flg;
         if (kflg_chk(flg, KMF_SNDMSG)) {
@@ -936,7 +936,7 @@ static kvoid kmsg_windup(kbean a_tsk)
     }
 
     klog(("windup message: msg:%x, flg:%x ars(%x, %x, %x, %x)\n", curmsg->msg, curmsg->flg,
-                curmsg->ar0, curmsg->ar1, curmsg->ar2, curmsg->ar3));
+                curmsg->ur0, curmsg->ur1, curmsg->ur2, curmsg->ur3));
 
     /* save, for checking QUIT after kmsg is freed for KMF_DYNMEM */
     msgid = curmsg->msg;
@@ -973,10 +973,10 @@ static kvoid kmsg_windup(kbean a_tsk)
  *
  * @param a_tsk Target task.
  * @param a_msg return peeked message.
- * @param *a_ar0 return peeked user data for this message.
- * @param *a_ar1 return peeked user data for this message.
- * @param *a_ar2 return peeked user data for this message.
- * @param *a_ar3 return peeked user data for this message.
+ * @param *a_ur0 return peeked user data for this message.
+ * @param *a_ur1 return peeked user data for this message.
+ * @param *a_ur2 return peeked user data for this message.
+ * @param *a_ur3 return peeked user data for this message.
  *
  * @retval ktrue A message is successfully peeked from message queue
  * @retval kfalse The tasking is quiting.
@@ -984,7 +984,7 @@ static kvoid kmsg_windup(kbean a_tsk)
  * @see ::kmsg_cleanup
  */
 kbool kmsg_peek(kbean a_tsk, kuint *a_msg,
-        kvoid **a_ar0, kvoid **a_ar1, kvoid **a_ar2, kvoid **a_ar3)
+        kvoid **a_ur0, kvoid **a_ur1, kvoid **a_ur2, kvoid **a_ur3)
 {
     ktsk *tsk = (ktsk*)a_tsk;
     kint ret;
@@ -1020,13 +1020,13 @@ again:
         tsk->curmsg = FIELD_TO_STRUCTURE(ent, kmsg, ent);
 
         klog(("peek message: msg:%x, ars(%x, %x, %x, %x)\n", tsk->curmsg->msg,
-                    tsk->curmsg->ar0, tsk->curmsg->ar1, tsk->curmsg->ar2, tsk->curmsg->ar3));
+                    tsk->curmsg->ur0, tsk->curmsg->ur1, tsk->curmsg->ur2, tsk->curmsg->ur3));
 
         *a_msg = tsk->curmsg->msg;
-        *a_ar0 = tsk->curmsg->ar0;
-        *a_ar1 = tsk->curmsg->ar1;
-        *a_ar2 = tsk->curmsg->ar2;
-        *a_ar3 = tsk->curmsg->ar3;
+        *a_ur0 = tsk->curmsg->ur0;
+        *a_ur1 = tsk->curmsg->ur1;
+        *a_ur2 = tsk->curmsg->ur2;
+        *a_ur3 = tsk->curmsg->ur3;
 
         ksyn_lck_rel(tsk->msg_qlck);
 
