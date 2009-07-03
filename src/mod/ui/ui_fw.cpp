@@ -17,6 +17,19 @@
 
 #include "glade-palette-box.h"
 
+typedef struct _ToolEntry ToolEntry;
+struct _ToolEntry {
+    GtkWidget* (*create)();
+    void (*destroy)(GtkWidget*);
+
+    kuint type;         /* trigger, page, tool */
+    kchar *tool_tip;
+    kchar *name;
+    kchar *icon;
+};
+
+static void register_tool(ToolEntry *te);
+
 static char guid[] = "52727E3B-08FD-4664-97B1-4CBABD17C985";
 
 static kchar *__g_mod_dir = knil;
@@ -123,17 +136,6 @@ static GtkWidget *create_tool_widget()
     return tool;
 }
 
-typedef struct _ToolEntry ToolEntry;
-struct _ToolEntry {
-    GtkWidget* (*create)();
-    void (*destroy)(GtkWidget*);
-
-    kuint type;         /* trigger, page, tool */
-    kchar *tool_tip;
-    kchar *name;
-    kchar *icon;
-};
-
 GtkWidget* htoolbar_create()
 {
     GtkWidget *htbar, *button;
@@ -165,32 +167,55 @@ void htoolbar_destroy(GtkWidget*)
 {
 }
 
-GtkWidget* button_create()
+/*---------------------------------------------------------------------------------
+ * button_play tool
+ */
+
+#define IMWCH(f) (f)(KIM *im, KRtiRec *rec, void *ua, void *ub, kuchar type)
+static kint IMWCH(imwch_button_play_clicked)
 {
-    GtkWidget *button;
-
-    button = gtk_button_new_with_label("button");
-
-    gtk_widget_show(button);
-
-    return button;
+    /* toggle to pause or play the current media */
 }
 
-void button_destroy(GtkWidget*)
+static void on_button_play_clicked(GtkButton *button, gpointer user_data)
+{
+    GtkWidget *but = (GtkWidget*)user_data;
+    g_assert((void*)but == (void*)button);
+
+    kim_setint(__g_im, "i.tool.evt.clicked", 1, (void**)but, knil);
+}
+
+/* create the play button */
+GtkWidget* button_play_create()
+{
+    GtkWidget *button_play;
+
+    button_play = gtk_button_new_with_label("button");
+
+    /* set tool tips */
+    /* set icon */
+
+    /* g_signal -> g_callback -> im_event */
+    g_signal_connect(G_OBJECT(button_play), "clicked", G_CALLBACK(on_button_play_clicked), button_play);
+    kim_addawch(__g_im, "i.tool.evt.clicked", imwch_button_play_clicked, button_play, knil, knil);
+
+    gtk_widget_show(button_play);
+
+    return button_play;
+}
+
+void button_play_destroy(GtkWidget*)
 {
 }
 
-
-static void register_tool(ToolEntry *te);
-
-static ToolEntry* mk_button(kbool pub)
+static ToolEntry* mk_button_play(kbool pub)
 {
     ToolEntry *te = (ToolEntry*)kmem_alloz(sizeof(ToolEntry));
-    te->create = button_create;
-    te->destroy = button_destroy;
+    te->create = button_play_create;
+    te->destroy = button_play_destroy;
 
     te->type = 'T';
-    te->tool_tip = "Create button";
+    te->tool_tip = "Create play button";
     te->name = "xbut";
 
     if (pub)
@@ -199,13 +224,21 @@ static ToolEntry* mk_button(kbool pub)
     return te;
 }
 
+/*---------------------------------------------------------------------------------
+ * button tool
+ */
+
+static ToolEntry* mk_htoolbar2(kchar *clsid, kbool pub)
+{
+}
+
 static ToolEntry* mk_htoolbar(kbool pub)
 {
     ToolEntry *te = (ToolEntry*)kmem_alloz(sizeof(ToolEntry));
     te->create = htoolbar_create;
     te->destroy = htoolbar_destroy;
 
-    te->type = 'T';
+    te->type = 'L';
     te->tool_tip = "Create vertical tool bar";
     te->name = "VerticalToolBar";
 
@@ -214,6 +247,27 @@ static ToolEntry* mk_htoolbar(kbool pub)
 
     return te;
 }
+
+#if 0
+void flow()
+{
+    GtkWidget *vol = gtk_progress_bar_new();
+    g_signal_connect(G_OBJECT(vol), "changed", G_CALLBACK(vol), vol);
+    kim_addawch(__g_im, "vol.enable", vol_enable, vol, ...);
+
+
+
+    GtkWidget *vol = gtk_progress_bar_new();
+    g_signal_connect(G_OBJECT(vol), "changed", G_CALLBACK(vol), vol);
+    kim_addawch(__g_im, "vol.enable", vol_enable, vol, ...);
+
+
+
+    GtkWidget *vol = gtk_progress_bar_new();
+    g_signal_connect(G_OBJECT(vol), "changed", G_CALLBACK(vol), vol);
+    kim_addawch(__g_im, "vol.enable", vol_enable, vol, ...);
+}
+#endif
 
 GList *__g_tool_list = NULL;
 static void register_tool(ToolEntry *te)
@@ -265,8 +319,10 @@ source_drag_data_get  (GtkWidget          *widget,
 static void fill_tool_window()
 {
     GtkWidget *window_tool_pool = (GtkWidget*)kim_getptr(__g_im, "p.ui.ui.window.tool_pool", knil);
+    GtkWidget *window_layout_tool_pool = (GtkWidget*)kim_getptr(__g_im, "p.ui.ui.window.layout_tool_pool", knil);
+    window_tool_pool = window_layout_tool_pool;
 
-    GtkWidget *box;
+    GtkWidget *tool_box;
     GtkWidget *button;
 
     char label[22];
@@ -275,24 +331,24 @@ static void fill_tool_window()
     ToolEntry *te;
 
     mk_htoolbar(ktrue);
-    mk_button(ktrue);
+    mk_button_play(ktrue);
 
     mk_htoolbar(ktrue);
-    mk_button(ktrue);
+    mk_button_play(ktrue);
 
     mk_htoolbar(ktrue);
-    mk_button(ktrue);
-    mk_button(ktrue);
-    mk_button(ktrue);
+    mk_button_play(ktrue);
+    mk_button_play(ktrue);
+    mk_button_play(ktrue);
     mk_htoolbar(ktrue);
     mk_htoolbar(ktrue);
 
     gtk_widget_set_size_request(GTK_WIDGET(window_tool_pool), 200, 200);
 
-	box = glade_palette_box_new ();
+	tool_box = glade_palette_box_new ();
 
     /* FIXME: set border other than 0 can make layout mess some time */
-    gtk_container_set_border_width(GTK_CONTAINER(box), 0);
+    gtk_container_set_border_width(GTK_CONTAINER(tool_box), 0);
 
     for (l = __g_tool_list; l; l = l->next) {
         te = (ToolEntry*)l->data;
@@ -309,7 +365,7 @@ static void fill_tool_window()
         g_signal_connect (button, "drag_data_get",
                 G_CALLBACK (source_drag_data_get), te);
 
-        gtk_container_add (GTK_CONTAINER (box), button);
+        gtk_container_add (GTK_CONTAINER (tool_box), button);
     }
 
 #if 0
@@ -324,11 +380,11 @@ static void fill_tool_window()
                 GdkDragAction(GDK_ACTION_COPY | GDK_ACTION_MOVE));
 #endif
 
-        gtk_container_add (GTK_CONTAINER (box), button);
+        gtk_container_add (GTK_CONTAINER (tool_box), button);
     }
 #endif
 
-    gtk_container_add(GTK_CONTAINER(window_tool_pool), box);
+    gtk_container_add(GTK_CONTAINER(window_tool_pool), tool_box);
 
     gtk_widget_show_all(GTK_WIDGET(window_tool_pool));
 }
@@ -409,9 +465,11 @@ static void ui_create_ui(KIM *im)
 
     GtkWidget *window_main = glade_xml_get_widget (gxml, "window_main");
     kim_addptr(im, "p.ui.ui.window.main", (kvoid*)window_main, RF_AUTOSET, knil, knil);
+    klog(("window_main: %s\n", GTK_OBJECT_TYPE_NAME(window_main)));
 
     GtkWidget *vbox_main = glade_xml_get_widget(gxml, "winmain_vbox_main");
     printf("ui_create_ui: vbox_main: %x\n", vbox_main);
+    klog(("vbox_main: %s\n", GTK_OBJECT_TYPE_NAME(vbox_main)));
 
     gtk_drag_dest_set (vbox_main,
             GTK_DEST_DEFAULT_ALL,
@@ -444,6 +502,9 @@ static void ui_create_ui(KIM *im)
 
     GtkWidget *window_tool_pool = glade_xml_get_widget (gxml, "wintool_viewport_tool_pool");
     kim_addptr(im, "p.ui.ui.window.tool_pool", (kvoid*)window_tool_pool, RF_AUTOSET, knil, knil);
+
+    GtkWidget *window_layout_tool_pool = glade_xml_get_widget (gxml, "wintool_viewport_layout_tool_pool");
+    kim_addptr(im, "p.ui.ui.window.layout_tool_pool", (kvoid*)window_layout_tool_pool, RF_AUTOSET, knil, knil);
 
     glade_xml_signal_autoconnect(gxml);
 

@@ -1,12 +1,12 @@
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE glade-interface SYSTEM "glade-2.0.dtd">
+<!--Generated with glade3 3.4.5 on Fri Jun 19 13:04:34 2009 -->
 <glade-interface>
-  <!-- interface-requires gtk+ 2.16 -->
-  <!-- interface-naming-policy toplevel-contextual -->
   <widget class="GtkWindow" id="window_main">
     <property name="width_request">640</property>
     <property name="height_request">480</property>
     <property name="title" translatable="yes">zuk-main</property>
-    <property name="window_position">center</property>
+    <property name="window_position">GTK_WIN_POS_CENTER</property>
     <signal name="delete_event" handler="gtk_main_quit"/>
     <child>
       <widget class="GtkVBox" id="winmain_vbox_main">
@@ -24,32 +24,32 @@
                     <property name="visible">True</property>
                     <child>
                       <widget class="GtkImageMenuItem" id="imagemenuitem1">
-                        <property name="label">gtk-new</property>
                         <property name="visible">True</property>
+                        <property name="label">gtk-new</property>
                         <property name="use_underline">True</property>
                         <property name="use_stock">True</property>
                       </widget>
                     </child>
                     <child>
                       <widget class="GtkImageMenuItem" id="imagemenuitem2">
-                        <property name="label">gtk-open</property>
                         <property name="visible">True</property>
+                        <property name="label">gtk-open</property>
                         <property name="use_underline">True</property>
                         <property name="use_stock">True</property>
                       </widget>
                     </child>
                     <child>
                       <widget class="GtkImageMenuItem" id="imagemenuitem3">
-                        <property name="label">gtk-save</property>
                         <property name="visible">True</property>
+                        <property name="label">gtk-save</property>
                         <property name="use_underline">True</property>
                         <property name="use_stock">True</property>
                       </widget>
                     </child>
                     <child>
                       <widget class="GtkImageMenuItem" id="imagemenuitem4">
-                        <property name="label">gtk-save-as</property>
                         <property name="visible">True</property>
+                        <property name="label">gtk-save-as</property>
                         <property name="use_underline">True</property>
                         <property name="use_stock">True</property>
                       </widget>
@@ -61,8 +61,8 @@
                     </child>
                     <child>
                       <widget class="GtkImageMenuItem" id="imagemenuitem5">
-                        <property name="label">gtk-quit</property>
                         <property name="visible">True</property>
+                        <property name="label">gtk-quit</property>
                         <property name="use_underline">True</property>
                         <property name="use_stock">True</property>
                         <signal name="activate" handler="gtk_main_quit"/>
@@ -82,32 +82,32 @@
                     <property name="visible">True</property>
                     <child>
                       <widget class="GtkImageMenuItem" id="imagemenuitem6">
-                        <property name="label">gtk-cut</property>
                         <property name="visible">True</property>
+                        <property name="label">gtk-cut</property>
                         <property name="use_underline">True</property>
                         <property name="use_stock">True</property>
                       </widget>
                     </child>
                     <child>
                       <widget class="GtkImageMenuItem" id="imagemenuitem7">
-                        <property name="label">gtk-copy</property>
                         <property name="visible">True</property>
+                        <property name="label">gtk-copy</property>
                         <property name="use_underline">True</property>
                         <property name="use_stock">True</property>
                       </widget>
                     </child>
                     <child>
                       <widget class="GtkImageMenuItem" id="imagemenuitem8">
-                        <property name="label">gtk-paste</property>
                         <property name="visible">True</property>
+                        <property name="label">gtk-paste</property>
                         <property name="use_underline">True</property>
                         <property name="use_stock">True</property>
                       </widget>
                     </child>
                     <child>
                       <widget class="GtkImageMenuItem" id="imagemenuitem9">
-                        <property name="label">gtk-delete</property>
                         <property name="visible">True</property>
+                        <property name="label">gtk-delete</property>
                         <property name="use_underline">True</property>
                         <property name="use_stock">True</property>
                       </widget>
@@ -119,8 +119,8 @@
                     </child>
                     <child>
                       <widget class="GtkImageMenuItem" id="winmain_menu_item_tool">
-                        <property name="label">_Tool pane</property>
                         <property name="visible">True</property>
+                        <property name="label">_Tool pane</property>
                         <property name="use_underline">True</property>
                         <property name="use_stock">True</property>
                         <signal name="activate" handler="on_winmain_menu_item_tool_activate"/>
@@ -128,8 +128,8 @@
                     </child>
                     <child>
                       <widget class="GtkImageMenuItem" id="winmain_menu_item_pref">
-                        <property name="label">gtk-preferences</property>
                         <property name="visible">True</property>
+                        <property name="label">gtk-preferences</property>
                         <property name="use_underline">True</property>
                         <property name="use_stock">True</property>
                         <signal name="activate" handler="on_winmain_menu_item_pref_activate"/>
@@ -156,8 +156,8 @@
                     <property name="visible">True</property>
                     <child>
                       <widget class="GtkImageMenuItem" id="winmain_menu_item_about">
-                        <property name="label">gtk-about</property>
                         <property name="visible">True</property>
+                        <property name="label">gtk-about</property>
                         <property name="use_underline">True</property>
                         <property name="use_stock">True</property>
                         <signal name="activate" handler="on_winmain_menu_item_about_activate"/>
@@ -170,7 +170,6 @@
           </widget>
           <packing>
             <property name="expand">False</property>
-            <property name="position">0</property>
           </packing>
         </child>
         <child>
@@ -184,7 +183,7 @@
   </widget>
   <widget class="GtkWindow" id="window_info">
     <property name="title" translatable="yes">zuk-info</property>
-    <property name="window_position">center</property>
+    <property name="window_position">GTK_WIN_POS_CENTER</property>
     <signal name="delete_event" handler="gtk_widget_hide"/>
     <child>
       <placeholder/>
@@ -192,7 +191,7 @@
   </widget>
   <widget class="GtkWindow" id="window_pref">
     <property name="title" translatable="yes">window_pref</property>
-    <property name="window_position">center</property>
+    <property name="window_position">GTK_WIN_POS_CENTER</property>
     <signal name="delete_event" handler="gtk_widget_hide"/>
     <child>
       <placeholder/>
@@ -203,7 +202,7 @@
     <property name="height_request">240</property>
     <property name="visible">True</property>
     <property name="title" translatable="yes">window_tool</property>
-    <property name="window_position">center</property>
+    <property name="window_position">GTK_WIN_POS_CENTER</property>
     <signal name="delete_event" handler="gtk_widget_hide"/>
     <child>
       <widget class="GtkVBox" id="wintool_vbox_main">
@@ -218,23 +217,56 @@
           </widget>
           <packing>
             <property name="expand">False</property>
-            <property name="position">0</property>
           </packing>
         </child>
         <child>
-          <widget class="GtkScrolledWindow" id="wintool_scrolledwindow_pool">
+          <widget class="GtkVBox" id="vbox1">
             <property name="visible">True</property>
-            <property name="can_focus">True</property>
-            <property name="hscrollbar_policy">automatic</property>
-            <property name="vscrollbar_policy">automatic</property>
             <child>
-              <widget class="GtkViewport" id="wintool_viewport_tool_pool">
+              <widget class="GtkScrolledWindow" id="wintool_scrolledwindow_layout_pool">
                 <property name="visible">True</property>
-                <property name="resize_mode">queue</property>
+                <property name="can_focus">True</property>
+                <property name="hscrollbar_policy">GTK_POLICY_AUTOMATIC</property>
+                <property name="vscrollbar_policy">GTK_POLICY_AUTOMATIC</property>
                 <child>
-                  <placeholder/>
+                  <widget class="GtkViewport" id="wintool_viewport_layout_tool_pool">
+                    <property name="visible">True</property>
+                    <property name="resize_mode">GTK_RESIZE_QUEUE</property>
+                    <child>
+                      <placeholder/>
+                    </child>
+                  </widget>
                 </child>
               </widget>
+            </child>
+            <child>
+              <widget class="GtkHSeparator" id="hseparator1">
+                <property name="visible">True</property>
+              </widget>
+              <packing>
+                <property name="expand">False</property>
+                <property name="position">1</property>
+              </packing>
+            </child>
+            <child>
+              <widget class="GtkScrolledWindow" id="wintool_scrolledwindow_pool">
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="hscrollbar_policy">GTK_POLICY_AUTOMATIC</property>
+                <property name="vscrollbar_policy">GTK_POLICY_AUTOMATIC</property>
+                <child>
+                  <widget class="GtkViewport" id="wintool_viewport_tool_pool">
+                    <property name="visible">True</property>
+                    <property name="resize_mode">GTK_RESIZE_QUEUE</property>
+                    <child>
+                      <placeholder/>
+                    </child>
+                  </widget>
+                </child>
+              </widget>
+              <packing>
+                <property name="position">2</property>
+              </packing>
             </child>
           </widget>
           <packing>
@@ -247,17 +279,17 @@
             <property name="spacing">6</property>
             <child>
               <widget class="GtkButton" id="wintool_button_close">
-                <property name="label" translatable="yes">gtk-ok</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
+                <property name="label" translatable="yes">gtk-ok</property>
                 <property name="use_stock">True</property>
+                <property name="response_id">0</property>
                 <signal name="activate" handler="gtk_widget_hide"/>
               </widget>
               <packing>
                 <property name="fill">False</property>
                 <property name="padding">10</property>
-                <property name="position">0</property>
               </packing>
             </child>
           </widget>
@@ -271,7 +303,7 @@
     </child>
   </widget>
   <widget class="GtkWindow" id="window_media">
-    <property name="window_position">center</property>
+    <property name="window_position">GTK_WIN_POS_CENTER</property>
     <child>
       <placeholder/>
     </child>
