@@ -38,6 +38,7 @@ static kchar *__g_mod_dir = knil;
 /////////////////////////////////////////////////////////////////////////////
 // kmsg dispatch
 
+void *mediaWindow;
 /////////////////////////////////////////////////////////////////////////////
 // standard KMM routines
 extern "C" EXPORT_FUN void mm_hey(KIM *im)
@@ -58,6 +59,7 @@ extern "C" EXPORT_FUN void mm_hey(KIM *im)
     int argc = kim_getint(im, "i.env.argc", knil);
     char **argv = (char**)kim_getptr(im, "p.env.argv", knil);
 
+    mediaWindow = (void*)kim_getptr(im, "p.ui.ui.window.optn", knil);
     int __not_main(int argc, char *argv[]);
     __not_main(argc, argv);
 }

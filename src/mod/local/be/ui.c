@@ -25,12 +25,12 @@
 
 #include "gst-backend.h"
 
-static gchar *filename;
-static GtkWidget *video_output;
-static GtkWidget *pause_button;
-static GtkWidget *scale;
-static guint64 duration;
-static GtkWidget *window;
+static gchar *__g_filename;
+static GtkWidget *__g_video_output;
+static GtkWidget *__g_pause_button;
+static GtkWidget *__g_scale;
+static guint64 __g_duration;
+static GtkWidget *__g_window;
 
 #define DURATION_IS_VALID(x)(x != 0 && x !=(guint64) -1)
 
@@ -40,11 +40,11 @@ static void toggle_paused(void)
 
     if (paused) {
         backend_resume();
-        gtk_button_set_label(GTK_BUTTON(pause_button), "Pause");
+        gtk_button_set_label(GTK_BUTTON(__g_pause_button), "Pause");
         paused = FALSE;
     } else {
         backend_pause();
-        gtk_button_set_label(GTK_BUTTON(pause_button), "Resume");
+        gtk_button_set_label(GTK_BUTTON(__g_pause_button), "Resume");
         paused = TRUE;
     }
 }
@@ -56,9 +56,9 @@ static void toggle_fullscreen(void)
     fullscreen = !fullscreen;
 
     if (fullscreen)
-        gtk_window_fullscreen(window);
+        gtk_window_fullscreen(__g_window);
     else
-        gtk_window_unfullscreen(window);
+        gtk_window_unfullscreen(__g_window);
 }
 
 static void pause_cb(GtkWidget *widget, gpointer data)
@@ -119,17 +119,17 @@ static void seek_cb(GtkRange *range, GtkScrollType scroll, gdouble value, gpoint
 {
     guint64 to_seek;
 
-    if (!DURATION_IS_VALID(duration))
-        duration = backend_query_duration();
+    if (!DURATION_IS_VALID(__g_duration))
+        __g_duration = backend_query_duration();
 
-    if (!DURATION_IS_VALID(duration))
+    if (!DURATION_IS_VALID(__g_duration))
         return;
 
-    to_seek = (value / 100) * duration;
+    to_seek = (value / 100) * __g_duration;
 
 #if 0
     g_print("value: %f\n", value);
-    g_print("duration: %llu\n", duration);
+    g_print("__g_duration: %llu\n", __g_duration);
     g_print("seek: %llu\n", to_seek);
 #endif
 
@@ -142,19 +142,19 @@ static void start(void)
     GtkWidget *hbox;
     GtkWidget *vbox;
 
-    window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
+    __g_window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
 
-    g_signal_connect(G_OBJECT(window), "delete_event", G_CALLBACK(delete_event), NULL);
+    g_signal_connect(G_OBJECT(__g_window), "delete_event", G_CALLBACK(delete_event), NULL);
 
-    g_signal_connect(G_OBJECT(window), "destroy", G_CALLBACK(destroy), NULL);
+    g_signal_connect(G_OBJECT(__g_window), "destroy", G_CALLBACK(destroy), NULL);
 
-    g_signal_connect(G_OBJECT(window), "key-press-event", G_CALLBACK(key_press), NULL);
+    g_signal_connect(G_OBJECT(__g_window), "key-press-event", G_CALLBACK(key_press), NULL);
 
-    gtk_container_set_border_width(GTK_CONTAINER(window), 0);
+    gtk_container_set_border_width(GTK_CONTAINER(__g_window), 0);
 
     vbox = gtk_vbox_new(FALSE, 0);
 
-    gtk_container_add(GTK_CONTAINER(window), vbox);
+    gtk_container_add(GTK_CONTAINER(__g_window), vbox);
 
     gtk_widget_show(vbox);
 
@@ -165,13 +165,13 @@ static void start(void)
     gtk_widget_show(hbox);
 
     {
-        video_output = gtk_drawing_area_new();
+        __g_video_output = gtk_drawing_area_new();
 
-        gtk_box_pack_start(GTK_BOX(vbox), video_output, TRUE, TRUE, 0);
+        gtk_box_pack_start(GTK_BOX(vbox), __g_video_output, TRUE, TRUE, 0);
 
-        gtk_widget_set_size_request(video_output, 0x200, 0x100);
+        gtk_widget_set_size_request(__g_video_output, 0x200, 0x100);
 
-        gtk_widget_show(video_output);
+        gtk_widget_show(__g_video_output);
     }
 
     {
@@ -183,7 +183,7 @@ static void start(void)
 
         gtk_widget_show(button);
 
-        pause_button = button;
+        __g_pause_button = button;
     }
 
     {
@@ -199,24 +199,24 @@ static void start(void)
     {
         GtkObject *adjustment;
         adjustment = gtk_adjustment_new(0, 0, 101, 1, 5, 1);
-        scale = gtk_hscale_new(GTK_ADJUSTMENT(adjustment));
+        __g_scale = gtk_hscale_new(GTK_ADJUSTMENT(adjustment));
 
-        gtk_box_pack_end(GTK_BOX(hbox), scale, TRUE, TRUE, 2);
+        gtk_box_pack_end(GTK_BOX(hbox), __g_scale, TRUE, TRUE, 2);
 
-        g_signal_connect(G_OBJECT(scale), "change-value", G_CALLBACK(seek_cb), NULL);
+        g_signal_connect(G_OBJECT(__g_scale), "change-value", G_CALLBACK(seek_cb), NULL);
 
-        gtk_widget_show(scale);
+        gtk_widget_show(__g_scale);
     }
 
-    gtk_widget_show(window);
+    // gtk_widget_show(__g_window);
 }
 
 static gboolean init(gpointer data)
 {
-    backend_set_window(GINT_TO_POINTER(GDK_WINDOW_XWINDOW(video_output->window)));
+    backend_set_window(GINT_TO_POINTER(GDK_WINDOW_XWINDOW(__g_video_output->window)));
 
-    if (filename)
-        backend_play(filename);
+    if (__g_filename)
+        backend_play(__g_filename);
 
     return FALSE;
 }
@@ -226,14 +226,14 @@ static gboolean timeout(gpointer data)
     guint64 pos;
 
     pos = backend_query_position();
-    if (!DURATION_IS_VALID(duration))
-        duration = backend_query_duration();
+    if (!DURATION_IS_VALID(__g_duration))
+        __g_duration = backend_query_duration();
 
-    if (!DURATION_IS_VALID(duration))
+    if (!DURATION_IS_VALID(__g_duration))
         return TRUE;
 
 #if 0
-    g_print("duration=%f\n", duration /((double) 60 * 1000 * 1000 * 1000));
+    g_print("__g_duration=%f\n", __g_duration /((double) 60 * 1000 * 1000 * 1000));
     g_print("position=%llu\n", pos);
 #endif
 
@@ -241,21 +241,23 @@ static gboolean timeout(gpointer data)
     if (pos != 0)
     {
         double value;
-        value = (pos * (((double) 100) / duration));
-        gtk_range_set_value(GTK_RANGE(scale), value);
+        value = (pos * (((double) 100) / __g_duration));
+        gtk_range_set_value(GTK_RANGE(__g_scale), value);
     }
 
     return TRUE;
 }
 
+extern void *mediaWindow;
 int __not_main(int argc, char *argv[])
 {
     // gtk_init(&argc, &argv);
     backend_init(&argc, &argv);
 
     start();
+    __g_video_output = (GtkWidget*)mediaWindow;
 
-    filename = g_strdup("/home/auv/Desktop/niaochao/MVI_0032.avi");
+    __g_filename = g_strdup("/home/auv/Desktop/niaochao/MVI_0032.avi");
 
     toggle_fullscreen();
     g_idle_add(init, NULL);
@@ -263,7 +265,7 @@ int __not_main(int argc, char *argv[])
 
     // gtk_main();
 
-    // g_free(filename);
+    // g_free(__g_filename);
     // backend_deinit();
 
     return 0;
