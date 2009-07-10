@@ -1,6 +1,7 @@
 /* vim:set et sw=4 sts=4 ff=unix: */
 #include <kmem.h>
 #include <kstr.h>
+#include <md5sum.h>
 
 #include <kmccontainer.h>
 #include "local-protocol.h"
@@ -12,6 +13,12 @@ KMC_LocalProtocol::KMC_LocalProtocol(KMediaContainer* a_parentContainer, char* a
 
 KMC_LocalProtocol::~KMC_LocalProtocol()
 {
+}
+
+char* KMC_LocalProtocol::getHash(void)
+{
+    char *src = "KMC_LocalProtocol";
+    return (char*)md5_calculate((const unsigned char*)src, strlen(src));
 }
 
 int KMC_LocalProtocol::scanDevice()

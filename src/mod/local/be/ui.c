@@ -32,6 +32,8 @@ static GtkWidget *__g_scale;
 static guint64 __g_duration;
 static GtkWidget *__g_window;
 
+static gpointer __g_backend;
+
 #define DURATION_IS_VALID(x)(x != 0 && x !=(guint64) -1)
 
 static void toggle_paused(void)
@@ -39,11 +41,11 @@ static void toggle_paused(void)
     static gboolean paused = FALSE;
 
     if (paused) {
-        backend_resume();
+        backend_resume(__g_backend);
         gtk_button_set_label(GTK_BUTTON(__g_pause_button), "Pause");
         paused = FALSE;
     } else {
-        backend_pause();
+        backend_pause(__g_backend);
         gtk_button_set_label(GTK_BUTTON(__g_pause_button), "Resume");
         paused = TRUE;
     }
@@ -68,7 +70,7 @@ static void pause_cb(GtkWidget *widget, gpointer data)
 
 static void reset_cb(GtkWidget *widget, gpointer data)
 {
-    backend_reset();
+    backend_reset(__g_backend);
 }
 
 static gboolean delete_event(GtkWidget *widget, GdkEvent *event, gpointer data)
@@ -96,13 +98,13 @@ static gboolean key_press(GtkWidget *widget, GdkEventKey *event, gpointer data)
             break;
         case GDK_R:
         case GDK_r:
-            backend_reset();
+            backend_reset(__g_backend);
             break;
         case GDK_Right:
-            backend_seek(10);
+            backend_seek(__g_backend, 10);
             break;
         case GDK_Left:
-            backend_seek(-10);
+            backend_seek(__g_backend, -10);
             break;
         case GDK_Q:
         case GDK_q:
@@ -120,7 +122,7 @@ static void seek_cb(GtkRange *range, GtkScrollType scroll, gdouble value, gpoint
     guint64 to_seek;
 
     if (!DURATION_IS_VALID(__g_duration))
-        __g_duration = backend_query_duration();
+        __g_duration = backend_query_duration(__g_backend);
 
     if (!DURATION_IS_VALID(__g_duration))
         return;
@@ -133,7 +135,7 @@ static void seek_cb(GtkRange *range, GtkScrollType scroll, gdouble value, gpoint
     g_print("seek: %llu\n", to_seek);
 #endif
 
-    backend_seek_absolute(to_seek);
+    backend_seek_absolute(__g_backend, to_seek);
 }
 
 static void start(void)
@@ -213,10 +215,10 @@ static void start(void)
 
 static gboolean init(gpointer data)
 {
-    backend_set_window(GINT_TO_POINTER(GDK_WINDOW_XWINDOW(__g_video_output->window)));
+    backend_set_window(__g_backend, GINT_TO_POINTER(GDK_WINDOW_XWINDOW(__g_video_output->window)));
 
     if (__g_filename)
-        backend_play(__g_filename);
+        backend_play(__g_backend, __g_filename);
 
     return FALSE;
 }
@@ -225,9 +227,9 @@ static gboolean timeout(gpointer data)
 {
     guint64 pos;
 
-    pos = backend_query_position();
+    pos = backend_query_position(__g_backend);
     if (!DURATION_IS_VALID(__g_duration))
-        __g_duration = backend_query_duration();
+        __g_duration = backend_query_duration(__g_backend);
 
     if (!DURATION_IS_VALID(__g_duration))
         return TRUE;
@@ -252,7 +254,7 @@ extern void *mediaWindow;
 int __not_main(int argc, char *argv[])
 {
     // gtk_init(&argc, &argv);
-    backend_init(&argc, &argv);
+    __g_backend = backend_init(&argc, &argv);
 
     start();
     __g_video_output = (GtkWidget*)mediaWindow;
@@ -262,11 +264,6 @@ int __not_main(int argc, char *argv[])
     toggle_fullscreen();
     g_idle_add(init, NULL);
     g_timeout_add(500, timeout, NULL);
-
-    // gtk_main();
-
-    // g_free(__g_filename);
-    // backend_deinit();
 
     return 0;
 }

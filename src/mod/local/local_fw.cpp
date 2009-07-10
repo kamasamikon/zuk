@@ -14,10 +14,14 @@
 
 #include <textconv.h>
 
+#include "mc/local-protocol.h"
+
 static char guid[] = "7D378382-9351-4f4e-BF83-4FF20C456B6D";
 static kbean __g_worker_thread = knil;
 
 static kchar *__g_mod_dir = knil;
+
+static KMC_LocalProtocol *__g_local_protocol = knil;
 
 /////////////////////////////////////////////////////////////////////////////
 // defines
@@ -54,6 +58,8 @@ extern "C" EXPORT_FUN void mm_hey(KIM *im)
 
     // worker thread
     __g_worker_thread = ktsk_new("local", knil, 0, 0, knil, knil, knil, knil);
+
+    __g_local_protocol = new KMC_LocalProtocol(__g_mc, "mc-local-protocol", 1);
 
     /* XXX test */
     int argc = kim_getint(im, "i.env.argc", knil);

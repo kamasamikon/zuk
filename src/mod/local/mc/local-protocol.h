@@ -10,7 +10,7 @@ public:
     KMC_LocalProtocol(KMediaContainer* a_parentContainer, char* a_name, int a_type);
     virtual ~KMC_LocalProtocol(void);
 
-    virtual char* getHash(void) = 0;
+    virtual char* getHash(void);
 
     virtual kbool start(void);
     virtual kbool stop(void);
