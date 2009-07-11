@@ -4,7 +4,7 @@
 
 #include <kmccontainer.h>
 
-class KMC_LocalProtocol : public KMediaProtocal
+class KMC_LocalProtocol : public KMediaProtocol
 {
 public:
     KMC_LocalProtocol(KMediaContainer* a_parentContainer, char* a_name, int a_type);

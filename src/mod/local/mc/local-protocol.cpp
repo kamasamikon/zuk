@@ -7,7 +7,7 @@
 #include "local-protocol.h"
 
 KMC_LocalProtocol::KMC_LocalProtocol(KMediaContainer* a_parentContainer, char* a_name, int a_type)
-    : KMediaProtocal(a_parentContainer, a_name, a_type)
+    : KMediaProtocol(a_parentContainer, a_name, a_type)
 {
 }
 
@@ -28,11 +28,11 @@ int KMC_LocalProtocol::scanDevice()
 
 kbool KMC_LocalProtocol::start()
 {
-    return KMediaProtocal::start();
+    return KMediaProtocol::start();
 }
 
 kbool KMC_LocalProtocol::stop()
 {
-    return KMediaProtocal::stop();
+    return KMediaProtocol::stop();
 }
 

@@ -10,7 +10,7 @@
 #include <kdbg.h>
 #include "kerrcode.h"
 
-class KMediaProtocal;
+class KMediaProtocol;
 
 #define MC_DEV_FLG_STARTED   0x00000001
 #define MC_DEV_FLG_DEFREEZED 0x00000002
@@ -26,7 +26,7 @@ class KMediaProtocal;
 class KMediaDevice
 {
 public:
-    KMediaDevice(KMediaProtocal* a_parentProtocal, char* a_name);
+    KMediaDevice(KMediaProtocol* a_parentProtocal, char* a_name);
     virtual ~KMediaDevice(void);
 
     virtual char* getHash(void) = 0;
@@ -36,7 +36,7 @@ public:
 
     int getType(void) { return type; };
 
-    KMediaProtocal *getProtocal(void) const { return parentProtocal; }
+    KMediaProtocol *getProtocal(void) const { return parentProtocal; }
 
     virtual kbool start(void) { kuint of = flg; kflg_set(flg, MC_DEV_FLG_STARTED); return kflg_chk(of, MC_DEV_FLG_STARTED) ? true : false; }
     virtual kbool stop(void) { kuint of = flg; kflg_clr(flg, MC_DEV_FLG_STARTED); return kflg_chk(of, MC_DEV_FLG_STARTED) ? true : false; }
@@ -49,8 +49,8 @@ public:
     virtual int remove(void) { return EC_NOT_SUPPORT; }
 
     /** all channel hash belong to this device, with 0 end */
-    char** getMediaChannelList(void);
-    char** getMediaChannelList(unsigned int class_mask);
+    char** getMediaChannelHashList(void);
+    char** getMediaChannelHashList(unsigned int class_mask);
 
     /**  0 <= a_amp < 100 */
     virtual int setSignalAmp(int a_amp) { return EC_NOT_SUPPORT; }
@@ -68,7 +68,7 @@ public:
     int  type;
 
 private:
-    KMediaProtocal* parentProtocal;
+    KMediaProtocol* parentProtocal;
     char* name;
     char hash[33];
 

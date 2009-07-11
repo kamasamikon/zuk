@@ -4,7 +4,7 @@
 
 #include <kmccontainer.h>
 
-class KMC_MCSkelProtocol : public KMediaProtocal
+class KMC_MCSkelProtocol : public KMediaProtocol
 {
 public:
     KMC_MCSkelProtocol(KMediaContainer* a_parentContainer, char* a_name, int a_type);

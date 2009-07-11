@@ -261,7 +261,7 @@ int IMWCH(plwch_deviceFroze)
         KMediaDevice *dev;
 
         if (dev = __g_mc->getMediaDeviceFromDevice(hash)) {
-            chlist = dev->getMediaChannelList();
+            chlist = dev->getMediaChannelHashList();
             if (!chlist || !chlist[0]) {
                 kmsg_post(__g_worker_thread, KMPL_SCAN, kstr_dup(hash), (kvoid*)ktrue, knil, knil);
                 kmem_free(chlist);
@@ -315,13 +315,13 @@ static int IMWCH(plwch_modLoadEnd)
     if (!__g_try_scan_when_mod_loaded)
         return 0;
 
-    devlist = __g_mc->getMediaDeviceList();
+    devlist = __g_mc->getMediaDeviceHashList();
     if (!devlist)
         return 0;
 
     for (int i = 0; devlist[i]; i++)
         if (dev = __g_mc->getMediaDeviceFromDevice(devlist[i])) {
-            chlist = dev->getMediaChannelList();
+            chlist = dev->getMediaChannelHashList();
             if (!chlist || !chlist[0]) {
                 kmsg_post(__g_worker_thread, KMPL_SCAN, kstr_dup(devlist[i]), (kvoid*)ktrue, knil, knil);
                 kmem_free(chlist);
@@ -388,7 +388,7 @@ static kint om_scan(kbean a_tsk, kuint a_msg, kvoid *a_ur0, kvoid *a_ur1, kvoid 
 
                 ret = dev->updateChannelList();
             } else if (!devHash) {
-                devlist = __g_mc->getMediaDeviceList();
+                devlist = __g_mc->getMediaDeviceHashList();
                 for (i = 0; devlist[i]; i++) {
                     if (dev = __g_mc->getMediaDeviceFromDevice(devHash)) {
                         if (!dev->isStarted())
@@ -403,7 +403,7 @@ static kint om_scan(kbean a_tsk, kuint a_msg, kvoid *a_ur0, kvoid *a_ur1, kvoid 
                 if (dev->isStarted())
                     dev->stop();
             } else if (!devHash) {
-                devlist = __g_mc->getMediaDeviceList();
+                devlist = __g_mc->getMediaDeviceHashList();
                 for (i = 0; devlist[i]; i++) {
                     if (dev = __g_mc->getMediaDeviceFromDevice(devHash)) {
                         ret = dev->cancelUpdateChannelList();

@@ -4,7 +4,7 @@
 
 #include "kmccontainer.h"
 
-KMediaDevice::KMediaDevice(KMediaProtocal* a_parentProtocal, char* a_name)
+KMediaDevice::KMediaDevice(KMediaProtocol* a_parentProtocal, char* a_name)
 {
     init_dlist_head(&channelHeader);
     init_dlist_head(&deviceEntry);
@@ -36,7 +36,7 @@ KMediaDevice::~KMediaDevice(void)
     remove_dlist_entry(&deviceEntry);
 }
 
-char** KMediaDevice::getMediaChannelList(void)
+char** KMediaDevice::getMediaChannelHashList(void)
 {
     int cnt = 0, index = 0;
     char **hashList;

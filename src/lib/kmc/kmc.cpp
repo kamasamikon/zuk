@@ -49,7 +49,7 @@ class KDVBTChannel : public KMediaChannel {
 
 class KDVBTDevice : public KMediaDevice {
     public:
-        KDVBTDevice(KMediaProtocal* a_parentProtocal, char* a_name) : KMediaDevice(a_parentProtocal, a_name) {}
+        KDVBTDevice(KMediaProtocol* a_parentProtocal, char* a_name) : KMediaDevice(a_parentProtocal, a_name) {}
 
         char* getHash() { return "sdasdfas"; }
 
@@ -63,7 +63,7 @@ class KDVBTDevice : public KMediaDevice {
         }
 };
 
-class KDVBTProtocal : public KMediaProtocal {
+class KDVBTProtocal : public KMediaProtocol {
     char* getHash() { return "45oineroi"; }
 
     int scanDevice(void) {

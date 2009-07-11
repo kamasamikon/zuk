@@ -17,11 +17,11 @@ public:
     KMediaContainer(KIM* im, char* a_name);
     virtual ~KMediaContainer(void);
 
-    const char* getName(void) { return name; }
+    const char* getName(void) { return m_name; }
 
-    KMediaProtocal* getMediaProtocalFromProtocal(char* protHash);
-    KMediaProtocal* getMediaProtocalFromDevice(char* devHash);
-    KMediaProtocal* getMediaProtocalFromChannel(char* chHash);
+    KMediaProtocol* getMediaProtocalFromProtocal(char* protHash);
+    KMediaProtocol* getMediaProtocalFromDevice(char* devHash);
+    KMediaProtocol* getMediaProtocalFromChannel(char* chHash);
 
     KMediaDevice* getMediaDeviceFromDevice(char* devHash);
     KMediaDevice* getMediaDeviceFromChannel(char* chHash);
@@ -29,21 +29,23 @@ public:
     KMediaChannel* getMediaChannelFromChannel(char* chHash);
 
     /** protocol hash list, 0 end */
-    char** getMediaProtocalList(void);
+    char** getMediaProtocalHashList(void);
+    KMediaProtocol** getMediaProtocalClassList(void);
 
     /** device hash list, 0 end */
-    char** getMediaDeviceList(void);
+    char** getMediaDeviceHashList(void);
+    KMediaDevice** getMediaDeviceClassList(void);
 
     /** channel hash list, 0 end */
-    char** getMediaChannelList(void);
-    char** getMediaChannelList(unsigned int class_mask);
+    char** getMediaChannelHashList(void);
+    KMediaChannel** getMediaChannelClassList(void);
 
 public:
     K_dlist_entry protocalHeader;
 
 private:
-    char* name;
-    KIM* im;
+    char* m_name;
+    KIM* m_im;
 };
 
 #endif /*KMCCONTAINER_H_*/

@@ -4,7 +4,7 @@
 
 #include "kmccontainer.h"
 
-KMediaProtocal::KMediaProtocal(KMediaContainer* a_parentContainer, char* a_name, int a_type)
+KMediaProtocol::KMediaProtocol(KMediaContainer* a_parentContainer, char* a_name, int a_type)
 {
     init_dlist_head(&deviceHeader);
     init_dlist_head(&protocalEntry);
@@ -16,7 +16,7 @@ KMediaProtocal::KMediaProtocal(KMediaContainer* a_parentContainer, char* a_name,
     insert_dlist_tail_entry(&parentContainer->protocalHeader, &protocalEntry);
 }
 
-KMediaProtocal::~KMediaProtocal(void)
+KMediaProtocol::~KMediaProtocol(void)
 {
     kmem_free_s(name);
     kmem_free_s(desc);
@@ -36,7 +36,7 @@ KMediaProtocal::~KMediaProtocal(void)
     remove_dlist_entry(&protocalEntry);
 }
 
-char** KMediaProtocal::getMediaDeviceList(void)
+char** KMediaProtocol::getMediaDeviceHashList(void)
 {
     int cnt = 0, index = 0;
     char **hashList;
@@ -67,12 +67,12 @@ char** KMediaProtocal::getMediaDeviceList(void)
     return hashList;
 }
 
-char** KMediaProtocal::getMediaChannelList(unsigned int class_mask)
+char** KMediaProtocol::getMediaChannelHashList(unsigned int class_mask)
 {
     return NULL;
 }
 
-char** KMediaProtocal::getMediaChannelList(void)
+char** KMediaProtocol::getMediaChannelHashList(void)
 {
     int devCnt = 0, chCnt = 0, devIndex = 0, chIndex = 0;
     char **hashList = NULL;
@@ -95,7 +95,7 @@ char** KMediaProtocal::getMediaChannelList(void)
     devEntry = deviceHeader.next;
     while (devEntry != &deviceHeader) {
         dev = FIELD_TO_STRUCTURE(devEntry, KMediaDevice, deviceEntry);
-        hashListList[devIndex++] = dev->getMediaChannelList();
+        hashListList[devIndex++] = dev->getMediaChannelHashList();
         devEntry = devEntry->next;
     }
 
@@ -123,7 +123,7 @@ char** KMediaProtocal::getMediaChannelList(void)
     return hashList;
 }
 
-int KMediaProtocal::scanDevice(void)
+int KMediaProtocol::scanDevice(void)
 {
     return EC_NOT_SUPPORT;
 }
