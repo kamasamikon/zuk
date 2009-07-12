@@ -86,22 +86,22 @@ typedef enum _KMC_CAP
 class KMediaChannel
 {
 public:
-    KMediaChannel(KMediaDevice* a_parentDevice, char* a_name);
+    KMediaChannel(KMediaDevice* a_parentDevice, const char* a_name);
     virtual ~KMediaChannel(void);
 
     virtual char* getHash(void) = 0;
-    void setHash(const char *a_hash) { if (hash[0]) kerror(("Already setHash, can not set!\n")); else memcpy(hash, a_hash, 33); }
-    const char* getName(void) { return name; }
+    void setHash(const char *a_hash) { if (m_hash[0]) kerror(("Already setHash, can not set!\n")); else memcpy(m_hash, a_hash, 33); }
+    const char* getName(void) { return m_name; }
 
-    KMediaDevice *getDevice(void) const { return parentDevice; }
+    KMediaDevice *getDevice(void) const { return m_parentDevice; }
 
-    virtual kbool start(void) { kuint of = flg; kflg_set(flg, MC_CH_FLG_STARTED); return kflg_chk(of, MC_CH_FLG_STARTED) ? true : false; }
-    virtual kbool stop(void) { kuint of = flg; kflg_clr(flg, MC_CH_FLG_STARTED); return kflg_chk(of, MC_CH_FLG_STARTED) ? true : false; }
-    kbool isStarted(void) { return kflg_chk(flg, MC_CH_FLG_STARTED) ? true : false; }
+    virtual kbool start(void) { kuint of = m_flg; kflg_set(m_flg, MC_CH_FLG_STARTED); return kflg_chk(of, MC_CH_FLG_STARTED) ? true : false; }
+    virtual kbool stop(void) { kuint of = m_flg; kflg_clr(m_flg, MC_CH_FLG_STARTED); return kflg_chk(of, MC_CH_FLG_STARTED) ? true : false; }
+    kbool isStarted(void) { return kflg_chk(m_flg, MC_CH_FLG_STARTED) ? true : false; }
 
-    kbool isFreeze(void) { return kflg_chk(flg, MC_CH_FLG_DEFREEZED) ? true : false; }
-    kbool freeze(void) { kuint of = flg; kflg_set(flg, MC_CH_FLG_DEFREEZED); return kflg_chk(of, MC_CH_FLG_DEFREEZED) ? true : false; }
-    kbool defreeze(void) { kuint of = flg; kflg_clr(flg, MC_CH_FLG_DEFREEZED); return kflg_chk(of, MC_CH_FLG_DEFREEZED) ? true : false; }
+    kbool isFreeze(void) { return kflg_chk(m_flg, MC_CH_FLG_DEFREEZED) ? true : false; }
+    kbool freeze(void) { kuint of = m_flg; kflg_set(m_flg, MC_CH_FLG_DEFREEZED); return kflg_chk(of, MC_CH_FLG_DEFREEZED) ? true : false; }
+    kbool defreeze(void) { kuint of = m_flg; kflg_clr(m_flg, MC_CH_FLG_DEFREEZED); return kflg_chk(of, MC_CH_FLG_DEFREEZED) ? true : false; }
 
     virtual kbool getCapability(KMC_CAP cap) { return kfalse; }
 
@@ -123,7 +123,7 @@ public:
      * return EC_NOT_SUPPORT if operation not supported
      */
 
-    /** percent 0 - 99 */
+    /** percent 0 - 100 */
     virtual int setVolume(int a_vol) { return EC_NOT_SUPPORT; }
     virtual int getVolume(int* a_vol) { return EC_NOT_SUPPORT; }
 
@@ -227,14 +227,14 @@ public:
     virtual int getVideoAngle(int *a_angle) { return EC_NOT_SUPPORT; }
 
 public:
-    K_dlist_entry channelEntry;
+    K_dlist_entry m_channelEntry;
 
 private:
-    KMediaDevice* parentDevice;
-    char* name;
-    char hash[33];
+    KMediaDevice* m_parentDevice;
+    char* m_name;
+    char m_hash[33];
 
-    kuint flg;
+    kuint m_flg;
 };
 
 #endif /*KMCCHANNEL_H_*/

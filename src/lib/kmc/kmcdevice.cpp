@@ -4,36 +4,36 @@
 
 #include "kmccontainer.h"
 
-KMediaDevice::KMediaDevice(KMediaProtocol* a_parentProtocal, char* a_name)
+KMediaDevice::KMediaDevice(KMediaProtocol* a_parentProtocal, const char* a_name)
 {
-    init_dlist_head(&channelHeader);
-    init_dlist_head(&deviceEntry);
-    parentProtocal = a_parentProtocal;
-    name = kstr_dup(a_name);
-    flg = 0;
-    desc = NULL;
+    init_dlist_head(&m_channelHeader);
+    init_dlist_head(&m_deviceEntry);
+    m_parentProtocal = a_parentProtocal;
+    m_name = kstr_dup(a_name);
+    m_flg = 0;
+    m_desc = NULL;
 
-    insert_dlist_tail_entry(&parentProtocal->deviceHeader, &deviceEntry);
+    insert_dlist_tail_entry(&m_parentProtocal->m_deviceHeader, &m_deviceEntry);
 }
 
 KMediaDevice::~KMediaDevice(void)
 {
-    kmem_free_s(name);
-    kmem_free_s(desc);
+    kmem_free_s(m_name);
+    kmem_free_s(m_desc);
 
     K_dlist_entry* chEntry;
     KMediaChannel* ch;
 
-    chEntry = channelHeader.next;
-    while (chEntry != &channelHeader) {
-        ch = FIELD_TO_STRUCTURE(chEntry, KMediaChannel, channelEntry);
+    chEntry = m_channelHeader.next;
+    while (chEntry != &m_channelHeader) {
+        ch = FIELD_TO_STRUCTURE(chEntry, KMediaChannel, m_channelEntry);
         chEntry = chEntry->next;
 
         delete ch;
     }
 
     /* device should stopped before call this */
-    remove_dlist_entry(&deviceEntry);
+    remove_dlist_entry(&m_deviceEntry);
 }
 
 char** KMediaDevice::getMediaChannelHashList(void)
@@ -43,12 +43,11 @@ char** KMediaDevice::getMediaChannelHashList(void)
     K_dlist_entry* chEntry;
     KMediaChannel* ch;
 
-    if (is_dlist_empty(&channelHeader)) {
+    if (is_dlist_empty(&m_channelHeader))
         return NULL;
-    }
 
-    chEntry = channelHeader.next;
-    while (chEntry != &channelHeader) {
+    chEntry = m_channelHeader.next;
+    while (chEntry != &m_channelHeader) {
         cnt++;
         chEntry = chEntry->next;
     }
@@ -56,14 +55,44 @@ char** KMediaDevice::getMediaChannelHashList(void)
     hashList = (char**)kmem_alloc(sizeof(char*) * (cnt + 1));
     hashList[cnt] = NULL;
 
-    chEntry = channelHeader.next;
-    while (chEntry != &channelHeader) {
-        ch = FIELD_TO_STRUCTURE(chEntry, KMediaChannel, channelEntry);
+    chEntry = m_channelHeader.next;
+    while (chEntry != &m_channelHeader) {
+        ch = FIELD_TO_STRUCTURE(chEntry, KMediaChannel, m_channelEntry);
         hashList[index++] = kstr_dup(ch->getHash());
         chEntry = chEntry->next;
     }
     hashList[index++] = NULL;
 
     return hashList;
+}
+
+KMediaChannel** KMediaDevice::getMediaChannelClassList(void)
+{
+    int cnt = 0, index = 0;
+    KMediaChannel **channelList;
+    K_dlist_entry* chEntry;
+    KMediaChannel* ch;
+
+    if (is_dlist_empty(&m_channelHeader))
+        return NULL;
+
+    chEntry = m_channelHeader.next;
+    while (chEntry != &m_channelHeader) {
+        cnt++;
+        chEntry = chEntry->next;
+    }
+
+    channelList = (KMediaChannel**)kmem_alloc(sizeof(KMediaChannel*) * (cnt + 1));
+    channelList[cnt] = NULL;
+
+    chEntry = m_channelHeader.next;
+    while (chEntry != &m_channelHeader) {
+        ch = FIELD_TO_STRUCTURE(chEntry, KMediaChannel, m_channelEntry);
+        channelList[index++] = ch;
+        chEntry = chEntry->next;
+    }
+    channelList[index++] = NULL;
+
+    return channelList;
 }
 

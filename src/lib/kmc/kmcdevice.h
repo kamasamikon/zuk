@@ -1,6 +1,6 @@
 /* vim:set et sw=4 sts=4 ff=unix: */
-#ifndef KMCDEVICE_H_
-#define KMCDEVICE_H_
+#ifndef __KMC_DEVICE_H__
+#define __KMC_DEVICE_H__
 
 #include <string.h>
 #include <stdlib.h>
@@ -26,31 +26,31 @@ class KMediaProtocol;
 class KMediaDevice
 {
 public:
-    KMediaDevice(KMediaProtocol* a_parentProtocal, char* a_name);
+    KMediaDevice(KMediaProtocol* a_parentProtocal, const char* a_name);
     virtual ~KMediaDevice(void);
 
     virtual char* getHash(void) = 0;
-    void setHash(const char *a_hash) { if (hash[0]) kerror(("Already setHash, can not set!\n")); else memcpy(hash, a_hash, 33); }
-    const char* getName(void) { return name; }
-    const char* getDesc(void) { return desc; }
+    void setHash(const char *a_hash) { if (m_hash[0]) kerror(("Already setHash, can not set!\n")); else memcpy(m_hash, a_hash, 33); }
+    const char* getName(void) { return m_name; }
+    const char* getDesc(void) { return m_desc; }
 
-    int getType(void) { return type; };
+    int getType(void) { return m_type; };
 
-    KMediaProtocol *getProtocal(void) const { return parentProtocal; }
+    KMediaProtocol *getProtocal(void) const { return m_parentProtocal; }
 
-    virtual kbool start(void) { kuint of = flg; kflg_set(flg, MC_DEV_FLG_STARTED); return kflg_chk(of, MC_DEV_FLG_STARTED) ? true : false; }
-    virtual kbool stop(void) { kuint of = flg; kflg_clr(flg, MC_DEV_FLG_STARTED); return kflg_chk(of, MC_DEV_FLG_STARTED) ? true : false; }
-    kbool isStarted(void) { return kflg_chk(flg, MC_DEV_FLG_STARTED) ? true : false; }
+    virtual kbool start(void) { kuint of = m_flg; kflg_set(m_flg, MC_DEV_FLG_STARTED); return kflg_chk(of, MC_DEV_FLG_STARTED) ? true : false; }
+    virtual kbool stop(void) { kuint of = m_flg; kflg_clr(m_flg, MC_DEV_FLG_STARTED); return kflg_chk(of, MC_DEV_FLG_STARTED) ? true : false; }
+    kbool isStarted(void) { return kflg_chk(m_flg, MC_DEV_FLG_STARTED) ? true : false; }
 
-    kbool freeze(void) { kuint of = flg; kflg_set(flg, MC_DEV_FLG_DEFREEZED); return kflg_chk(of, MC_DEV_FLG_DEFREEZED) ? true : false; }
-    kbool defreeze(void) { kuint of = flg; kflg_clr(flg, MC_DEV_FLG_DEFREEZED); return kflg_chk(of, MC_DEV_FLG_DEFREEZED) ? true : false; }
-    kbool isFreeze(void) { return kflg_chk(flg, MC_DEV_FLG_DEFREEZED) ? true : false; }
+    kbool freeze(void) { kuint of = m_flg; kflg_set(m_flg, MC_DEV_FLG_DEFREEZED); return kflg_chk(of, MC_DEV_FLG_DEFREEZED) ? true : false; }
+    kbool defreeze(void) { kuint of = m_flg; kflg_clr(m_flg, MC_DEV_FLG_DEFREEZED); return kflg_chk(of, MC_DEV_FLG_DEFREEZED) ? true : false; }
+    kbool isFreeze(void) { return kflg_chk(m_flg, MC_DEV_FLG_DEFREEZED) ? true : false; }
 
     virtual int remove(void) { return EC_NOT_SUPPORT; }
 
     /** all channel hash belong to this device, with 0 end */
     char** getMediaChannelHashList(void);
-    char** getMediaChannelHashList(unsigned int class_mask);
+    KMediaChannel** getMediaChannelClassList(void);
 
     /**  0 <= a_amp < 100 */
     virtual int setSignalAmp(int a_amp) { return EC_NOT_SUPPORT; }
@@ -61,18 +61,18 @@ public:
     virtual int cancelUpdateChannelList(void) { return EC_NOT_SUPPORT; }
 
 public:
-    K_dlist_entry channelHeader;
-    K_dlist_entry deviceEntry;
+    K_dlist_entry m_channelHeader;
+    K_dlist_entry m_deviceEntry;
 
-    char* desc;
-    int  type;
+    char* m_desc;
+    int  m_type;
 
 private:
-    KMediaProtocol* parentProtocal;
-    char* name;
-    char hash[33];
+    KMediaProtocol* m_parentProtocal;
+    char* m_name;
+    char m_hash[33];
 
-    kuint flg;
+    kuint m_flg;
 };
 
-#endif /*KMCDEVICE_H_*/
+#endif /*__KMC_DEVICE_H__*/

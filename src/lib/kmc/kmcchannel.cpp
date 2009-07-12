@@ -4,19 +4,19 @@
 
 #include "kmccontainer.h"
 
-KMediaChannel::KMediaChannel(KMediaDevice* a_parentDevice, char* a_name)
+KMediaChannel::KMediaChannel(KMediaDevice* a_parentDevice, const char* a_name)
 {
-    init_dlist_head(&channelEntry);
-    parentDevice = a_parentDevice;
-    name = kstr_dup(a_name);
-    flg = 0;
+    init_dlist_head(&m_channelEntry);
+    m_parentDevice = a_parentDevice;
+    m_name = kstr_dup(a_name);
+    m_flg = 0;
 
-    insert_dlist_tail_entry(&parentDevice->channelHeader, &channelEntry);
+    insert_dlist_tail_entry(&m_parentDevice->m_channelHeader, &m_channelEntry);
 }
 
 KMediaChannel::~KMediaChannel(void)
 {
-    kmem_free_s(name);
-    remove_dlist_entry(&channelEntry);
+    kmem_free_s(m_name);
+    remove_dlist_entry(&m_channelEntry);
 }
 

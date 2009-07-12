@@ -1,6 +1,6 @@
 /* vim:set et sw=4 sts=4 ff=unix: */
 #include "kmccontainer.h"
-#include "kmcprotocal.h"
+#include "kmcprotocol.h"
 #include "kmcdevice.h"
 #include "kmcchannel.h"
 
