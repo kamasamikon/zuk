@@ -1,6 +1,6 @@
 /* vim:set et sw=4 sts=4 ff=unix: */
-#ifndef KMCCHANNEL_H_
-#define KMCCHANNEL_H_
+#ifndef __KMC_CHANNEL_H__
+#define __KMC_CHANNEL_H__
 
 #include <string.h>
 #include <time.h>
@@ -237,5 +237,5 @@ private:
     kuint m_flg;
 };
 
-#endif /*KMCCHANNEL_H_*/
+#endif /*__KMC_CHANNEL_H__*/
 
