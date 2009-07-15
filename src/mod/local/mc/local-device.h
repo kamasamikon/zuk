@@ -8,7 +8,7 @@
 class KMC_LocalDevice : public KMediaDevice
 {
 public:
-    KMC_LocalDevice(KMC_LocalProtocol* a_parentProtocal, char* a_name);
+    KMC_LocalDevice(KIM *a_im, KMC_LocalProtocol* a_parentProtocal, char* a_name);
     virtual ~KMC_LocalDevice(void);
 
     virtual char* getHash(void) = 0;
@@ -20,7 +20,6 @@ public:
     virtual int getSignalAmp(int *a_pamp) { return EC_NOT_SUPPORT; }
 
     virtual int updateChannelList(void) { return EC_NOT_SUPPORT; }
-    virtual int updateChannelList(unsigned int class_mask, unsigned int type_mask) { return EC_NOT_SUPPORT; }
     virtual int cancelUpdateChannelList(void) { return EC_NOT_SUPPORT; }
 
 private:

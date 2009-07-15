@@ -9,17 +9,12 @@ KMC_MCSkelProtocol::KMC_MCSkelProtocol(KMediaContainer* a_parentContainer, char*
         : KMediaProtocol(a_parentContainer, a_name, a_type)
 {
     kchar hash[33];
-    kim_setint(__g_im, "i.kmc.evt.protocol.new", 1, (void**)(hash), (void**)this);
+    kim_setint(__g_im, "i.kmc.evt.protocol.new", 1, (void**)this, knil);
 }
 
 KMC_MCSkelProtocol::~KMC_MCSkelProtocol()
 {
-    kim_setint(__g_im, "i.kmc.evt.protocol.del", 1, (void**)getHash(), (void**)this);
-}
-
-int KMC_MCSkelProtocol::scanDevice()
-{
-    return EC_NOT_SUPPORT;
+    kim_setint(__g_im, "i.kmc.evt.protocol.del", 1, (void**)this, knil);
 }
 
 kbool KMC_MCSkelProtocol::start()

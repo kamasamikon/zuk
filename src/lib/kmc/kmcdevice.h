@@ -26,38 +26,40 @@ class KMediaProtocol;
 class KMediaDevice
 {
 public:
-    KMediaDevice(KMediaProtocol* a_parentProtocal, const char* a_name);
+    KMediaDevice(KIM *a_im, KMediaProtocol* a_parentProtocal, const char* a_name);
     virtual ~KMediaDevice(void);
 
-    virtual char* getHash(void) = 0;
-    void setHash(const char *a_hash) { if (m_hash[0]) kerror(("Already setHash, can not set!\n")); else memcpy(m_hash, a_hash, 33); }
-    const char* getName(void) { return m_name; }
-    const char* getDesc(void) { return m_desc; }
+    KIM *im();
 
-    int getType(void) { return m_type; };
+    const char* getHash(void);
+    void setHash(const char *a_hash);
+    const char* getName(void);
+    const char* getDesc(void);
 
-    KMediaProtocol *getProtocal(void) const { return m_parentProtocal; }
+    int getType(void);;
 
-    virtual kbool start(void) { kuint of = m_flg; kflg_set(m_flg, MC_DEV_FLG_STARTED); return kflg_chk(of, MC_DEV_FLG_STARTED) ? true : false; }
-    virtual kbool stop(void) { kuint of = m_flg; kflg_clr(m_flg, MC_DEV_FLG_STARTED); return kflg_chk(of, MC_DEV_FLG_STARTED) ? true : false; }
-    kbool isStarted(void) { return kflg_chk(m_flg, MC_DEV_FLG_STARTED) ? true : false; }
+    KMediaProtocol *getProtocal(void) const;
 
-    kbool freeze(void) { kuint of = m_flg; kflg_set(m_flg, MC_DEV_FLG_DEFREEZED); return kflg_chk(of, MC_DEV_FLG_DEFREEZED) ? true : false; }
-    kbool defreeze(void) { kuint of = m_flg; kflg_clr(m_flg, MC_DEV_FLG_DEFREEZED); return kflg_chk(of, MC_DEV_FLG_DEFREEZED) ? true : false; }
-    kbool isFreeze(void) { return kflg_chk(m_flg, MC_DEV_FLG_DEFREEZED) ? true : false; }
+    virtual kbool start(void);
+    virtual kbool stop(void);
+    kbool isStarted(void);
 
-    virtual int remove(void) { return EC_NOT_SUPPORT; }
+    kbool freeze(void);
+    kbool defreeze(void);
+    kbool isFreeze(void);
+
+    virtual int remove(void);
 
     /** all channel hash belong to this device, with 0 end */
     char** getMediaChannelHashList(void);
     KMediaChannel** getMediaChannelClassList(void);
 
     /**  0 <= a_amp < 100 */
-    virtual int setSignalAmp(int a_amp) { return EC_NOT_SUPPORT; }
-    virtual int getSignalAmp(int *a_pamp) { return EC_NOT_SUPPORT; }
+    virtual int setSignalAmp(int a_amp);
+    virtual int getSignalAmp(int *a_pamp);
 
-    virtual int updateChannelList(void) { return EC_NOT_SUPPORT; }
-    virtual int cancelUpdateChannelList(void) { return EC_NOT_SUPPORT; }
+    virtual int updateChannelList(void);
+    virtual int cancelUpdateChannelList(void);
 
 public:
     K_dlist_entry m_channelHeader;
@@ -67,6 +69,8 @@ public:
     int  m_type;
 
 private:
+    KIM *m_im;
+
     KMediaProtocol* m_parentProtocal;
     char* m_name;
     char m_hash[33];

@@ -7,7 +7,7 @@
 class KMC_LocalProtocol : public KMediaProtocol
 {
 public:
-    KMC_LocalProtocol(KMediaContainer* a_parentContainer, char* a_name, int a_type);
+    KMC_LocalProtocol(KIM *a_im, KMediaContainer* a_parentContainer, char* a_name, int a_type);
     virtual ~KMC_LocalProtocol(void);
 
     virtual char* getHash(void);

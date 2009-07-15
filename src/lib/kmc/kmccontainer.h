@@ -14,10 +14,12 @@
 class KMediaContainer
 {
 public:
-    KMediaContainer(KIM* im, const char* a_name);
+    KMediaContainer(KIM *a_im, const char* a_name);
     virtual ~KMediaContainer(void);
 
-    const char* getName(void) { return m_name; }
+    KIM *im();
+
+    const char* getName(void);
 
     KMediaProtocol* getMediaProtocolFromProtocol(const char* protHash);
     KMediaProtocol* getMediaProtocolFromDevice(const char* devHash);

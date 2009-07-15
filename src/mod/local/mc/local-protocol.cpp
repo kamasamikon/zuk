@@ -6,13 +6,16 @@
 #include <kmccontainer.h>
 #include "local-protocol.h"
 
-KMC_LocalProtocol::KMC_LocalProtocol(KMediaContainer* a_parentContainer, char* a_name, int a_type)
-    : KMediaProtocol(a_parentContainer, a_name, a_type)
+KMC_LocalProtocol::KMC_LocalProtocol(KIM *a_im, KMediaContainer* a_parentContainer, char* a_name, int a_type)
+    : KMediaProtocol(a_im, a_parentContainer, a_name, a_type)
 {
+    kchar hash[33];
+    kim_setint(im(), "i.kmc.evt.protocol.new", 1, (void**)this, knil);
 }
 
 KMC_LocalProtocol::~KMC_LocalProtocol()
 {
+    kim_setint(im(), "i.kmc.evt.protocol.del", 1, (void**)this, knil);
 }
 
 char* KMC_LocalProtocol::getHash(void)

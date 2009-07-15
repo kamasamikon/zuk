@@ -4,10 +4,12 @@
 
 #include "kmccontainer.h"
 
-KMediaProtocol::KMediaProtocol(KMediaContainer* a_parentContainer, const char* a_name, int a_type)
+KMediaProtocol::KMediaProtocol(KIM *a_im, KMediaContainer* a_parentContainer, const char* a_name, int a_type)
 {
     init_dlist_head(&m_deviceHeader);
     init_dlist_head(&m_protocolEntry);
+
+    m_im = a_im;
     m_parentContainer = a_parentContainer;
     m_name = kstr_dup(a_name);
     m_desc = NULL;
@@ -34,6 +36,68 @@ KMediaProtocol::~KMediaProtocol(void)
 
     /* protocol should stopped before call this */
     remove_dlist_entry(&m_protocolEntry);
+}
+
+KIM* KMediaProtocol::im()
+{
+    return m_im;
+}
+
+const char* KMediaProtocol::getHash(void)
+{
+    return m_hash;
+}
+
+void KMediaProtocol::setHash(const char *a_hash)
+{
+    if (m_hash[0])
+        kerror(("Already setHash, can not set!\n"));
+    else
+        memcpy(m_hash, a_hash, 33);
+}
+
+const char* KMediaProtocol::getName(void)
+{
+    return m_name;
+}
+
+const char* KMediaProtocol::getDesc(void)
+{
+    return m_desc;
+}
+
+KMediaContainer *KMediaProtocol::getContainer(void) const
+{
+    return m_parentContainer;
+}
+
+int KMediaProtocol::getType(void)
+{
+    return m_type;
+}
+
+kbool KMediaProtocol::start(void)
+{
+    kuint of = m_flg;
+
+    kflg_set(m_flg, MC_PRO_FLG_STARTED);
+    return kflg_chk(of, MC_PRO_FLG_STARTED) ? true : false;
+}
+kbool KMediaProtocol::stop(void)
+{
+    kuint of = m_flg;
+
+    kflg_clr(m_flg, MC_PRO_FLG_STARTED);
+    return kflg_chk(of, MC_PRO_FLG_STARTED) ? true : false;
+}
+kbool KMediaProtocol::isStarted(void)
+{
+    return kflg_chk(m_flg, MC_PRO_FLG_STARTED) ? true : false;
+}
+
+int KMediaProtocol::scanDevice(void)
+{
+    return EC_NOT_SUPPORT;
 }
 
 char** KMediaProtocol::getMediaDeviceHashList(void)

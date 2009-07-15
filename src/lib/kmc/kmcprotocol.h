@@ -18,21 +18,23 @@ class KMediaChannel;
 class KMediaProtocol
 {
 public:
-    KMediaProtocol(KMediaContainer* a_parentContainer, const char* a_name, int a_type);
+    KMediaProtocol(KIM *a_im, KMediaContainer* a_parentContainer, const char* a_name, int a_type);
     virtual ~KMediaProtocol(void);
 
-    virtual char* getHash(void) = 0;
-    void setHash(const char *a_hash) { if (m_hash[0]) kerror(("Already setHash, can not set!\n")); else memcpy(m_hash, a_hash, 33); }
-    const char* getName(void) { return m_name; }
-    const char* getDesc(void) { return m_desc; }
+    KIM *im();
 
-    KMediaContainer *getContainer(void) const { return m_parentContainer; }
+    const char* getHash(void);
+    void setHash(const char *a_hash);
+    const char* getName(void);
+    const char* getDesc(void);
 
-    int getType(void) { return m_type; };
+    KMediaContainer *getContainer(void) const;
 
-    virtual kbool start(void) { kuint of = m_flg; kflg_set(m_flg, MC_PRO_FLG_STARTED); return kflg_chk(of, MC_PRO_FLG_STARTED) ? true : false; }
-    virtual kbool stop(void) { kuint of = m_flg; kflg_clr(m_flg, MC_PRO_FLG_STARTED); return kflg_chk(of, MC_PRO_FLG_STARTED) ? true : false; }
-    kbool isStarted(void) { return kflg_chk(m_flg, MC_PRO_FLG_STARTED) ? true : false; }
+    int getType(void);
+
+    virtual kbool start(void);
+    virtual kbool stop(void);
+    kbool isStarted(void);
 
     char** getMediaDeviceHashList(void);
     KMediaDevice** getMediaDeviceClassList(void);
@@ -40,7 +42,7 @@ public:
     char** getMediaChannelHashList(void);
     KMediaChannel** getMediaChannelClassList(void);
 
-    virtual int scanDevice(void) { return EC_NOT_SUPPORT; }
+    virtual int scanDevice(void);
 
 public:
     K_dlist_entry m_deviceHeader;
@@ -50,6 +52,8 @@ protected:
     char* m_desc;
 
 private:
+    KIM* m_im;
+
     KMediaContainer* m_parentContainer;
     char* m_name;
     char m_hash[33];

@@ -52,9 +52,9 @@ static struct {
     { "i.kmc.evt.hardwareChange", "After:" },
 };
 
-KMediaContainer::KMediaContainer(KIM* im, const char* a_name)
+KMediaContainer::KMediaContainer(KIM *a_im, const char* a_name)
 {
-    this->m_im = im;
+    this->m_im = a_im;
     init_dlist_head(&m_protocolHeader);
     m_name = kstr_dup(a_name);
 
@@ -79,6 +79,16 @@ KMediaContainer::~KMediaContainer(void)
 
     for (int i = 0; i < sizeof(__g_im_entry_list) / sizeof(__g_im_entry_list[0]); i++)
         kim_delint(m_im, __g_im_entry_list[i].id);
+}
+
+KIM* KMediaContainer::im()
+{
+    return m_im;
+}
+
+const char* KMediaContainer::getName(void)
+{
+    return m_name;
 }
 
 KMediaProtocol* KMediaContainer::getMediaProtocolFromProtocol(const char* protHash)

@@ -36,7 +36,7 @@ public:
      * return EC_NOT_SUPPORT if operation not supported
      */
 
-    /** percent 0 - 99 */
+    /** percent 0 - 100 */
     virtual int setVolume(int a_vol) { return EC_NOT_SUPPORT; }
     virtual int getVolume(int* a_vol) { return EC_NOT_SUPPORT; }
 
@@ -47,9 +47,6 @@ public:
     /** play, stop, pause, */
     virtual int setPlayState(KMCPS a_state) { return EC_NOT_SUPPORT; }
     virtual int getPlayState(KMCPS* a_state) { return EC_NOT_SUPPORT; }
-
-    /** can recorder? */
-    virtual int canRecorder(kbool *a_can) { return EC_NOT_SUPPORT; }
 
     /** recording: start, end */
     virtual int setRecState(KMCRS a_state) { return EC_NOT_SUPPORT; }
@@ -67,7 +64,7 @@ public:
     virtual int setAudio(int a_audio) { return EC_NOT_SUPPORT; }
     virtual int getAudio(int* a_audio) { return EC_NOT_SUPPORT; }
 
-    /** Language and MCSkele: en_US, zh_CN, zh_CN.UTF-8 etc */
+    /** Language and locale: en_US, zh_CN, zh_CN.UTF-8 etc */
     virtual int setLanguage(int a_lang) { return EC_NOT_SUPPORT; }
     virtual int getLanguage(int* a_lang) { return EC_NOT_SUPPORT; }
 
@@ -115,8 +112,8 @@ public:
      */
     virtual int stepSeek(int a_step) { return EC_NOT_SUPPORT; }
 
-    virtual int setOutputWindow(void* a_ow) { return EC_NOT_SUPPORT; }
-    virtual int getOutputWindow(void** a_ow) { return EC_NOT_SUPPORT; }
+    virtual int setOutputWindow(void* a_window) { return EC_NOT_SUPPORT; }
+    virtual int getOutputWindow(void** a_window) { return EC_NOT_SUPPORT; }
 
     /**
      * Channel is one playable media resource, which can be played by
