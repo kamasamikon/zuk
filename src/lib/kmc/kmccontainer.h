@@ -11,7 +11,12 @@
 #include "kmcdevice.h"
 #include "kmcchannel.h"
 
-class KMediaContainer
+typedef struct _KMediaContainerHeader KMediaContainerHeader;
+struct _KMediaContainerHeader {
+    K_dlist_entry m_protocolHeader;
+};
+
+class KMediaContainer : public KMediaContainerHeader
 {
 public:
     KMediaContainer(KIM *a_im, const char* a_name);
@@ -41,9 +46,6 @@ public:
     /** channel hash list, 0 end */
     char** getMediaChannelHashList(void);
     KMediaChannel** getMediaChannelClassList(void);
-
-public:
-    K_dlist_entry m_protocolHeader;
 
 private:
     char* m_name;

@@ -83,7 +83,13 @@ typedef enum _KMC_CAP
     KMC_CAP_ETC
 } KMC_CAP;
 
-class KMediaChannel
+typedef struct _KMediaChannelHeader KMediaChannelHeader;
+struct _KMediaChannelHeader {
+    K_dlist_entry m_channelEntry;
+};
+
+
+class KMediaChannel : public KMediaChannelHeader
 {
 public:
     KMediaChannel(KIM *a_im, KMediaDevice* a_parentDevice, const char* a_name);
@@ -224,9 +230,6 @@ public:
     /** clockwise, default is zero */
     virtual int setVideoAngle(int a_angle);
     virtual int getVideoAngle(int *a_angle);
-
-public:
-    K_dlist_entry m_channelEntry;
 
 private:
     KIM *m_im;

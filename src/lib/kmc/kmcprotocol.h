@@ -15,7 +15,13 @@ class KMediaChannel;
 
 #define MC_PRO_FLG_STARTED   0x00000001
 
-class KMediaProtocol
+typedef struct _KMediaProtocolHeader KMediaProtocolHeader;
+struct _KMediaProtocolHeader {
+    K_dlist_entry m_deviceHeader;
+    K_dlist_entry m_protocolEntry;
+};
+
+class KMediaProtocol : public KMediaProtocolHeader
 {
 public:
     KMediaProtocol(KIM *a_im, KMediaContainer* a_parentContainer, const char* a_name, int a_type);
@@ -43,10 +49,6 @@ public:
     KMediaChannel** getMediaChannelClassList(void);
 
     virtual int scanDevice(void);
-
-public:
-    K_dlist_entry m_deviceHeader;
-    K_dlist_entry m_protocolEntry;
 
 protected:
     char* m_desc;

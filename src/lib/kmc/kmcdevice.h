@@ -23,7 +23,14 @@ class KMediaProtocol;
    3   local::record
 */
 
-class KMediaDevice
+typedef struct _KMediaDeviceHeader KMediaDeviceHeader;
+struct _KMediaDeviceHeader {
+    K_dlist_entry m_channelHeader;
+    K_dlist_entry m_deviceEntry;
+};
+
+
+class KMediaDevice : public KMediaDeviceHeader
 {
 public:
     KMediaDevice(KIM *a_im, KMediaProtocol* a_parentProtocal, const char* a_name);
@@ -62,9 +69,6 @@ public:
     virtual int cancelUpdateChannelList(void);
 
 public:
-    K_dlist_entry m_channelHeader;
-    K_dlist_entry m_deviceEntry;
-
     char* m_desc;
     int  m_type;
 
