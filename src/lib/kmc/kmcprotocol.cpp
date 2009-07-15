@@ -190,8 +190,3 @@ KMediaChannel** KMediaProtocol::getMediaChannelClassList(void)
     return deviceList;
 }
 
-int KMediaProtocol::scanDevice(void)
-{
-    return EC_NOT_SUPPORT;
-}
-

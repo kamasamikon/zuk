@@ -57,7 +57,6 @@ public:
     virtual int getSignalAmp(int *a_pamp) { return EC_NOT_SUPPORT; }
 
     virtual int updateChannelList(void) { return EC_NOT_SUPPORT; }
-    virtual int updateChannelList(unsigned int class_mask, unsigned int type_mask) { return EC_NOT_SUPPORT; }
     virtual int cancelUpdateChannelList(void) { return EC_NOT_SUPPORT; }
 
 public:

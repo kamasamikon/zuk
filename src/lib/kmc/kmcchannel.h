@@ -27,17 +27,17 @@ typedef enum { KMCPS_PLAY, KMCPS_STOP, KMCPS_PAUSE } KMCPS;
 /**
  * event issued when playing
  */
-typedef enum { KMCPE_END, KMCPE_ERR, KMCPE_ABT } KMCPE;
+typedef enum { KMCPE_END, KMCPE_ERR, KMCPE_ABT, KMCPE_STP } KMCPE;
 
 /**
  * Recording state by setRecState/getRecState
  */
-typedef enum { KMCRS_START, KMCRS_END} KMCRS;
+typedef enum { KMCRS_START, KMCRS_END } KMCRS;
 
 /**
  * channel play window state
  */
-typedef enum { KMCPW_HIDE, KMCPW_SHOW} KMCPW;
+typedef enum { KMCPW_HIDE, KMCPW_SHOW } KMCPW;
 
 /**
  * record channel start event
@@ -80,7 +80,7 @@ typedef enum _KMC_CAP
     KMC_CAP_RECORDER,
     KMC_CAP_SEEK,
     KMC_CAP_CHG_SPEED,
-    KMC_ETC
+    KMC_CAP_ETC
 } KMC_CAP;
 
 class KMediaChannel
@@ -134,9 +134,6 @@ public:
     /** play, stop, pause, */
     virtual int setPlayState(KMCPS a_state) { return EC_NOT_SUPPORT; }
     virtual int getPlayState(KMCPS* a_state) { return EC_NOT_SUPPORT; }
-
-    /** can recorder? */
-    virtual int canRecorder(kbool *a_can) { return EC_NOT_SUPPORT; }
 
     /** recording: start, end */
     virtual int setRecState(KMCRS a_state) { return EC_NOT_SUPPORT; }
@@ -202,8 +199,8 @@ public:
      */
     virtual int stepSeek(int a_step) { return EC_NOT_SUPPORT; }
 
-    virtual int setOutputWindow(void* a_ow) { return EC_NOT_SUPPORT; }
-    virtual int getOutputWindow(void** a_ow) { return EC_NOT_SUPPORT; }
+    virtual int setOutputWindow(void* a_window) { return EC_NOT_SUPPORT; }
+    virtual int getOutputWindow(void** a_window) { return EC_NOT_SUPPORT; }
 
     /**
      * Channel is one playable media resource, which can be played by

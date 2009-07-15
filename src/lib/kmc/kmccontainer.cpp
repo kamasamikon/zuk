@@ -37,18 +37,17 @@ static struct {
     { "i.kmc.evt.channel.RecordTime", "ua = channelClass" },
     { "i.kmc.evt.channel.RecordEnd", "After: ua = channelClass" },
 
-    { "i.kmc.evt.channel.playWindowState", "ua = channelClass" },
+    // { "i.kmc.evt.channel.playWindowState", "ua = channelClass" },
 
     { "i.kmc.evt.playEvent", "What's up when play, val=KMCPE', ua=chClass" },
 
     { "i.kmc.evt.playStateChange", "After: play, pause, stop" },
 
-
-    { "i.kmc.evt.esgStateChange", "双向或广播的ESG/EPG信息" },
-    { "i.kmc.evt.esgChannelChange", "频道发生变化" },
-    { "i.kmc.evt.esgInteractivityChange", "互动发生变化" },
-    { "i.kmc.evt.esgProgramChange", "节目发生变化" },
-    { "i.kmc.evt.esgAccseeChange", "频道物理参数发生变化" },
+    // { "i.kmc.evt.esgStateChange", "双向或广播的ESG/EPG信息" },
+    // { "i.kmc.evt.esgChannelChange", "频道发生变化" },
+    // { "i.kmc.evt.esgInteractivityChange", "互动发生变化" },
+    // { "i.kmc.evt.esgProgramChange", "节目发生变化" },
+    // { "i.kmc.evt.esgAccseeChange", "频道物理参数发生变化" },
 
     { "i.kmc.evt.hardwareChange", "After:" },
 };

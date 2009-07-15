@@ -40,7 +40,7 @@ public:
     char** getMediaChannelHashList(void);
     KMediaChannel** getMediaChannelClassList(void);
 
-    virtual int scanDevice(void);
+    virtual int scanDevice(void) { return EC_NOT_SUPPORT; }
 
 public:
     K_dlist_entry m_deviceHeader;
