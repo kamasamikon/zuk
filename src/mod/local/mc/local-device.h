@@ -11,16 +11,17 @@ public:
     KMC_LocalDevice(KIM *a_im, KMC_LocalProtocol* a_parentProtocal, char* a_name);
     virtual ~KMC_LocalDevice(void);
 
-    virtual char* getHash(void) = 0;
+    virtual kbool start();
+    virtual kbool stop();
 
-    virtual int remove(void) { return EC_NOT_SUPPORT; }
+    virtual int remove(void);
 
     /**  0 <= a_amp < 100 */
-    virtual int setSignalAmp(int a_amp) { return EC_NOT_SUPPORT; }
-    virtual int getSignalAmp(int *a_pamp) { return EC_NOT_SUPPORT; }
+    virtual int setSignalAmp(int a_amp);
+    virtual int getSignalAmp(int *a_pamp);
 
-    virtual int updateChannelList(void) { return EC_NOT_SUPPORT; }
-    virtual int cancelUpdateChannelList(void) { return EC_NOT_SUPPORT; }
+    virtual int updateChannelList(void);
+    virtual int cancelUpdateChannelList(void);
 
 private:
 };

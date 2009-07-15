@@ -16,6 +16,45 @@ KMC_LocalChannel::~KMC_LocalChannel(void)
     kim_setint(im(), "i.kmc.evt.channel.del", 1, (void**)this, knil);
 }
 
+kbool KMC_LocalChannel::getCapability(KMC_CAP cap)
+{
+    return kfalse;
+}
+
+int KMC_LocalChannel::setChannel(kbool isSet)
+{
+    return EC_NOT_SUPPORT;
+}
+int KMC_LocalChannel::remove(void)
+{
+    return EC_NOT_SUPPORT;
+}
+
+int KMC_LocalChannel::getChannelInfo(KMC_ChannelInfo * serviceInfo)
+{
+    return EC_NOT_SUPPORT;
+}
+int KMC_LocalChannel::getChannelPreviewInfo(KMC_PREVIEW_TYPE infoType, KMC_PreviewInfo *previewInfo)
+{
+    return EC_NOT_SUPPORT;
+}
+
+int KMC_LocalChannel::getProgramList(time_t startTime, time_t endTime, KMC_ProgInfo** a_pi_lst, int *piCnt)
+{
+    return EC_NOT_SUPPORT;
+}
+int KMC_LocalChannel::getProgramDescrition(char *progID, char **description)
+{
+    return EC_NOT_SUPPORT;
+}
+
+int KMC_LocalChannel::getInteractivityInfo(time_t a_time,
+        KMC_ItvInfo** a_ii_cur, int *iiCurCnt,
+        KMC_ItvInfo** a_ii_nxt, int *iiNxtCnt)
+{
+    return EC_NOT_SUPPORT;
+}
+
 int KMC_LocalChannel::setVolume(int a_vol)
 {
     return EC_NOT_SUPPORT;

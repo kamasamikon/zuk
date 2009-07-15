@@ -11,23 +11,21 @@ public:
     KMC_LocalChannel(KIM *im, KMC_LocalDevice* a_parentDevice, char* a_name);
     virtual ~KMC_LocalChannel(void);
 
-    virtual char* getHash(void) = 0;
+    virtual kbool getCapability(KMC_CAP cap);
 
-    virtual kbool getCapability(KMC_CAP cap) { return kfalse; }
-
-    virtual int setChannel(kbool isSet) { return EC_NOT_SUPPORT; }
-    virtual int remove(void) { return EC_NOT_SUPPORT; }
+    virtual int setChannel(kbool isSet);
+    virtual int remove(void);
 
 public:
-    virtual int getChannelInfo(KMC_ChannelInfo * serviceInfo) { return EC_NOT_SUPPORT; }
-    virtual int getChannelPreviewInfo(KMC_PREVIEW_TYPE infoType, KMC_PreviewInfo *previewInfo) { return EC_NOT_SUPPORT; }
+    virtual int getChannelInfo(KMC_ChannelInfo * serviceInfo);
+    virtual int getChannelPreviewInfo(KMC_PREVIEW_TYPE infoType, KMC_PreviewInfo *previewInfo);
 
-    virtual int getProgramList(time_t startTime, time_t endTime, KMC_ProgInfo** a_pi_lst, int *piCnt) { return EC_NOT_SUPPORT; }
-    virtual int getProgramDescrition(char *progID, char **description) { return EC_NOT_SUPPORT; }
+    virtual int getProgramList(time_t startTime, time_t endTime, KMC_ProgInfo** a_pi_lst, int *piCnt);
+    virtual int getProgramDescrition(char *progID, char **description);
 
     virtual int getInteractivityInfo(time_t a_time,
             KMC_ItvInfo** a_ii_cur, int *iiCurCnt,
-            KMC_ItvInfo** a_ii_nxt, int *iiNxtCnt) { return EC_NOT_SUPPORT; }
+            KMC_ItvInfo** a_ii_nxt, int *iiNxtCnt);
 
     /**
      * return EC_NOT_SUPPORT if operation not supported
