@@ -9,6 +9,7 @@ KMediaChannel::KMediaChannel(KIM *a_im, KMediaDevice* a_parentDevice, const char
     init_dlist_head(&m_channelEntry);
 
     m_im = a_im;
+    m_hash[0] = '\0';
     m_parentDevice = a_parentDevice;
     m_name = kstr_dup(a_name);
     m_flg = 0;

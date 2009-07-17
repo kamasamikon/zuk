@@ -10,6 +10,7 @@ KMediaProtocol::KMediaProtocol(KIM *a_im, KMediaContainer* a_parentContainer, co
     init_dlist_head(&m_protocolEntry);
 
     m_im = a_im;
+    m_hash[0] = '\0';
     m_parentContainer = a_parentContainer;
     m_name = kstr_dup(a_name);
     m_desc = NULL;

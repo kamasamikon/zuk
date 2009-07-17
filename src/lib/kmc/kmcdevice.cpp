@@ -10,6 +10,7 @@ KMediaDevice::KMediaDevice(KIM *a_im, KMediaProtocol* a_parentProtocal, const ch
     init_dlist_head(&m_deviceEntry);
 
     m_im = a_im;
+    m_hash[0] = '\0';
     m_parentProtocal = a_parentProtocal;
     m_name = kstr_dup(a_name);
     m_flg = 0;
