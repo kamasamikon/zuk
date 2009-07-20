@@ -20,17 +20,26 @@
 #ifndef GST_BACKEND_H
 #define GST_BACKEND_H
 
-gpointer backend_init(int *argc, char **argv[]);
-void backend_deinit(gpointer *handle);
-void backend_set_window(gpointer *handle, gpointer window);
-void backend_play(gpointer *handle, const gchar *filename);
-void backend_stop(gpointer *handle);
-void backend_seek(gpointer *handle, gint value);
-void backend_seek_absolute(gpointer *handle, guint64 value);
-void backend_reset(gpointer *handle);
-void backend_pause(gpointer *handle);
-void backend_resume(gpointer *handle);
-guint64 backend_query_position(gpointer *handle);
-guint64 backend_query_duration(gpointer *handle);
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+void* backend_init(int *argc, char **argv[]);
+void backend_deinit(void *handle);
+void backend_set_window(void *handle, void *window);
+void backend_play(void *handle, const char *filename);
+void backend_stop(void *handle);
+void backend_seek(void *handle, int value);
+void backend_seek_absolute(void *handle, unsigned int value);
+void backend_reset(void *handle);
+void backend_pause(void *handle);
+void backend_resume(void *handle);
+unsigned int backend_query_position(void *handle);
+unsigned int backend_query_duration(void *handle);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* GST_BACKEND_H */
+

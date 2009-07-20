@@ -12,7 +12,11 @@ GTK_LIBS += -lglade-2.0
 GTK_CFLAGS += -I/usr/include/libglade-2.0 
 libui_la_CPPFLAGS = ${GTK_CFLAGS}
 
-libui_la_LDFLAGS = ${GTK_LIBS} -module -rdynamic
+zuk_core_LDFLAGS = -L../../lib/kacoo -L../../lib/kmm -L../../lib/kmc -L../../lib/textconv
+zuk_core_LDFLAGS += -lrt -lkacoo -lkmm -lkmc -ltextconv
+
+libui_la_LDFLAGS = ${GTK_LIBS} -module -rdynamic 
+libui_la_LDFLAGS += ${zuk_core_LDFLAGS}
 libui_la_CFLAGS = ${GTK_CFLAGS}
 
 libui_la_CFLAGS += -Wall -g

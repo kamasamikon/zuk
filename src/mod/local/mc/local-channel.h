@@ -8,13 +8,16 @@
 class KMC_LocalChannel : public KMediaChannel
 {
 public:
-    KMC_LocalChannel(KIM *im, KMC_LocalDevice* a_parentDevice, char* a_name);
+    KMC_LocalChannel(KIM *im, KMC_LocalDevice* a_parentDevice, char* a_name, char *a_uri);
     virtual ~KMC_LocalChannel(void);
 
     virtual kbool getCapability(KMC_CAP cap);
 
     virtual int setChannel(kbool isSet);
     virtual int remove(void);
+
+public:
+    void setBackend(void *a_backend);
 
 public:
     virtual int getChannelInfo(KMC_ChannelInfo * serviceInfo);
@@ -136,6 +139,10 @@ private:
     kbool m_mute;
     KMCPS m_playState;
     KMCRS m_recState;
+
+private:
+    void *m_backend;
+    char *m_uri;
 };
 
 #endif /*__KMC_LOCAL_CHANNEL_H__*/

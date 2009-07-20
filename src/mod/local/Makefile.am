@@ -13,7 +13,7 @@ GST_CFLAGS=`pkg-config --cflags gstreamer-0.10`
 GTK_LIBS=`pkg-config --libs gtk+-2.0`
 GTK_CFLAGS=`pkg-config --cflags gtk+-2.0`
 
-libmc_local_la_LDFLAGS = ${GST_LIBS} ${GTK_LIBS} -module
+libmc_local_la_LDFLAGS = ${GST_LIBS} ${GTK_LIBS} -module -lrt -lkacoo -lkmm -lkmc -ltextconv
 libmc_local_la_CFLAGS = ${GST_CFLAGS} ${GTK_CFLAGS}
 
 libmc_local_la_LDFLAGS += -L../../lib/kacoo -L../../lib/kmm -L../../lib/kmc -L../../lib/textconv

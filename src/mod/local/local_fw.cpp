@@ -60,6 +60,7 @@ extern "C" EXPORT_FUN void mm_hey(KIM *im)
     __g_worker_thread = ktsk_new("local", knil, 0, 0, knil, knil, knil, knil);
 
     __g_local_protocol = new KMC_LocalProtocol(__g_im, __g_mc, "mc-local-protocol", 1);
+    __g_local_protocol->scanDevice();
 
     /* XXX test */
     int argc = kim_getint(im, "i.env.argc", knil);
@@ -67,7 +68,7 @@ extern "C" EXPORT_FUN void mm_hey(KIM *im)
 
     mediaWindow = (void*)kim_getptr(im, "p.ui.ui.window.optn", knil);
     int __not_main(int argc, char *argv[]);
-    __not_main(argc, argv);
+    //__not_main(argc, argv);
 }
 
 extern "C" EXPORT_FUN void mm_bye(KIM *im)

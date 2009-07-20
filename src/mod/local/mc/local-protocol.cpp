@@ -24,6 +24,8 @@ KMC_LocalProtocol::~KMC_LocalProtocol()
 int KMC_LocalProtocol::scanDevice()
 {
     KMC_LocalDevice *localDevice = new KMC_LocalDevice(im(), this, "localDevice");
+    localDevice->start();
+    localDevice->updateChannelList();
     return EC_OK;
 }
 

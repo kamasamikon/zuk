@@ -331,14 +331,14 @@ char** KMediaContainer::getMediaDeviceHashList(void)
     }
 
     for (protIndex = 0; protIndex < protCnt; protIndex++)
-        for (int i = 0; hashListList[protIndex]&&hashListList[protIndex][i]; i++)
+        for (int i = 0; hashListList[protIndex] && hashListList[protIndex][i]; i++)
             devCnt++;
 
     hashList = (char**)kmem_alloc(sizeof(char*) * (devCnt + 1));
     hashList[devCnt] = NULL;
 
     for (protIndex = 0; protIndex < protCnt; protIndex++)
-        for (int i = 0; hashListList[protIndex]&&hashListList[protIndex][i]; i++) {
+        for (int i = 0; hashListList[protIndex] && hashListList[protIndex][i]; i++) {
             hashList[devIndex++] = hashListList[protIndex][i];
             devCnt++;
         }
@@ -375,14 +375,14 @@ KMediaDevice** KMediaContainer::getMediaDeviceClassList(void)
     }
 
     for (protIndex = 0; protIndex < protCnt; protIndex++)
-        for (int i = 0; deviceListList[protIndex]&&deviceListList[protIndex][i]; i++)
+        for (int i = 0; deviceListList[protIndex] && deviceListList[protIndex][i]; i++)
             devCnt++;
 
     deviceList = (KMediaDevice**)kmem_alloc(sizeof(KMediaDevice*) * (devCnt + 1));
     deviceList[devCnt] = NULL;
 
     for (protIndex = 0; protIndex < protCnt; protIndex++)
-        for (int i = 0; deviceListList[protIndex]&&deviceListList[protIndex][i]; i++) {
+        for (int i = 0; deviceListList[protIndex] && deviceListList[protIndex][i]; i++) {
             deviceList[devIndex++] = deviceListList[protIndex][i];
             devCnt++;
         }
@@ -419,14 +419,14 @@ char** KMediaContainer::getMediaChannelHashList(void)
     }
 
     for (protIndex = 0; protIndex < protCnt; protIndex++)
-        for (int i = 0; hashListList[protIndex]&&hashListList[protIndex][i]; i++)
+        for (int i = 0; hashListList[protIndex] && hashListList[protIndex][i]; i++)
             devCnt++;
 
     hashList = (char**)kmem_alloc(sizeof(char*) * (devCnt + 1));
     hashList[devCnt] = NULL;
 
     for (protIndex = 0; protIndex < protCnt; protIndex++)
-        for (int i = 0; hashListList[protIndex]&&hashListList[protIndex][i]; i++) {
+        for (int i = 0; hashListList[protIndex] && hashListList[protIndex][i]; i++) {
             hashList[devIndex++] = hashListList[protIndex][i];
             devCnt++;
         }
@@ -437,5 +437,52 @@ char** KMediaContainer::getMediaChannelHashList(void)
     kmem_free_s(hashListList);
 
     return hashList;
+}
+
+KMediaChannel** KMediaContainer::getMediaChannelClassList(void)
+{
+    int protCnt = 0, devCnt = 0, protIndex = 0, devIndex = 0;
+    KMediaChannel **channelList = NULL;
+    KMediaChannel ***channelListList = NULL;
+    K_dlist_entry* protEntry;
+    KMediaProtocol* prot;
+
+    if (is_dlist_empty(&m_protocolHeader))
+        return NULL;
+
+    protEntry = m_protocolHeader.next;
+    while (protEntry != &m_protocolHeader) {
+        protCnt++;
+        protEntry = protEntry->next;
+    }
+
+    channelListList = (KMediaChannel***)kmem_alloc(sizeof(KMediaChannel**) * protCnt);
+
+    protEntry = m_protocolHeader.next;
+    while (protEntry != &m_protocolHeader) {
+        prot = FIELD_TO_STRUCTURE(protEntry, KMediaProtocol, m_protocolEntry);
+        channelListList[protIndex++] = prot->getMediaChannelClassList();
+        protEntry = protEntry->next;
+    }
+
+    for (protIndex = 0; protIndex < protCnt; protIndex++)
+        for (int i = 0; channelListList[protIndex] && channelListList[protIndex][i]; i++)
+            devCnt++;
+
+    channelList = (KMediaChannel**)kmem_alloc(sizeof(KMediaChannel*) * (devCnt + 1));
+    channelList[devCnt] = NULL;
+
+    for (protIndex = 0; protIndex < protCnt; protIndex++)
+        for (int i = 0; channelListList[protIndex] && channelListList[protIndex][i]; i++) {
+            channelList[devIndex++] = channelListList[protIndex][i];
+            devCnt++;
+        }
+
+    for (protIndex = 0; protIndex < protCnt; protIndex++)
+        kmem_free_s(channelListList[protIndex]);
+
+    kmem_free_s(channelListList);
+
+    return channelList;
 }
 

@@ -65,6 +65,7 @@ target_drag_data_received  (GtkWidget          *widget,
 // defines
 extern "C" void on_winmain_menu_item_about_activate(GtkMenuItem *menuitem, gpointer user_data)
 {
+    static int count = 0, i;
     GtkWidget *window_main = (GtkWidget*)kim_getptr(__g_im, "p.ui.ui.window.main", knil);
 
     const gchar *authors[] = {
@@ -87,6 +88,20 @@ extern "C" void on_winmain_menu_item_about_activate(GtkMenuItem *menuitem, gpoin
             "documenters", documentors,
             "title", "About zuk! zuk!",
             NULL);
+
+    GtkWidget *mediaWindow = (GtkWidget*)kim_getptr(__g_im, "p.ui.ui.window.main", knil);
+    KMediaChannel **chList = __g_mc->getMediaChannelClassList();
+    if (chList && chList[0]) {
+        for (i = 0; chList[i]; i++) {
+            if (i == count) {
+                chList[i]->setOutputWindow(mediaWindow->window);
+                chList[i]->setPlayState(KMCPS_PLAY);
+                count++;
+                return;
+            }
+        }
+        count = 0;
+    }
 }
 
 extern "C" void on_winmain_menu_item_tool_activate(GtkMenuItem *menuitem, gpointer user_data)

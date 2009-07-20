@@ -5,6 +5,8 @@
 #include <kmccontainer.h>
 #include "local-protocol.h"
 
+#include "../be/gst-backend.h"
+
 class KMC_LocalDevice : public KMediaDevice
 {
 public:
@@ -24,6 +26,7 @@ public:
     virtual int cancelUpdateChannelList(void);
 
 private:
+    void *m_backend;
 };
 
 #endif /* __KMC_LOCAL_DEVICE_H__ */

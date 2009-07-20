@@ -1,19 +1,31 @@
 /* vim:set et sw=4 sts=4 ff=unix: */
 #include <kmem.h>
 #include <kstr.h>
+#include <md5sum.h>
 
 #include "kmccontainer.h"
 #include "local-channel.h"
 
-KMC_LocalChannel::KMC_LocalChannel(KIM *a_im, KMC_LocalDevice* a_parentDevice, char* a_name) :
+KMC_LocalChannel::KMC_LocalChannel(KIM *a_im, KMC_LocalDevice* a_parentDevice, char* a_name, char *a_uri) :
     KMediaChannel(a_im, a_parentDevice, a_name)
 {
+    m_uri = kstr_dup(a_uri);
+    m_backend = 0;
+
+    char *src = m_uri;
+    setHash((char*)md5_calculate((const unsigned char*)src, strlen(src)));
+
     kim_setint(im(), "i.kmc.evt.channel.new", 1, (void**)this, knil);
 }
 
 KMC_LocalChannel::~KMC_LocalChannel(void)
 {
     kim_setint(im(), "i.kmc.evt.channel.del", 1, (void**)this, knil);
+}
+
+void KMC_LocalChannel::setBackend(void *a_backend)
+{
+    m_backend = a_backend;
 }
 
 kbool KMC_LocalChannel::getCapability(KMC_CAP cap)
@@ -75,7 +87,8 @@ int KMC_LocalChannel::getMute(kbool* a_mute)
 
 int KMC_LocalChannel::setPlayState(KMCPS a_state)
 {
-    return EC_NOT_SUPPORT;
+    backend_play(m_backend, m_uri);
+    return EC_OK;
 }
 int KMC_LocalChannel::getPlayState(KMCPS* a_state)
 {
@@ -180,7 +193,8 @@ int KMC_LocalChannel::stepSeek(int a_step)
 
 int KMC_LocalChannel::setOutputWindow(void* a_window)
 {
-    return EC_NOT_SUPPORT;
+    backend_set_window(m_backend, a_window);
+    return EC_OK;
 }
 int KMC_LocalChannel::getOutputWindow(void** a_window)
 {
