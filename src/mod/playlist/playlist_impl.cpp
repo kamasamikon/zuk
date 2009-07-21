@@ -13,7 +13,11 @@
 
 #include <textconv.h>
 
+#include <gtk/gtk.h>
+
 #include "playlistdefine.h"
+
+#include "editable_cells.c"
 
 static char guid[] = "7D378382-9351-4f4e-BF83-4FF20C456B6D";
 static kbean __g_worker_thread = knil;
@@ -27,6 +31,8 @@ CPlayListRunTimeInfo __g_plrti;
 static int __g_chSearchingRef = 0;
 
 static kbean __g_sig_tmr = knil;
+
+GtkWidget *__g_vbox;
 
 /////////////////////////////////////////////////////////////////////////////
 // defines
@@ -43,134 +49,6 @@ static kvoid update_urls(kbool add)
     const kchar *lang = kim_getstr(__g_im, "s.env.language", knil);
     if (!lang || strncmp(lang, "zh_", 3))
         lang = "en";
-
-    /* the loading page */
-    sprintf(fnbuf, "%s\\playlist\\page\\live\\loading.png", modDir);
-    kstr_subs(fnbuf, '\\', kvfs_path_sep());
-    if (!kvfs_exist(fnbuf)) {
-        sprintf(fnbuf, "%s\\playlist\\page\\default\\%s\\loading.png", modDir, lang);
-        kstr_subs(fnbuf, '\\', kvfs_path_sep());
-    }
-
-    kstr_subs(fnbuf, kvfs_path_sep(), '/');
-    utf8 = acp_to_utf8(fnbuf);
-    sprintf(fnbuf, "file://%s", utf8);
-    kmem_free_s(utf8);
-
-    if (add)
-        kim_addstr(__g_im, "s.playlist.url.loading", fnbuf, RF_AUTOSET, knil, knil);
-    else
-        kim_setstr(__g_im, "s.playlist.url.loading", fnbuf, knil, knil);
-
-
-    /* not no_device page */
-    sprintf(fnbuf, "%s\\playlist\\page\\live\\no_device.png", modDir);
-    kstr_subs(fnbuf, '\\', kvfs_path_sep());
-    if (!kvfs_exist(fnbuf)) {
-        sprintf(fnbuf, "%s\\playlist\\page\\default\\%s\\no_device.png", modDir, lang);
-        kstr_subs(fnbuf, '\\', kvfs_path_sep());
-    }
-
-    kstr_subs(fnbuf, kvfs_path_sep(), '/');
-    utf8 = acp_to_utf8(fnbuf);
-    sprintf(fnbuf, "file://%s", utf8);
-    kmem_free_s(utf8);
-
-    if (add)
-        kim_addstr(__g_im, "s.playlist.url.no_device", fnbuf, RF_AUTOSET, knil, knil);
-    else
-        kim_setstr(__g_im, "s.playlist.url.no_device", fnbuf, knil, knil);
-
-    /* not scanning page */
-    sprintf(fnbuf, "%s\\playlist\\page\\live\\scanning.png", modDir);
-    kstr_subs(fnbuf, '\\', kvfs_path_sep());
-    if (!kvfs_exist(fnbuf)) {
-        sprintf(fnbuf, "%s\\playlist\\page\\default\\%s\\scanning.png", modDir, lang);
-        kstr_subs(fnbuf, '\\', kvfs_path_sep());
-    }
-
-    kstr_subs(fnbuf, kvfs_path_sep(), '/');
-    utf8 = acp_to_utf8(fnbuf);
-    sprintf(fnbuf, "file://%s", utf8);
-    kmem_free_s(utf8);
-
-    if (add)
-        kim_addstr(__g_im, "s.playlist.url.scanning", fnbuf, RF_AUTOSET, knil, knil);
-    else
-        kim_setstr(__g_im, "s.playlist.url.scanning", fnbuf, knil, knil);
-
-    /* not scanning_failed page */
-    sprintf(fnbuf, "%s\\playlist\\page\\live\\scanning_failed.png", modDir);
-    kstr_subs(fnbuf, '\\', kvfs_path_sep());
-    if (!kvfs_exist(fnbuf)) {
-        sprintf(fnbuf, "%s\\playlist\\page\\default\\%s\\scanning_failed.png", modDir, lang);
-        kstr_subs(fnbuf, '\\', kvfs_path_sep());
-    }
-
-    kstr_subs(fnbuf, kvfs_path_sep(), '/');
-    utf8 = acp_to_utf8(fnbuf);
-    sprintf(fnbuf, "file://%s", utf8);
-    kmem_free_s(utf8);
-
-    if (add)
-        kim_addstr(__g_im, "s.playlist.url.scanning_failed", fnbuf, RF_AUTOSET, knil, knil);
-    else
-        kim_setstr(__g_im, "s.playlist.url.scanning_failed", fnbuf, knil, knil);
-
-    /* no live program */
-    sprintf(fnbuf, "%s\\playlist\\page\\live\\no_prg_live.png", modDir);
-    kstr_subs(fnbuf, '\\', kvfs_path_sep());
-    if (!kvfs_exist(fnbuf)) {
-        sprintf(fnbuf, "%s\\playlist\\page\\default\\%s\\no_prg_live.png", modDir, lang);
-        kstr_subs(fnbuf, '\\', kvfs_path_sep());
-    }
-
-    kstr_subs(fnbuf, kvfs_path_sep(), '/');
-    utf8 = acp_to_utf8(fnbuf);
-    sprintf(fnbuf, "file://%s", utf8);
-    kmem_free_s(utf8);
-
-    if (add)
-        kim_addstr(__g_im, "s.playlist.url.no_prg_live", fnbuf, RF_AUTOSET, knil, knil);
-    else
-        kim_setstr(__g_im, "s.playlist.url.no_prg_live", fnbuf, knil, knil);
-
-    /* no live program */
-    sprintf(fnbuf, "%s\\playlist\\page\\live\\no_prg_vod.png", modDir);
-    kstr_subs(fnbuf, '\\', kvfs_path_sep());
-    if (!kvfs_exist(fnbuf)) {
-        sprintf(fnbuf, "%s\\playlist\\page\\default\\%s\\no_prg_vod.png", modDir, lang);
-        kstr_subs(fnbuf, '\\', kvfs_path_sep());
-    }
-
-    kstr_subs(fnbuf, kvfs_path_sep(), '/');
-    utf8 = acp_to_utf8(fnbuf);
-    sprintf(fnbuf, "file://%s", utf8);
-    kmem_free_s(utf8);
-
-    if (add)
-        kim_addstr(__g_im, "s.playlist.url.no_prg_vod", fnbuf, RF_AUTOSET, knil, knil);
-    else
-        kim_setstr(__g_im, "s.playlist.url.no_prg_vod", fnbuf, knil, knil);
-
-
-    /* no live program */
-    sprintf(fnbuf, "%s\\playlist\\page\\live\\no_prg_rec.png", modDir);
-    kstr_subs(fnbuf, '\\', kvfs_path_sep());
-    if (!kvfs_exist(fnbuf)) {
-        sprintf(fnbuf, "%s\\playlist\\page\\default\\%s\\no_prg_rec.png", modDir, lang);
-        kstr_subs(fnbuf, '\\', kvfs_path_sep());
-    }
-
-    kstr_subs(fnbuf, kvfs_path_sep(), '/');
-    utf8 = acp_to_utf8(fnbuf);
-    sprintf(fnbuf, "file://%s", utf8);
-    kmem_free_s(utf8);
-
-    if (add)
-        kim_addstr(__g_im, "s.playlist.url.no_prg_rec", fnbuf, RF_AUTOSET, knil, knil);
-    else
-        kim_setstr(__g_im, "s.playlist.url.no_prg_rec", fnbuf, knil, knil);
 }
 
 
@@ -234,7 +112,8 @@ int IMWCH(plwch_deviceNew)
     if (__g_unloading)
         return -1;
 
-    char* hash = (char*)REC_UA(rec);
+    KMediaDevice *device = (KMediaDevice*)REC_UA(rec);
+    klog(("plwch_deviceNew:%s\n", device->getHash()));
     return 0;
 }
 int IMWCH(plwch_deviceDel)
@@ -242,7 +121,8 @@ int IMWCH(plwch_deviceDel)
     if (__g_unloading)
         return -1;
 
-    char* hash = (char*)REC_UA(rec);
+    KMediaDevice *device = (KMediaDevice*)REC_UA(rec);
+    klog(("plwch_deviceDel:%s\n", device->getHash()));
     return 0;
 }
 int IMWCH(plwch_deviceFroze)
@@ -250,32 +130,56 @@ int IMWCH(plwch_deviceFroze)
     if (__g_unloading)
         return -1;
 
-    char* hash = (char*)REC_UA(rec);
+    KMediaDevice *device = (KMediaDevice*)REC_UA(rec);
     int param = (int)REC_UB(rec);
-    klog(("plwch_deviceFroze:hash:%s, ub:%x\n", hash, param));
+    klog(("plwch_deviceFroze:%s\n", device->getHash()));
 
     if (param & 0x80000000)
         ;
     else if (__g_try_scan_when_dev_defreeze) {
         kchar **chlist;
-        KMediaDevice *dev;
 
-        if (dev = __g_mc->getMediaDeviceFromDevice(hash)) {
-            chlist = dev->getMediaChannelHashList();
-            if (!chlist || !chlist[0]) {
-                kmsg_post(__g_worker_thread, KMPL_SCAN, kstr_dup(hash), (kvoid*)ktrue, knil, knil);
-                kmem_free(chlist);
-            }
+        chlist = device->getMediaChannelHashList();
+        if (!chlist || !chlist[0]) {
+            kmsg_post(__g_worker_thread, KMPL_SCAN, kstr_dup(device->getHash()), (kvoid*)ktrue, knil, knil);
+            kmem_free(chlist);
         }
     }
     return 0;
 }
+void on_play(GtkButton *button, gpointer data)
+{
+    KMediaChannel *channel = (KMediaChannel*)data;
+
+    GtkWidget *mediaWindow = (GtkWidget*)kim_getptr(__g_im, "p.ui.ui.window.main", knil);
+    channel->setOutputWindow(mediaWindow->window);
+    channel->setPlayState(KMCPS_PLAY);
+}
+
 int IMWCH(plwch_channelNew)
 {
     if (__g_unloading)
         return -1;
 
-    char* hash = (char*)REC_UA(rec);
+    KMediaChannel *channel = (KMediaChannel*)REC_UA(rec);
+    klog(("plwch_channelNew:%x:%s\n", __g_vbox, channel->getHash()));
+
+    GtkWidget *button;
+    button = gtk_button_new_with_label(channel->getName());
+    gtk_widget_show(button);
+    gtk_box_pack_start(GTK_BOX(__g_vbox), button, FALSE, FALSE, 0);
+
+    g_signal_connect(button, "clicked", G_CALLBACK(on_play), (gpointer)channel);
+
+    static kbool first = ktrue;
+    if (first) {
+        first = kfalse;
+        GtkWidget *window_pref = (GtkWidget*)kim_getptr(__g_im, "p.ui.ui.window.optn", knil);
+        gtk_container_add(GTK_CONTAINER(window_pref), __g_vbox);
+        gtk_widget_show_all(window_pref);
+
+        // do_editable_cells(NULL);
+    }
     return 0;
 }
 int IMWCH(plwch_channelDel)
@@ -283,7 +187,8 @@ int IMWCH(plwch_channelDel)
     if (__g_unloading)
         return -1;
 
-    char* hash = (char*)REC_UA(rec);
+    KMediaChannel *channel = (KMediaChannel*)REC_UA(rec);
+    klog(("plwch_channelDel:%s\n", channel->getHash()));
     return 0;
 }
 int IMWCH(plwch_channelFroze)
@@ -291,7 +196,8 @@ int IMWCH(plwch_channelFroze)
     if (__g_unloading)
         return -1;
 
-    char* hash = (char*)REC_UA(rec);
+    KMediaChannel *channel = (KMediaChannel*)REC_UA(rec);
+    klog(("plwch_channelFroze:%s\n", channel->getHash()));
     if (REC_UB(rec)) {
     } else {
     }
@@ -309,65 +215,29 @@ static int IMWCH(plwch_modUnloadStart)
  */
 static int IMWCH(plwch_modLoadEnd)
 {
-    kchar **devlist, **chlist;
-    KMediaDevice *dev;
+    KMediaDevice **deviceList;
+    KMediaChannel **channelList;
 
     if (!__g_try_scan_when_mod_loaded)
         return 0;
 
-    devlist = __g_mc->getMediaDeviceHashList();
-    if (!devlist)
+    deviceList = __g_mc->getMediaDeviceClassList();
+    if (!deviceList)
         return 0;
 
-    for (int i = 0; devlist[i]; i++)
-        if (dev = __g_mc->getMediaDeviceFromDevice(devlist[i])) {
-            chlist = dev->getMediaChannelHashList();
-            if (!chlist || !chlist[0]) {
-                kmsg_post(__g_worker_thread, KMPL_SCAN, kstr_dup(devlist[i]), (kvoid*)ktrue, knil, knil);
-                kmem_free(chlist);
-            }
+    for (int i = 0; deviceList[i]; i++) {
+        channelList = deviceList[i]->getMediaChannelClassList();
+        if (!channelList || !channelList[0]) {
+            kmsg_post(__g_worker_thread, KMPL_SCAN, kstr_dup(deviceList[i]->getHash()), (kvoid*)ktrue, knil, knil);
+            kmem_free(channelList);
         }
+    }
 
-    if (devlist)
-        kmem_free(devlist);
-
-    return 0;
-}
-
-int IMWCH(plwch_liveadComplete)
-{
-    if (__g_unloading)
-        return -1;
-
-    kchar * fromDir = (char*)REC_CUR_STR(rec);
-    kchar * moduleDir = kim_getstr(im, "s.env.path.moduleDir", knil);
-
-    kchar fromDirBuf[260], moduleDirBuf[260];
-
-    strcpy(fromDirBuf, fromDir);
-    strcat(fromDirBuf, "\\playlist");
-
-    strcpy(moduleDirBuf, moduleDir);
-    strcat(moduleDirBuf, "\\playlist\\page\\live");
-
-    /* move the default page to current dir */
-    kstr_subs(fromDirBuf, '\\', kvfs_path_sep());
-    kstr_subs(moduleDirBuf, '\\', kvfs_path_sep());
-
-    /* delete old to avoid junks */
-    kvfs_rmdir(moduleDirBuf);
-
-    /* copy the new */
-    kvfs_cpdir(fromDirBuf, moduleDirBuf);
-
-    /*
-     * Update the url
-     */
-    update_urls(kfalse);
+    if (deviceList)
+        kmem_free(deviceList);
 
     return 0;
 }
-
 
 /////////////////////////////////////////////////////////////////////////////
 // kmsg dispatch
@@ -440,7 +310,6 @@ static struct _wchmap {
     { knil, 'b', "i.kmc.evt.channel.del", plwch_channelDel },
     { knil, 'b', "i.kmm.evt.modLoadEnd", plwch_modLoadEnd },
     { knil, 'b', "i.kmm.evt.modUnloadStart", plwch_modUnloadStart },
-    { knil, 'a', "s.livead.evt.dataComplete", plwch_liveadComplete },
 };
 
 static void add_im_watches()
@@ -518,6 +387,8 @@ extern "C" EXPORT_FUN void mm_hey(KIM *im)
 
     void loadui(KIM *im);
     // XXX loadui(im);
+
+    __g_vbox = gtk_vbox_new(FALSE, 1);
 
     update_urls(ktrue);
 

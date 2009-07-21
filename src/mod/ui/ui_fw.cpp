@@ -497,7 +497,7 @@ static void ui_create_ui(KIM *im)
             G_CALLBACK (target_drag_data_received), NULL);
 
 
-    if (1) {
+    if (0) {
         GtkWidget *button;
         button = gtk_button_new_with_label("xxyyyx");
         //button = gtk_viewport_new(NULL, NULL);//"GTK_WINDOW_TOPLEVEL");
@@ -506,7 +506,6 @@ static void ui_create_ui(KIM *im)
         gtk_drag_source_set (button, GdkModifierType(GDK_BUTTON1_MASK | GDK_BUTTON3_MASK),
                 target_table, n_targets,
                 GdkDragAction(GDK_ACTION_COPY | GDK_ACTION_MOVE));
-    kim_addptr(im, "p.ui.ui.window.optn", (kvoid*)button, RF_AUTOSET, knil, knil);
     }
 
     GtkWidget *window_info = glade_xml_get_widget (gxml, "window_info");
@@ -518,7 +517,7 @@ static void ui_create_ui(KIM *im)
     // gtk_box_pack_start(GTK_BOX(vbox_main), window_media, TRUE, FALSE, 0);
 
     GtkWidget *window_pref = glade_xml_get_widget (gxml, "window_pref");
-    //kim_addptr(im, "p.ui.ui.window.optn", (kvoid*)window_pref, RF_AUTOSET, knil, knil);
+    kim_addptr(im, "p.ui.ui.window.optn", (kvoid*)window_pref, RF_AUTOSET, knil, knil);
     gtk_widget_show(window_pref);
 
     if (0) {

@@ -75,7 +75,7 @@ int KMC_LocalDevice::updateChannelList(void)
                 if (strstr(finfo.name, ".flv")) {
                     sprintf(fullpath, "%s%s%s", baseDir, ps, finfo.name);
                     klog(("found: file:%s\n", fullpath));
-                    KMC_LocalChannel *channel = new KMC_LocalChannel(im(), this, "local", fullpath);
+                    KMC_LocalChannel *channel = new KMC_LocalChannel(im(), this, finfo.name, fullpath);
                     channel->setBackend(m_backend);
                 }
             }
