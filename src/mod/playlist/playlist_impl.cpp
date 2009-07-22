@@ -25,8 +25,6 @@ static kbean __g_worker_thread = knil;
 static kint __g_try_scan_when_mod_loaded = 0;
 static kint __g_try_scan_when_dev_defreeze = 0;
 
-static kbool __g_unloading = kfalse;
-
 CPlayListRunTimeInfo __g_plrti;
 static int __g_chSearchingRef = 0;
 
@@ -59,9 +57,6 @@ static kvoid update_urls(kbool add)
  */
 kint pltmr_sig_checker(kvoid *a_ur0, kvoid *a_ur1, kvoid *a_ur2, kvoid *a_ur3)
 {
-    if (__g_unloading)
-        return -1;
-
     kchar *hash = kim_getstr(__g_im, "s.playlist.channel.current", knil);
     KMediaDevice *dev;
     KMediaChannel *ch;
@@ -80,9 +75,6 @@ kint pltmr_sig_checker(kvoid *a_ur0, kvoid *a_ur1, kvoid *a_ur2, kvoid *a_ur3)
 // watch routines
 int IMWCH(plwch_channelSwitchStart)
 {
-    if (__g_unloading)
-        return -1;
-
     char* hash = (char*)REC_UA(rec);
     ktmr_kill(__g_sig_tmr);
     kim_setint(im, "i.playlist.media.signal", -1, knil, knil);
@@ -90,9 +82,6 @@ int IMWCH(plwch_channelSwitchStart)
 }
 int IMWCH(plwch_channelSwitchEnd)
 {
-    if (__g_unloading)
-        return -1;
-
     char* hash = (char*)REC_UA(rec);
     int error = (int)REC_UB(rec), amp;
     klog(("plwch_channelSwitchEnd:%s:%d\n", hash, error));
@@ -109,27 +98,18 @@ int IMWCH(plwch_channelSwitchEnd)
 }
 int IMWCH(plwch_deviceNew)
 {
-    if (__g_unloading)
-        return -1;
-
     KMediaDevice *device = (KMediaDevice*)REC_UA(rec);
     klog(("plwch_deviceNew:%s\n", device->getHash()));
     return 0;
 }
 int IMWCH(plwch_deviceDel)
 {
-    if (__g_unloading)
-        return -1;
-
     KMediaDevice *device = (KMediaDevice*)REC_UA(rec);
     klog(("plwch_deviceDel:%s\n", device->getHash()));
     return 0;
 }
 int IMWCH(plwch_deviceFroze)
 {
-    if (__g_unloading)
-        return -1;
-
     KMediaDevice *device = (KMediaDevice*)REC_UA(rec);
     int param = (int)REC_UB(rec);
     klog(("plwch_deviceFroze:%s\n", device->getHash()));
@@ -158,9 +138,6 @@ void on_play(GtkButton *button, gpointer data)
 
 int IMWCH(plwch_channelNew)
 {
-    if (__g_unloading)
-        return -1;
-
     KMediaChannel *channel = (KMediaChannel*)REC_UA(rec);
     klog(("plwch_channelNew:%x:%s\n", __g_vbox, channel->getHash()));
 
@@ -184,18 +161,12 @@ int IMWCH(plwch_channelNew)
 }
 int IMWCH(plwch_channelDel)
 {
-    if (__g_unloading)
-        return -1;
-
     KMediaChannel *channel = (KMediaChannel*)REC_UA(rec);
     klog(("plwch_channelDel:%s\n", channel->getHash()));
     return 0;
 }
 int IMWCH(plwch_channelFroze)
 {
-    if (__g_unloading)
-        return -1;
-
     KMediaChannel *channel = (KMediaChannel*)REC_UA(rec);
     klog(("plwch_channelFroze:%s\n", channel->getHash()));
     if (REC_UB(rec)) {
@@ -205,7 +176,6 @@ int IMWCH(plwch_channelFroze)
 }
 static int IMWCH(plwch_modUnloadStart)
 {
-    __g_unloading = ktrue;
     ktmr_kill(__g_sig_tmr);
     return 0;
 }
@@ -250,7 +220,7 @@ static kint om_scan(kbean a_tsk, kuint a_msg, kvoid *a_ur0, kvoid *a_ur1, kvoid 
     KMediaDevice *dev;
     kint i;
 
-    if ((!__g_unloading) && (!a_rsn)) {
+    if (!a_rsn) {
         if (start) {
             if (devHash && (dev = __g_mc->getMediaDeviceFromDevice(devHash))) {
                 if (!dev->isStarted())
