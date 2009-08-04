@@ -181,14 +181,41 @@ static TreeItem toplevel[] =
 };
 
 
-static GtkTreeModel *
-create_model (GtkWidget *treeview)
+static gboolean
+brasero_search_is_visible_cb (GtkTreeModel *model,
+			      GtkTreeIter *iter,
+			      void *search)
 {
-  GtkTreeStore *model;
-  GtkTreeIter iter;
-  TreeItem *month = toplevel;
+    static gboolean saveResult = TRUE;
+	gboolean result = saveResult;
+    saveResult = !saveResult;
+#if 0
 
-  model = gtk_tree_store_new(BLIST_COLUMNS,
+	gtk_tree_model_get (model, iter,
+			    BRASERO_SEARCH_TREE_TITLE_COL, &filename,
+			    BRASERO_SEARCH_TREE_URI_COL, &uri,
+			    BRASERO_SEARCH_TREE_TITLE_COL, &display_name,
+			    BRASERO_SEARCH_TREE_MIME_COL, &mime_type, -1);
+
+	result = brasero_mime_filter_filter (BRASERO_MIME_FILTER (search->priv->filter),
+					     filename,
+					     uri,
+					     display_name,
+					     mime_type);
+
+	g_free (filename);
+	g_free (uri);
+	g_free (display_name);
+	g_free (mime_type);
+#endif
+	return result;
+}
+static GtkTreeModel *
+create_model ()
+{
+  GtkTreeStore *store;
+
+  store = gtk_tree_store_new(BLIST_COLUMNS,
 						 GDK_TYPE_PIXBUF, /* Status icon */
 						 G_TYPE_BOOLEAN,  /* Status icon visible */
 						 G_TYPE_STRING,   /* Name */
@@ -206,95 +233,77 @@ create_model (GtkWidget *treeview)
 						 G_TYPE_BOOLEAN   /* Protocol visible */
 						);
 
-  /* add data to the tree store */
-  while (month->label)
+  return GTK_TREE_MODEL (store);
+}
+  // filter = gtk_tree_model_filter_new (GTK_TREE_MODEL (store), NULL);
+  // g_object_unref (G_OBJECT (store));
+  // gtk_tree_model_filter_set_visible_func (GTK_TREE_MODEL_FILTER (filter),
+          // (GtkTreeModelFilterVisibleFunc) brasero_search_is_visible_cb, NULL, NULL);
+
+static void fill_data(GtkWidget *treeview, GtkTreeStore *store)
+{
+  GtkTreeIter iter;
+  GtkTreeModel *filter;
+  TreeItem *month = toplevel;
+    /* add data to the tree store */
+    while (month->label)
     {
-      TreeItem *holiday = month->children;
-      gchar *mark = "this is a very very very very long string\nxxxxxxxx<b>shit</b>";
+        TreeItem *holiday = month->children;
+        gchar *mark = (gchar*)month->label;
 
-      GdkPixbuf *status;
-      status = gtk_widget_render_icon( GTK_WIDGET(treeview), GTK_STOCK_DIRECTORY, GTK_ICON_SIZE_SMALL_TOOLBAR, NULL );
+        GdkPixbuf *status;
+        status = gtk_widget_render_icon( GTK_WIDGET(treeview), GTK_STOCK_DIRECTORY, GTK_ICON_SIZE_SMALL_TOOLBAR, NULL );
 
-      gtk_tree_store_append (model, &iter, NULL);
-	gtk_tree_store_set(model, &iter,
-			   STATUS_ICON_COLUMN, status,
-			   STATUS_ICON_VISIBLE_COLUMN, TRUE,
-			   NAME_COLUMN, mark,
-			   BUDDY_ICON_COLUMN, status,
-			   BUDDY_ICON_VISIBLE_COLUMN, TRUE,
-			   //EMBLEM_COLUMN, emblem,
-			   EMBLEM_VISIBLE_COLUMN, TRUE,
-			   PROTOCOL_ICON_COLUMN, status,
-			   PROTOCOL_ICON_VISIBLE_COLUMN, TRUE,
-			   BGCOLOR_COLUMN, NULL,
-			   CONTACT_EXPANDER_COLUMN, NULL,
-			   //CONTACT_EXPANDER_VISIBLE_COLUMN, expanded,
-			   GROUP_EXPANDER_VISIBLE_COLUMN, FALSE,
-			-1);
-
-
-      /* add children */
-      while (holiday->label)
-	{
-	  GtkTreeIter child_iter;
-      gchar *mark = "child\nxxxxxxxx<b>shit</b>";
+        gtk_tree_store_append (store, &iter, NULL);
+        gtk_tree_store_set(store, &iter,
+                STATUS_ICON_COLUMN, status,
+                STATUS_ICON_VISIBLE_COLUMN, TRUE,
+                NAME_COLUMN, mark,
+                BUDDY_ICON_COLUMN, status,
+                BUDDY_ICON_VISIBLE_COLUMN, TRUE,
+                //EMBLEM_COLUMN, emblem,
+                EMBLEM_VISIBLE_COLUMN, TRUE,
+                PROTOCOL_ICON_COLUMN, status,
+                PROTOCOL_ICON_VISIBLE_COLUMN, TRUE,
+                BGCOLOR_COLUMN, NULL,
+                CONTACT_EXPANDER_COLUMN, NULL,
+                //CONTACT_EXPANDER_VISIBLE_COLUMN, expanded,
+                GROUP_EXPANDER_VISIBLE_COLUMN, FALSE,
+                -1);
 
 
-      GdkPixbuf *status;
-      status = gtk_widget_render_icon( GTK_WIDGET(treeview), GTK_STOCK_NETWORK, GTK_ICON_SIZE_DIALOG, NULL );
-	  gtk_tree_store_append (model, &child_iter, &iter);
-	gtk_tree_store_set(model, &child_iter,
-			   STATUS_ICON_COLUMN, status,
-			   STATUS_ICON_VISIBLE_COLUMN, TRUE,
-			   NAME_COLUMN, mark,
-			   BUDDY_ICON_COLUMN, status,
-			   BUDDY_ICON_VISIBLE_COLUMN, TRUE,
-			   //EMBLEM_COLUMN, emblem,
-			   EMBLEM_VISIBLE_COLUMN, TRUE,
-			   PROTOCOL_ICON_COLUMN, status,
-			   PROTOCOL_ICON_VISIBLE_COLUMN, holiday->alex,
-			   BGCOLOR_COLUMN, NULL,
-			   CONTACT_EXPANDER_COLUMN, NULL,
-			   //CONTACT_EXPANDER_VISIBLE_COLUMN, expanded,
-			   GROUP_EXPANDER_VISIBLE_COLUMN, FALSE,
-			-1);
+        /* add children */
+        while (holiday->label)
+        {
+            GtkTreeIter child_iter;
+        gchar *mark = (gchar*)month->label;
 
-	  holiday++;
-	}
 
-      month++;
+            GdkPixbuf *status;
+            status = gtk_widget_render_icon( GTK_WIDGET(treeview), GTK_STOCK_NETWORK, GTK_ICON_SIZE_DIALOG, NULL );
+            gtk_tree_store_append (store, &child_iter, &iter);
+            gtk_tree_store_set(store, &child_iter,
+                    STATUS_ICON_COLUMN, status,
+                    STATUS_ICON_VISIBLE_COLUMN, TRUE,
+                    NAME_COLUMN, mark,
+                    BUDDY_ICON_COLUMN, status,
+                    BUDDY_ICON_VISIBLE_COLUMN, TRUE,
+                    //EMBLEM_COLUMN, emblem,
+                    EMBLEM_VISIBLE_COLUMN, TRUE,
+                    PROTOCOL_ICON_COLUMN, status,
+                    PROTOCOL_ICON_VISIBLE_COLUMN, holiday->alex,
+                    BGCOLOR_COLUMN, NULL,
+                    CONTACT_EXPANDER_COLUMN, NULL,
+                    //CONTACT_EXPANDER_VISIBLE_COLUMN, expanded,
+                    GROUP_EXPANDER_VISIBLE_COLUMN, FALSE,
+                    -1);
+
+            holiday++;
+        }
+
+        month++;
     }
 
-  return GTK_TREE_MODEL (model);
-}
-
-static void
-item_toggled (GtkCellRendererToggle *cell,
-	      gchar                 *path_str,
-	      gpointer               data)
-{
-  GtkTreeModel *model = (GtkTreeModel *)data;
-  GtkTreePath *path = gtk_tree_path_new_from_string (path_str);
-  GtkTreeIter iter;
-  gboolean toggle_item;
-
-  gint *column;
-
-  column = (gint*)g_object_get_data (G_OBJECT (cell), "column");
-
-  /* get toggled iter */
-  gtk_tree_model_get_iter (model, &iter, path);
-  gtk_tree_model_get (model, &iter, column, &toggle_item, -1);
-
-  /* do something with the value */
-  toggle_item ^= 1;
-
-  /* set new value */
-  gtk_tree_store_set (GTK_TREE_STORE (model), &iter, column,
-		      toggle_item, -1);
-
-  /* clean up */
-  gtk_tree_path_free (path);
 }
 
 static void
@@ -375,6 +384,36 @@ add_columns (GtkTreeView *treeview)
 #else
 #endif
 }
+static gboolean
+filter_func( GtkTreeModel *model,
+             GtkTreeIter  *iter,
+             GtkEntry     *entry )
+{
+    const gchar *needle;
+    gchar       *haystack;
+
+    gtk_tree_model_get( model, iter, NAME_COLUMN, &haystack, -1 );
+    needle = gtk_entry_get_text( entry );
+
+    if( strstr( haystack, needle ) != NULL )
+        return( TRUE );
+    else
+        return( FALSE );
+}
+
+static gboolean
+cb_entry_changed( GtkEditable *entry,
+                  GtkTreeView *treeview )
+{
+    GtkTreeModelFilter *filter;
+
+    filter = GTK_TREE_MODEL_FILTER( gtk_tree_view_get_model( treeview ) );
+    gtk_tree_model_filter_refilter( filter );
+
+    return( FALSE );
+}
+
+
 
 GtkWidget *
 do_tree_store (GtkWidget *do_widget)
@@ -383,7 +422,7 @@ do_tree_store (GtkWidget *do_widget)
     {
       GtkWidget *vbox, *tool_hbox, *grep_hbox;
       GtkWidget *button;
-      GtkWidget *text;
+      GtkWidget *entry;
       GtkWidget *sw;
       GtkWidget *treeview;
       GtkTreeModel *model;
@@ -414,8 +453,8 @@ do_tree_store (GtkWidget *do_widget)
       gtk_container_set_border_width (GTK_CONTAINER (grep_hbox), 1);
       gtk_box_pack_start (GTK_BOX (vbox), grep_hbox, FALSE, FALSE, 0);
 
-      text = gtk_entry_new();
-      gtk_box_pack_start (GTK_BOX (grep_hbox), text, TRUE, TRUE, 0);
+      entry = gtk_entry_new();
+      gtk_box_pack_start (GTK_BOX (grep_hbox), entry, TRUE, TRUE, 0);
 
       sw = gtk_scrolled_window_new (NULL, NULL);
       gtk_scrolled_window_set_shadow_type (GTK_SCROLLED_WINDOW (sw),
@@ -426,12 +465,49 @@ do_tree_store (GtkWidget *do_widget)
       gtk_box_pack_start (GTK_BOX (vbox), sw, TRUE, TRUE, 0);
 
       /* create tree view */
-      treeview = gtk_tree_view_new();
+      // treeview = gtk_tree_view_new();
 
       /* create model */
-      model = create_model (treeview);
+      model = create_model ();
 
       gtk_tree_view_set_model(GTK_TREE_VIEW(treeview), GTK_TREE_MODEL(model));
+
+
+
+
+
+
+{
+    // GtkWidget    *treeview;
+    GtkTreeModel *filter;
+    GtkTreePath  *path;
+
+    /* Create path to set as virtual root */
+    path = gtk_tree_path_new_from_string( "1" );
+
+    /* Create filter and set visible function */
+    filter = gtk_tree_model_filter_new( model, NULL );
+    gtk_tree_model_filter_set_visible_func(
+                GTK_TREE_MODEL_FILTER( filter ),
+                (GtkTreeModelFilterVisibleFunc)filter_func, entry, NULL );
+
+    /* Create treeview with model */
+    treeview = gtk_tree_view_new_with_model( filter );
+
+    /* Create display components of tree view */
+    // create_treeview_display( GTK_TREE_VIEW( treeview ) );
+
+}
+
+
+    fill_data(treeview, GTK_TREE_STORE(model));
+
+    g_signal_connect( G_OBJECT( entry ), "changed",
+                      G_CALLBACK( cb_entry_changed ),
+                      GTK_TREE_VIEW( treeview ) );
+
+
+
 
       g_object_unref (model);
       gtk_tree_view_set_rules_hint (GTK_TREE_VIEW (treeview), TRUE);
