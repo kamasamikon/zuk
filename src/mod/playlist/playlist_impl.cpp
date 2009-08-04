@@ -17,7 +17,9 @@
 
 #include "playlistdefine.h"
 
-#include "editable_cells.c"
+// #include "editable_cells.c"
+#include "tree_store.c"
+// #include "gtkblist.c"
 
 static char guid[] = "7D378382-9351-4f4e-BF83-4FF20C456B6D";
 static kbean __g_worker_thread = knil;
@@ -156,6 +158,7 @@ int IMWCH(plwch_channelNew)
         gtk_widget_show_all(window_pref);
 
         // do_editable_cells(NULL);
+        do_tree_store(NULL);
     }
     return 0;
 }

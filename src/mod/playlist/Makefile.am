@@ -2,7 +2,7 @@ moddir = $(prefix)/zuk/modules/playlist
 
 mod_LTLIBRARIES = libplaylist.la
 
-libplaylist_la_SOURCES = playlist_impl.cpp
+libplaylist_la_SOURCES = playlist_impl.cpp playlist_ui.cpp
 
 dist_mod_DATA = cfg.xml main.ini
 

@@ -45,8 +45,6 @@ enum {
 	STATUS_ICON_COLUMN,
 	STATUS_ICON_VISIBLE_COLUMN,
 	NAME_COLUMN,
-	IDLE_COLUMN,
-	IDLE_VISIBLE_COLUMN,
 	BUDDY_ICON_COLUMN,
 	BUDDY_ICON_VISIBLE_COLUMN,
 	NODE_COLUMN,
@@ -194,8 +192,6 @@ create_model (GtkWidget *treeview)
 						 GDK_TYPE_PIXBUF, /* Status icon */
 						 G_TYPE_BOOLEAN,  /* Status icon visible */
 						 G_TYPE_STRING,   /* Name */
-						 G_TYPE_STRING,   /* Idle */
-						 G_TYPE_BOOLEAN,  /* Idle visible */
 						 GDK_TYPE_PIXBUF, /* Buddy icon */
 						 G_TYPE_BOOLEAN,  /* Buddy icon visible */
 						 G_TYPE_POINTER,  /* Node */
@@ -209,36 +205,21 @@ create_model (GtkWidget *treeview)
 						 GDK_TYPE_PIXBUF, /* Protocol icon */
 						 G_TYPE_BOOLEAN   /* Protocol visible */
 						);
-#if 00
-  /* create tree store */
-  model = gtk_tree_store_new (NUM_COLUMNS,
-			      G_TYPE_STRING,
-			      G_TYPE_BOOLEAN,
-			      G_TYPE_BOOLEAN,
-			      G_TYPE_BOOLEAN,
-			      G_TYPE_BOOLEAN,
-			      G_TYPE_BOOLEAN,
-			      G_TYPE_BOOLEAN,
-			      G_TYPE_BOOLEAN);
-#endif
 
   /* add data to the tree store */
   while (month->label)
     {
       TreeItem *holiday = month->children;
       gchar *mark = "this is a very very very very long string\nxxxxxxxx<b>shit</b>";
-      gchar *idle = "idle\nidle<b>shit</b>";
 
       GdkPixbuf *status;
-      status = gtk_widget_render_icon( GTK_WIDGET(treeview), GTK_STOCK_DIRECTORY, GTK_ICON_SIZE_DIALOG, NULL );
+      status = gtk_widget_render_icon( GTK_WIDGET(treeview), GTK_STOCK_DIRECTORY, GTK_ICON_SIZE_SMALL_TOOLBAR, NULL );
 
       gtk_tree_store_append (model, &iter, NULL);
 	gtk_tree_store_set(model, &iter,
 			   STATUS_ICON_COLUMN, status,
 			   STATUS_ICON_VISIBLE_COLUMN, TRUE,
 			   NAME_COLUMN, mark,
-			   IDLE_COLUMN, idle,
-			   IDLE_VISIBLE_COLUMN, TRUE,
 			   BUDDY_ICON_COLUMN, status,
 			   BUDDY_ICON_VISIBLE_COLUMN, TRUE,
 			   //EMBLEM_COLUMN, emblem,
@@ -251,26 +232,12 @@ create_model (GtkWidget *treeview)
 			   GROUP_EXPANDER_VISIBLE_COLUMN, FALSE,
 			-1);
 
-/*
-      gtk_tree_store_append (model, &iter, NULL);
-      gtk_tree_store_set (model, &iter,
-			  HOLIDAY_NAME_COLUMN, month->label,
-			  ALEX_COLUMN, FALSE,
-			  HAVOC_COLUMN, FALSE,
-			  TIM_COLUMN, FALSE,
-			  OWEN_COLUMN, FALSE,
-			  DAVE_COLUMN, FALSE,
-			  VISIBLE_COLUMN, FALSE,
-			  WORLD_COLUMN, FALSE,
-			  -1);
-              */
 
       /* add children */
       while (holiday->label)
 	{
 	  GtkTreeIter child_iter;
       gchar *mark = "child\nxxxxxxxx<b>shit</b>";
-      gchar *idle = "idle\nidle<b>shit</b>";
 
 
       GdkPixbuf *status;
@@ -280,32 +247,17 @@ create_model (GtkWidget *treeview)
 			   STATUS_ICON_COLUMN, status,
 			   STATUS_ICON_VISIBLE_COLUMN, TRUE,
 			   NAME_COLUMN, mark,
-			   IDLE_COLUMN, idle,
-			   IDLE_VISIBLE_COLUMN, TRUE,
 			   BUDDY_ICON_COLUMN, status,
 			   BUDDY_ICON_VISIBLE_COLUMN, TRUE,
 			   //EMBLEM_COLUMN, emblem,
 			   EMBLEM_VISIBLE_COLUMN, TRUE,
 			   PROTOCOL_ICON_COLUMN, status,
-			   PROTOCOL_ICON_VISIBLE_COLUMN, TRUE,
+			   PROTOCOL_ICON_VISIBLE_COLUMN, holiday->alex,
 			   BGCOLOR_COLUMN, NULL,
 			   CONTACT_EXPANDER_COLUMN, NULL,
 			   //CONTACT_EXPANDER_VISIBLE_COLUMN, expanded,
 			   GROUP_EXPANDER_VISIBLE_COLUMN, FALSE,
 			-1);
-#if 0
-	  gtk_tree_store_append (model, &child_iter, &iter);
-	  gtk_tree_store_set (model, &child_iter,
-			      HOLIDAY_NAME_COLUMN, holiday->label,
-			      ALEX_COLUMN, holiday->alex,
-			      HAVOC_COLUMN, holiday->havoc,
-			      TIM_COLUMN, holiday->tim,
-			      OWEN_COLUMN, holiday->owen,
-			      DAVE_COLUMN, holiday->dave,
-			      VISIBLE_COLUMN, TRUE,
-			      WORLD_COLUMN, holiday->world_holiday,
-			      -1);
-#endif
 
 	  holiday++;
 	}
@@ -361,29 +313,6 @@ add_columns (GtkTreeView *treeview)
 	gtk_tree_view_column_set_visible(column, TRUE);
 	gtk_tree_view_set_expander_column(GTK_TREE_VIEW(treeview), column);
 
-#if 0
-	text_column = column = gtk_tree_view_column_new ();
-	rend = pidgin_cell_renderer_expander_new();
-	gtk_tree_view_column_pack_start(column, rend, FALSE);
-	gtk_tree_view_column_set_attributes(column, rend,
-					    "visible", GROUP_EXPANDER_VISIBLE_COLUMN,
-					    "expander-visible", GROUP_EXPANDER_COLUMN,
-#if GTK_CHECK_VERSION(2,6,0)
-					    "sensitive", GROUP_EXPANDER_COLUMN,
-					    "cell-background-gdk", BGCOLOR_COLUMN,
-#endif
-					    NULL);
-	rend = pidgin_cell_renderer_expander_new();
-	gtk_tree_view_column_pack_start(column, rend, FALSE);
-	gtk_tree_view_column_set_attributes(column, rend,
-					    "expander-visible", CONTACT_EXPANDER_COLUMN,
-#if GTK_CHECK_VERSION(2,6,0)
-					    "sensitive", CONTACT_EXPANDER_COLUMN,
-					    "cell-background-gdk", BGCOLOR_COLUMN,
-#endif
-					    "visible", CONTACT_EXPANDER_VISIBLE_COLUMN,
-					    NULL);
-#endif
 
 	rend = gtk_cell_renderer_pixbuf_new();
 	gtk_tree_view_column_pack_start(column, rend, FALSE);
@@ -413,16 +342,6 @@ add_columns (GtkTreeView *treeview)
 #endif
 	gtk_tree_view_append_column(GTK_TREE_VIEW(treeview), column);
 
-	rend = gtk_cell_renderer_text_new();
-	g_object_set(rend, "xalign", 1.0, "ypad", 0, NULL);
-	gtk_tree_view_column_pack_start(column, rend, FALSE);
-	gtk_tree_view_column_set_attributes(column, rend,
-					    "markup", IDLE_COLUMN,
-					    "visible", IDLE_VISIBLE_COLUMN,
-#if GTK_CHECK_VERSION(2,6,0)
-					    "cell-background-gdk", BGCOLOR_COLUMN,
-#endif
-					    NULL);
 
 	rend = gtk_cell_renderer_pixbuf_new();
 	g_object_set(rend, "xalign", 1.0, "yalign", 0.5, "ypad", 0, "xpad", 3, NULL);
@@ -453,138 +372,7 @@ add_columns (GtkTreeView *treeview)
 #endif
 					    "visible", BUDDY_ICON_VISIBLE_COLUMN,
 					    NULL);
-
-
-
 #else
-  gint col_offset;
-  GtkCellRenderer *renderer;
-  GtkTreeViewColumn *column;
-  GtkTreeModel *model = gtk_tree_view_get_model (treeview);
-
-  /* column for holiday names */
-  renderer = gtk_cell_renderer_text_new ();
-  g_object_set (renderer, "xalign", 0.0, NULL);
-
-  col_offset = gtk_tree_view_insert_column_with_attributes (GTK_TREE_VIEW (treeview),
-							    -1, "Holiday",
-							    renderer, "text",
-							    HOLIDAY_NAME_COLUMN,
-							    NULL);
-  column = gtk_tree_view_get_column (GTK_TREE_VIEW (treeview), col_offset - 1);
-  gtk_tree_view_column_set_clickable (GTK_TREE_VIEW_COLUMN (column), TRUE);
-
-  /* alex column */
-  renderer = gtk_cell_renderer_toggle_new ();
-  g_object_set (renderer, "xalign", 0.0, NULL);
-  g_object_set_data (G_OBJECT (renderer), "column", (gint *)ALEX_COLUMN);
-
-  g_signal_connect (renderer, "toggled", G_CALLBACK (item_toggled), model);
-
-  col_offset = gtk_tree_view_insert_column_with_attributes (GTK_TREE_VIEW (treeview),
-							    -1, "Alex",
-							    renderer,
-							    "active",
-							    ALEX_COLUMN,
-							    "visible",
-							    VISIBLE_COLUMN,
-							    "activatable",
-							    WORLD_COLUMN, NULL);
-
-  column = gtk_tree_view_get_column (GTK_TREE_VIEW (treeview), col_offset - 1);
-  gtk_tree_view_column_set_sizing (GTK_TREE_VIEW_COLUMN (column),
-				   GTK_TREE_VIEW_COLUMN_FIXED);
-  gtk_tree_view_column_set_fixed_width (GTK_TREE_VIEW_COLUMN (column), 50);
-  gtk_tree_view_column_set_clickable (GTK_TREE_VIEW_COLUMN (column), TRUE);
-
-  /* havoc column */
-  renderer = gtk_cell_renderer_toggle_new ();
-  g_object_set (renderer, "xalign", 0.0, NULL);
-  g_object_set_data (G_OBJECT (renderer), "column", (gint *)HAVOC_COLUMN);
-
-  g_signal_connect (renderer, "toggled", G_CALLBACK (item_toggled), model);
-
-  col_offset = gtk_tree_view_insert_column_with_attributes (GTK_TREE_VIEW (treeview),
-							    -1, "Havoc",
-							    renderer,
-							    "active",
-							    HAVOC_COLUMN,
-							    "visible",
-							    VISIBLE_COLUMN,
-							    NULL);
-
-  column = gtk_tree_view_get_column (GTK_TREE_VIEW (treeview), col_offset - 1);
-  gtk_tree_view_column_set_sizing (GTK_TREE_VIEW_COLUMN (column),
-				   GTK_TREE_VIEW_COLUMN_FIXED);
-  gtk_tree_view_column_set_fixed_width (GTK_TREE_VIEW_COLUMN (column), 50);
-  gtk_tree_view_column_set_clickable (GTK_TREE_VIEW_COLUMN (column), TRUE);
-
-  /* tim column */
-  renderer = gtk_cell_renderer_toggle_new ();
-  g_object_set (renderer, "xalign", 0.0, NULL);
-  g_object_set_data (G_OBJECT (renderer), "column", (gint *)TIM_COLUMN);
-
-  g_signal_connect (renderer, "toggled", G_CALLBACK (item_toggled), model);
-
-  col_offset = gtk_tree_view_insert_column_with_attributes (GTK_TREE_VIEW (treeview),
-							    -1, "Tim",
-							    renderer,
-							    "active",
-							    TIM_COLUMN,
-							    "visible",
-							    VISIBLE_COLUMN,
-							    "activatable",
-							    WORLD_COLUMN, NULL);
-
-  column = gtk_tree_view_get_column (GTK_TREE_VIEW (treeview), col_offset - 1);
-  gtk_tree_view_column_set_sizing (GTK_TREE_VIEW_COLUMN (column),
-				   GTK_TREE_VIEW_COLUMN_FIXED);
-  gtk_tree_view_column_set_fixed_width (GTK_TREE_VIEW_COLUMN (column), 50);
-  gtk_tree_view_column_set_clickable (GTK_TREE_VIEW_COLUMN (column), TRUE);
-
-  /* owen column */
-  renderer = gtk_cell_renderer_toggle_new ();
-  g_object_set (renderer, "xalign", 0.0, NULL);
-  g_object_set_data (G_OBJECT (renderer), "column", (gint *)OWEN_COLUMN);
-
-  g_signal_connect (renderer, "toggled", G_CALLBACK (item_toggled), model);
-
-  col_offset = gtk_tree_view_insert_column_with_attributes (GTK_TREE_VIEW (treeview),
-							    -1, "Owen",
-							    renderer,
-							    "active",
-							    OWEN_COLUMN,
-							    "visible",
-							    VISIBLE_COLUMN,
-							    NULL);
-
-  column = gtk_tree_view_get_column (GTK_TREE_VIEW (treeview), col_offset - 1);
-  gtk_tree_view_column_set_sizing (GTK_TREE_VIEW_COLUMN (column),
-				   GTK_TREE_VIEW_COLUMN_FIXED);
-  gtk_tree_view_column_set_fixed_width (GTK_TREE_VIEW_COLUMN (column), 50);
-  gtk_tree_view_column_set_clickable (GTK_TREE_VIEW_COLUMN (column), TRUE);
-
-  /* dave column */
-  renderer = gtk_cell_renderer_toggle_new ();
-  g_object_set (renderer, "xalign", 0.0, NULL);
-  g_object_set_data (G_OBJECT (renderer), "column", (gint *)DAVE_COLUMN);
-
-  g_signal_connect (renderer, "toggled", G_CALLBACK (item_toggled), model);
-
-  col_offset = gtk_tree_view_insert_column_with_attributes (GTK_TREE_VIEW (treeview),
-							    -1, "Dave",
-							    renderer,
-							    "active",
-							    DAVE_COLUMN,
-							    "visible",
-							    VISIBLE_COLUMN,
-							    NULL);
-
-  column = gtk_tree_view_get_column (GTK_TREE_VIEW (treeview), col_offset - 1);
-  gtk_tree_view_column_set_sizing (GTK_TREE_VIEW_COLUMN (column),
-				   GTK_TREE_VIEW_COLUMN_FIXED);
-  gtk_tree_view_column_set_fixed_width (GTK_TREE_VIEW_COLUMN (column), 50);
-  gtk_tree_view_column_set_clickable (GTK_TREE_VIEW_COLUMN (column), TRUE);
 #endif
 }
 
@@ -593,7 +381,9 @@ do_tree_store (GtkWidget *do_widget)
 {
   if (!window)
     {
-      GtkWidget *vbox;
+      GtkWidget *vbox, *tool_hbox, *grep_hbox;
+      GtkWidget *button;
+      GtkWidget *text;
       GtkWidget *sw;
       GtkWidget *treeview;
       GtkTreeModel *model;
@@ -602,17 +392,30 @@ do_tree_store (GtkWidget *do_widget)
       window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
       gtk_window_set_screen (GTK_WINDOW (window),
 			     gtk_widget_get_screen (do_widget));
-      gtk_window_set_title (GTK_WINDOW (window), "Card planning sheet");
+      gtk_window_set_title (GTK_WINDOW (window), "list");
       g_signal_connect (window, "destroy",
 			G_CALLBACK (gtk_widget_destroyed), &window);
 
-      vbox = gtk_vbox_new (FALSE, 8);
-      gtk_container_set_border_width (GTK_CONTAINER (vbox), 8);
+      vbox = gtk_vbox_new (FALSE, 1);
+      gtk_container_set_border_width (GTK_CONTAINER (vbox), 1);
       gtk_container_add (GTK_CONTAINER (window), vbox);
 
-      gtk_box_pack_start (GTK_BOX (vbox),
-			  gtk_label_new ("Jonathan's Holiday Card Planning Sheet"),
-			  FALSE, FALSE, 0);
+      tool_hbox = gtk_hbox_new (FALSE, 1);
+      gtk_container_set_border_width (GTK_CONTAINER (tool_hbox), 1);
+      gtk_box_pack_start (GTK_BOX (vbox), tool_hbox, FALSE, FALSE, 0);
+
+      button = gtk_button_new_with_label("search");
+      gtk_box_pack_start (GTK_BOX (tool_hbox), button, FALSE, FALSE, 0);
+
+      button = gtk_button_new_with_label("search1");
+      gtk_box_pack_start (GTK_BOX (tool_hbox), button, FALSE, FALSE, 0);
+
+      grep_hbox = gtk_hbox_new (FALSE, 1);
+      gtk_container_set_border_width (GTK_CONTAINER (grep_hbox), 1);
+      gtk_box_pack_start (GTK_BOX (vbox), grep_hbox, FALSE, FALSE, 0);
+
+      text = gtk_entry_new();
+      gtk_box_pack_start (GTK_BOX (grep_hbox), text, TRUE, TRUE, 0);
 
       sw = gtk_scrolled_window_new (NULL, NULL);
       gtk_scrolled_window_set_shadow_type (GTK_SCROLLED_WINDOW (sw),
@@ -634,7 +437,7 @@ do_tree_store (GtkWidget *do_widget)
       gtk_tree_view_set_rules_hint (GTK_TREE_VIEW (treeview), TRUE);
       gtk_tree_view_set_show_expanders(GTK_TREE_VIEW(treeview), TRUE);
       gtk_tree_selection_set_mode (gtk_tree_view_get_selection (GTK_TREE_VIEW (treeview)),
-				   GTK_SELECTION_MULTIPLE);
+				   GTK_SELECTION_SINGLE);
 
       add_columns (GTK_TREE_VIEW (treeview));
 

@@ -17,8 +17,6 @@
 
 #include "playlistdefine.h"
 
-#include "editable_cells.c"
-
 static char guid[] = "7D378382-9351-4f4e-BF83-4FF20C456B6D";
 
 /////////////////////////////////////////////////////////////////////////////
@@ -57,7 +55,7 @@ static GtkWidget* create_playlist_window()
 {
     GtkWidget *playlistWindow;
 
-    playlistWindow = gtk_tree_view_collapse_all();
+    // playlistWindow = gtk_tree_view_collapse_all();
 }
 
 int add_playitem(KMediaChannel *channel)
@@ -70,7 +68,5 @@ void create_ui(KIM *im)
 
     GtkWidget *mediaWindow = create_media_window();
     kim_addptr(im, "p.playlist.ui.mediaWindow", mediaWindow, 0, knil, knil);
-
-    __g_vbox = gtk_vbox_new(FALSE, 1);
 }
 

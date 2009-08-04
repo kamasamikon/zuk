@@ -9,9 +9,9 @@
 #include <kmm.h>
 #include <kmccontainer.h>
 
-KIM *__g_im = (KIM*)knil;
-KMM *__g_mm = (KMM*)knil;
-KMediaContainer *__g_mc = (KMediaContainer*)knil;
+static KIM *__g_im = (KIM*)knil;
+static KMM *__g_mm = (KMM*)knil;
+static KMediaContainer *__g_mc = (KMediaContainer*)knil;
 
 #define SET_GLOBALS(im) \
     do { \
