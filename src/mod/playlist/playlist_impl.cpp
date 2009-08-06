@@ -17,10 +17,6 @@
 
 #include "playlistdefine.h"
 
-// #include "editable_cells.c"
-#include "tree_store.c"
-// #include "gtkblist.c"
-
 static char guid[] = "7D378382-9351-4f4e-BF83-4FF20C456B6D";
 static kbean __g_worker_thread = knil;
 
@@ -32,7 +28,7 @@ static int __g_chSearchingRef = 0;
 
 static kbean __g_sig_tmr = knil;
 
-GtkWidget *__g_vbox;
+void create_ui(KIM *im);
 
 /////////////////////////////////////////////////////////////////////////////
 // defines
@@ -40,16 +36,6 @@ GtkWidget *__g_vbox;
 
 /////////////////////////////////////////////////////////////////////////////
 // support routines
-static kvoid update_urls(kbool add)
-{
-    kchar fnbuf[1024], *utf8;
-    kchar *modDir;
-
-    modDir = kim_getstr(__g_im, "s.env.path.moduleDir", knil);
-    const kchar *lang = kim_getstr(__g_im, "s.env.language", knil);
-    if (!lang || strncmp(lang, "zh_", 3))
-        lang = "en";
-}
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -129,6 +115,7 @@ int IMWCH(plwch_deviceFroze)
     }
     return 0;
 }
+
 void on_play(GtkButton *button, gpointer data)
 {
     KMediaChannel *channel = (KMediaChannel*)data;
@@ -141,25 +128,7 @@ void on_play(GtkButton *button, gpointer data)
 int IMWCH(plwch_channelNew)
 {
     KMediaChannel *channel = (KMediaChannel*)REC_UA(rec);
-    klog(("plwch_channelNew:%x:%s\n", __g_vbox, channel->getHash()));
-
-    GtkWidget *button;
-    button = gtk_button_new_with_label(channel->getName());
-    gtk_widget_show(button);
-    gtk_box_pack_start(GTK_BOX(__g_vbox), button, FALSE, FALSE, 0);
-
-    g_signal_connect(button, "clicked", G_CALLBACK(on_play), (gpointer)channel);
-
-    static kbool first = ktrue;
-    if (first) {
-        first = kfalse;
-        GtkWidget *window_pref = (GtkWidget*)kim_getptr(__g_im, "p.ui.ui.window.optn", knil);
-        gtk_container_add(GTK_CONTAINER(window_pref), __g_vbox);
-        gtk_widget_show_all(window_pref);
-
-        // do_editable_cells(NULL);
-        do_tree_store(NULL);
-    }
+    // playlist_ui_update_channel(channel);
     return 0;
 }
 int IMWCH(plwch_channelDel)
@@ -358,12 +327,7 @@ extern "C" EXPORT_FUN void mm_hey(KIM *im)
     if (!kini_getint("scan", "try_when_defreeze", &__g_try_scan_when_dev_defreeze, iniPath))
         __g_try_scan_when_dev_defreeze = 0;
 
-    void loadui(KIM *im);
-    // XXX loadui(im);
-
-    __g_vbox = gtk_vbox_new(FALSE, 1);
-
-    update_urls(ktrue);
+    create_ui(im);
 
     // kim
     /* show or hide the media window */
@@ -383,10 +347,7 @@ extern "C" EXPORT_FUN void mm_hey(KIM *im)
     __g_worker_thread = ktsk_new("playlist", knil, 0, 0, knil, knil, knil, knil);
 
     /* ur0(devHash, 0 for all) */
-    kmsg_slot_set(__g_worker_thread, KMPL_SCAN, om_scan);
-
-    // ONLY, start ONCE on BOOT.
-    // Main
+    // kmsg_slot_set(__g_worker_thread, KMPL_SCAN, om_scan);
 }
 
 extern "C" EXPORT_FUN void mm_bye(KIM *im)
