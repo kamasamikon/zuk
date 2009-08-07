@@ -320,27 +320,22 @@ GtkWidget *pidgin_new_item_from_stock(GtkWidget * menu, const char *str, const c
     return menuitem;
 }
 
-void
-pidgin_treeview_popup_menu_position_func(GtkMenu *menu,
-										   gint *x,
-										   gint *y,
-										   gboolean *push_in,
-										   gpointer data)
+void pidgin_treeview_popup_menu_position_func(GtkMenu * menu, gint * x, gint * y, gboolean * push_in, gpointer data)
 {
-	GtkWidget *widget = GTK_WIDGET(data);
-	GtkTreeView *tv = GTK_TREE_VIEW(data);
-	GtkTreePath *path;
-	GtkTreeViewColumn *col;
-	GdkRectangle rect;
-	gint ythickness = GTK_WIDGET(menu)->style->ythickness;
+    GtkWidget *widget = GTK_WIDGET(data);
+    GtkTreeView *tv = GTK_TREE_VIEW(data);
+    GtkTreePath *path;
+    GtkTreeViewColumn *col;
+    GdkRectangle rect;
+    gint ythickness = GTK_WIDGET(menu)->style->ythickness;
 
-	gdk_window_get_origin (widget->window, x, y);
-	gtk_tree_view_get_cursor (tv, &path, &col);
-	gtk_tree_view_get_cell_area (tv, path, col, &rect);
+    gdk_window_get_origin(widget->window, x, y);
+    gtk_tree_view_get_cursor(tv, &path, &col);
+    gtk_tree_view_get_cell_area(tv, path, col, &rect);
 
-	*x += rect.x+(rect.width / 2);
-	*y += rect.y+(rect.height / 2)+ythickness;
-	// pidgin_menu_position_func_helper(menu, x, y, push_in, data);
+    *x += rect.x + (rect.width / 2);
+    *y += rect.y + (rect.height / 2) + ythickness;
+    // pidgin_menu_position_func_helper(menu, x, y, push_in, data);
 }
 
 
