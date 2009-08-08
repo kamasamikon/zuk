@@ -375,9 +375,10 @@ gboolean foreach_func(GtkTreeModel * model, GtkTreePath * path, GtkTreeIter * it
 
 int update_channel(gpointer handle, KMediaChannel * channel)
 {
-    GtkTreeIter iter, child_iter;
-    GtkTreePath *path;
+    GtkTreeIter iter, child_iter, *used_iter;
+    GtkTreePath *path = 0;
     gchar *input[2] = { (gchar *) channel->getHash(), 0 };
+    // gchar *input[2] = { "0", 0 };
 
     GdkPixbuf *status;
     status =
@@ -388,19 +389,25 @@ int update_channel(gpointer handle, KMediaChannel * channel)
 
     gtk_tree_model_foreach(GTK_TREE_MODEL(__g_priv.model), foreach_func, input);
 
-    path = gtk_tree_path_new_from_string(input[1]);
-    gtk_tree_model_get_iter(GTK_TREE_MODEL(__g_priv.model), &iter, path);
+    if (input[1]) {
+        path = gtk_tree_path_new_from_string(input[1]);
+        gtk_tree_model_get_iter(GTK_TREE_MODEL(__g_priv.model), &iter, path);
+        gtk_tree_store_append(GTK_TREE_STORE(__g_priv.model), &child_iter, &iter);
+        used_iter = &child_iter;
+    } else {
+        gtk_tree_store_append(GTK_TREE_STORE(__g_priv.model), &iter, NULL);
+        used_iter = &iter;
+    }
 
     klog(("update_channel: channel:%x, hash:%s, path:%s\n", channel, channel->getHash(), input[1]));
 
-    gtk_tree_store_append(GTK_TREE_STORE(__g_priv.model), &child_iter, &iter);
-    gtk_tree_store_set(GTK_TREE_STORE(__g_priv.model), &child_iter,
-                       HASH_COLUMN, "0",
+    gtk_tree_store_set(GTK_TREE_STORE(__g_priv.model), used_iter,
+                       HASH_COLUMN, input[0],
                        STATUS_ICON_COLUMN, status,
                        STATUS_ICON_VISIBLE_COLUMN, TRUE,
                        TITLE_COLUMN, title,
-                       RATE_ICON_COLUMN, NULL,
-                       RATE_ICON_VISIBLE_COLUMN, TRUE, REMIDER_COLUMN, NULL, REMIDER_VISIBLE_COLUMN, NULL, -1);
+                       RATE_ICON_COLUMN, status,
+                       RATE_ICON_VISIBLE_COLUMN, TRUE, REMIDER_COLUMN, status, REMIDER_VISIBLE_COLUMN, NULL, -1);
 }
 
 static gboolean gtk_blist_key_press_cb(GtkWidget * treeview, GdkEventKey * event, gpointer data)
@@ -539,7 +546,7 @@ gpointer do_tree_store()
         g_signal_connect(G_OBJECT(treeview), "button-press-event", G_CALLBACK(gtk_blist_button_press_cb), NULL);
         g_signal_connect(G_OBJECT(treeview), "key-press-event", G_CALLBACK(gtk_blist_key_press_cb), NULL);
 
-        fill_data(treeview, GTK_TREE_STORE(model));
+        // fill_data(treeview, GTK_TREE_STORE(model));
 
         g_signal_connect(G_OBJECT(grep_entry), "changed", G_CALLBACK(cb_entry_changed), GTK_TREE_VIEW(treeview));
 
