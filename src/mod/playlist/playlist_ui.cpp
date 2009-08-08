@@ -377,8 +377,7 @@ int update_channel(gpointer handle, KMediaChannel * channel)
 {
     GtkTreeIter iter, child_iter;
     GtkTreePath *path;
-    //gchar *input[2] = { (gchar *) channel->getHash(), 0 };
-    gchar *input[2] = { "0", 0 };
+    gchar *input[2] = { (gchar *) channel->getHash(), 0 };
 
     GdkPixbuf *status;
     status =
