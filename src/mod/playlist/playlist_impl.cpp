@@ -128,7 +128,8 @@ void on_play(GtkButton *button, gpointer data)
 int IMWCH(plwch_channelNew)
 {
     KMediaChannel *channel = (KMediaChannel*)REC_UA(rec);
-    // playlist_ui_update_channel(channel);
+    int update_channel(gpointer handle, KMediaChannel *channel);
+    update_channel(0, channel);
     return 0;
 }
 int IMWCH(plwch_channelDel)
@@ -347,7 +348,7 @@ extern "C" EXPORT_FUN void mm_hey(KIM *im)
     __g_worker_thread = ktsk_new("playlist", knil, 0, 0, knil, knil, knil, knil);
 
     /* ur0(devHash, 0 for all) */
-    // kmsg_slot_set(__g_worker_thread, KMPL_SCAN, om_scan);
+    kmsg_slot_set(__g_worker_thread, KMPL_SCAN, om_scan);
 }
 
 extern "C" EXPORT_FUN void mm_bye(KIM *im)

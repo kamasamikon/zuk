@@ -121,30 +121,11 @@ static TreeItem march[] = {
     {"St Patrick's Day", FALSE, FALSE, FALSE, FALSE, FALSE, TRUE, NULL},
     {NULL}
 };
-static TreeItem april[] = {
-    {"April Fools' Day", FALSE, FALSE, FALSE, FALSE, FALSE, TRUE, NULL},
-    {"Army Day", FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, NULL},
-    {"Earth Day", FALSE, FALSE, FALSE, FALSE, FALSE, TRUE, NULL},
-    {"Administrative Professionals' Day", FALSE, FALSE, FALSE, FALSE,
-     FALSE, FALSE, NULL},
-    {NULL}
-};
-
-static TreeItem may[] = {
-    {"Nurses' Day", FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, NULL},
-    {"National Day of Prayer", FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, NULL},
-    {"Mothers' Day", FALSE, FALSE, FALSE, FALSE, FALSE, TRUE, NULL},
-    {"Armed Forces Day", FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, NULL},
-    {"Memorial Day", TRUE, TRUE, TRUE, TRUE, FALSE, TRUE, NULL},
-    {NULL}
-};
 
 static TreeItem toplevel[] = {
     {"January", FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, january},
     {"february february ", FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, february},
     {"March", FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, march},
-    {"April", FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, april},
-    {"May", FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, may},
     {NULL}
 };
 
@@ -178,6 +159,7 @@ static void fill_data(GtkWidget * treeview, GtkTreeStore * store)
         i++;
 
         TreeItem *holiday = month->children;
+
         gchar *title = g_strdup_printf("<span color='%s'>%s</span>\n<span color='%s' size='smaller'>%s%d%s</span>",
                                        "red", month->label, "blue", " shit ", i, " oyes");
 
@@ -186,6 +168,7 @@ static void fill_data(GtkWidget * treeview, GtkTreeStore * store)
 
         gtk_tree_store_append(store, &iter, NULL);
         gtk_tree_store_set(store, &iter,
+                           HASH_COLUMN, "0",
                            STATUS_ICON_COLUMN, status,
                            STATUS_ICON_VISIBLE_COLUMN, TRUE,
                            TITLE_COLUMN, title,
@@ -207,6 +190,7 @@ static void fill_data(GtkWidget * treeview, GtkTreeStore * store)
             status = gtk_widget_render_icon(GTK_WIDGET(treeview), GTK_STOCK_NETWORK, GTK_ICON_SIZE_DIALOG, NULL);
             gtk_tree_store_append(store, &child_iter, &iter);
             gtk_tree_store_set(store, &child_iter,
+                               HASH_COLUMN, "0",
                                STATUS_ICON_COLUMN, status,
                                STATUS_ICON_VISIBLE_COLUMN, TRUE,
                                TITLE_COLUMN, title,
@@ -269,15 +253,11 @@ static gboolean filter_func(GtkTreeModel * model, GtkTreeIter * iter, GtkEntry *
     gtk_tree_model_get(model, iter, TITLE_COLUMN, &haystack, -1);
     needle = gtk_entry_get_text(entry);
 
-    printf("haystack: %s\n", haystack);
-    printf("needle: %s\n", needle);
-
-    if (strstr(haystack, needle) != NULL)
+    if (haystack && needle && strstr(haystack, needle) != NULL)
         ret = TRUE;
     else
         ret = FALSE;
 
-    printf("ret: %d\n", ret);
     return ret;
 }
 
@@ -335,51 +315,25 @@ void pidgin_treeview_popup_menu_position_func(GtkMenu * menu, gint * x, gint * y
 
     *x += rect.x + (rect.width / 2);
     *y += rect.y + (rect.height / 2) + ythickness;
-    // pidgin_menu_position_func_helper(menu, x, y, push_in, data);
 }
-
-
 
 void create_group_menu(guint32 time)
 {
     GtkWidget *menu = 0;
     GtkWidget *item;
-#if 1
+
     menu = gtk_menu_new();
     item = pidgin_new_item_from_stock(menu, ("Add _Buddy..."), GTK_STOCK_ADD, NULL, NULL, 0, 0, NULL);
+    gtk_menu_item_activate(GTK_MENU_ITEM(item));
+    gtk_menu_item_select(GTK_MENU_ITEM(item));
+
     item = pidgin_new_item_from_stock(menu, ("Add C_hat..."), GTK_STOCK_ADD, NULL, NULL, 0, 0, NULL);
     pidgin_new_item_from_stock(menu, ("_Delete Group"), GTK_STOCK_REMOVE, NULL, NULL, 0, 0, NULL);
     pidgin_new_item_from_stock(menu, ("_Rename"), NULL, NULL, NULL, 0, 0, NULL);
 
+
     gtk_widget_show_all(menu);
-    //gtk_menu_popup(GTK_MENU(menu), NULL, NULL, NULL, __g_priv.treeview, 0, 0);
     gtk_menu_popup(GTK_MENU(menu), NULL, NULL, pidgin_treeview_popup_menu_position_func, __g_priv.treeview, NULL, time);
-#else
-
-    if (!menu) {
-        menu = gtk_menu_new();
-
-        item = gtk_check_menu_item_new_with_mnemonic(("_Scan"));
-        //g_signal_connect(G_OBJECT(item), "toggled", G_CALLBACK(MenuScanCallback), NULL);
-        gtk_menu_shell_append(GTK_MENU_SHELL(menu), item);
-
-        GtkWidget *menuitem;
-        menuitem = gtk_separator_menu_item_new();
-        gtk_menu_shell_append(GTK_MENU_SHELL(menu), menuitem);
-
-        menuitem = gtk_image_menu_item_new_with_mnemonic(("_Quit"));
-        GtkWidget *image;
-        image = gtk_image_new_from_stock(GTK_STOCK_QUIT, GTK_ICON_SIZE_MENU);
-        gtk_image_menu_item_set_image(GTK_IMAGE_MENU_ITEM(menuitem), image);
-        //g_signal_connect(G_OBJECT(menuitem), "activate", G_CALLBACK(MenuQuitCallback), NULL);
-        gtk_menu_shell_append(GTK_MENU_SHELL(menu), menuitem);
-
-        gtk_widget_show_all(menu);
-    }
-    // gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(scan_menuitem), gpAppFrame->oAppCore.oSelection.bEnable);
-
-    gtk_menu_popup(GTK_MENU(menu), NULL, NULL, NULL, NULL, event->button, event->time);
-#endif
 }
 
 static gboolean cb_entry_changed(GtkEditable * entry, GtkTreeView * treeview)
@@ -393,11 +347,61 @@ static gboolean cb_entry_changed(GtkEditable * entry, GtkTreeView * treeview)
     return (FALSE);
 }
 
-int update_channel(gpointer handle, char *hash, int *type, int *state, char **title, int *rate, int *alarm)
+gboolean foreach_func(GtkTreeModel * model, GtkTreePath * path, GtkTreeIter * iter, gpointer user_data)
 {
-    GValue val;
-    GtkTreeIter iter;
-    gtk_tree_model_get_value(GTK_TREE_MODEL(__g_priv.model), &iter, HASH_COLUMN, &val);
+    gchar *hash, *tree_path_str, **input;
+    gboolean found = false;
+
+    input = (gchar **) user_data;
+
+    gtk_tree_model_get(model, iter, HASH_COLUMN, &hash, -1);
+
+    tree_path_str = gtk_tree_path_to_string(path);
+    g_print("Row %s\n", tree_path_str);
+    g_print("input_hash %s\n", input[0]);
+
+    if (hash && input[0] && g_str_equal(hash, input[0]))
+        found = TRUE;
+
+    g_print("found: %d\n", found);
+
+    if (found)
+        input[1] = tree_path_str;
+    else
+        g_free(tree_path_str);
+    g_free(hash);
+    return found;
+}
+
+int update_channel(gpointer handle, KMediaChannel * channel)
+{
+    GtkTreeIter iter, child_iter;
+    GtkTreePath *path;
+    //gchar *input[2] = { (gchar *) channel->getHash(), 0 };
+    gchar *input[2] = { "0", 0 };
+
+    GdkPixbuf *status;
+    status =
+        gtk_widget_render_icon(GTK_WIDGET(__g_priv.treeview), GTK_STOCK_DIRECTORY, GTK_ICON_SIZE_SMALL_TOOLBAR, NULL);
+
+    gchar *title = g_strdup_printf("<span color='%s'>%s</span>\n<span color='%s' size='smaller'>%s</span>",
+                                   "red", channel->getName(), "blue", channel->getHash());
+
+    gtk_tree_model_foreach(GTK_TREE_MODEL(__g_priv.model), foreach_func, input);
+
+    path = gtk_tree_path_new_from_string(input[1]);
+    gtk_tree_model_get_iter(GTK_TREE_MODEL(__g_priv.model), &iter, path);
+
+    klog(("update_channel: channel:%x, hash:%s, path:%s\n", channel, channel->getHash(), input[1]));
+
+    gtk_tree_store_append(GTK_TREE_STORE(__g_priv.model), &child_iter, &iter);
+    gtk_tree_store_set(GTK_TREE_STORE(__g_priv.model), &child_iter,
+                       HASH_COLUMN, "0",
+                       STATUS_ICON_COLUMN, status,
+                       STATUS_ICON_VISIBLE_COLUMN, TRUE,
+                       TITLE_COLUMN, title,
+                       RATE_ICON_COLUMN, NULL,
+                       RATE_ICON_VISIBLE_COLUMN, TRUE, REMIDER_COLUMN, NULL, REMIDER_VISIBLE_COLUMN, NULL, -1);
 }
 
 static gboolean gtk_blist_key_press_cb(GtkWidget * treeview, GdkEventKey * event, gpointer data)
