@@ -207,7 +207,7 @@ static void play_channel(GtkObject *obj, GtkTreeIter *iter)
 {
     GValue val;
     val.g_type = 0;
-    gtk_tree_model_get_value(GTK_TREE_MODEL(__g_priv.model), iter, HASH_COLUMN, &val);
+    gtk_tree_model_get_value(GTK_TREE_MODEL(__g_priv.filter), iter, HASH_COLUMN, &val);
 
     klog(("play_channel: %s\n", (char*)g_value_get_string(&val)));
 
@@ -226,7 +226,7 @@ void show_popup_menu(GtkTreeIter *iter)
 
     GValue val;
     val.g_type = 0;
-    gtk_tree_model_get_value(GTK_TREE_MODEL(__g_priv.model), iter, HASH_COLUMN, &val);
+    gtk_tree_model_get_value(GTK_TREE_MODEL(__g_priv.filter), iter, HASH_COLUMN, &val);
     klog(("xxxxxxxx\n"));
 
     menu = gtk_menu_new();
@@ -296,21 +296,21 @@ int update_channel(gpointer handle, KMediaChannel * channel)
     gchar *title = g_strdup_printf("<span color='%s'>%s</span>\n<span color='%s' size='smaller'>%s</span>",
                                    "red", channel->getName(), "blue", channel->getHash());
 
-    gtk_tree_model_foreach(GTK_TREE_MODEL(__g_priv.model), foreach_func, input);
+    gtk_tree_model_foreach(GTK_TREE_MODEL(__g_priv.filter), foreach_func, input);
 
     if (input[1]) {
         path = gtk_tree_path_new_from_string(input[1]);
-        gtk_tree_model_get_iter(GTK_TREE_MODEL(__g_priv.model), &iter, path);
-        gtk_tree_store_append(GTK_TREE_STORE(__g_priv.model), &child_iter, &iter);
+        gtk_tree_model_get_iter(GTK_TREE_MODEL(__g_priv.filter), &iter, path);
+        gtk_tree_store_append(GTK_TREE_STORE(__g_priv.filter), &child_iter, &iter);
         used_iter = &child_iter;
     } else {
-        gtk_tree_store_append(GTK_TREE_STORE(__g_priv.model), &iter, NULL);
+        gtk_tree_store_append(GTK_TREE_STORE(__g_priv.filter), &iter, NULL);
         used_iter = &iter;
     }
 
     klog(("update_channel: channel:%x, hash:%s, path:%s\n", channel, channel->getHash(), input[1]));
 
-    gtk_tree_store_set(GTK_TREE_STORE(__g_priv.model), used_iter,
+    gtk_tree_store_set(GTK_TREE_STORE(__g_priv.filter), used_iter,
                        HASH_COLUMN, input[0],
                        STATUS_ICON_COLUMN, status,
                        STATUS_ICON_VISIBLE_COLUMN, TRUE,
@@ -324,7 +324,7 @@ static gboolean gtk_blist_key_press_cb(GtkWidget * treeview, GdkEventKey * event
     GValue val;
     GtkTreeIter iter, *new_iter;
     GtkTreeSelection *sel;
-    GtkTreeModel *model = GTK_TREE_MODEL(__g_priv.model);
+    GtkTreeModel *model = GTK_TREE_MODEL(__g_priv.filter);
     GtkTreeStore *store = GTK_TREE_STORE(__g_priv.filter);
 
     sel = gtk_tree_view_get_selection(GTK_TREE_VIEW(treeview));
@@ -332,7 +332,7 @@ static gboolean gtk_blist_key_press_cb(GtkWidget * treeview, GdkEventKey * event
         return FALSE;
 
     val.g_type = 0;
-    gtk_tree_model_get_value(GTK_TREE_MODEL(__g_priv.model), &iter, HASH_COLUMN, &val);
+    gtk_tree_model_get_value(GTK_TREE_MODEL(__g_priv.filter), &iter, HASH_COLUMN, &val);
 
     klog(("aaaaaaaaaaa \n"));
     klog(("iter.user_data: %x\n", iter.user_data));
@@ -344,13 +344,13 @@ static gboolean gtk_blist_key_press_cb(GtkWidget * treeview, GdkEventKey * event
     if ((event->keyval == GDK_Return) || (event->keyval == GDK_Menu)) {
 
         val.g_type = 0;
-        gtk_tree_model_get_value(GTK_TREE_MODEL(__g_priv.model), &iter, HASH_COLUMN, &val);
+        gtk_tree_model_get_value(GTK_TREE_MODEL(__g_priv.filter), &iter, HASH_COLUMN, &val);
         klog(("iiiiiiiiiiiiiii \n"));
 
 
         val.g_type = 0;
         new_iter = gtk_tree_iter_copy(&iter);
-        gtk_tree_model_get_value(GTK_TREE_MODEL(__g_priv.model), new_iter, HASH_COLUMN, &val);
+        gtk_tree_model_get_value(GTK_TREE_MODEL(__g_priv.filter), new_iter, HASH_COLUMN, &val);
         klog(("kkkkkkkkkkkkkk \n"));
 
 
@@ -368,14 +368,14 @@ static gboolean gtk_blist_button_press_cb(GtkWidget * treeview, GdkEventButton *
     GtkTreeIter iter;
     GtkTreeSelection *sel;
     gboolean handled = FALSE;
-    GtkTreeStore *store = GTK_TREE_STORE(__g_priv.model);
+    GtkTreeStore *store = GTK_TREE_STORE(__g_priv.filter);
 
     if (!gtk_tree_view_get_path_at_pos(GTK_TREE_VIEW(treeview), event->x, event->y, &path, NULL, NULL, NULL))
         return FALSE;
 
-    gtk_tree_model_get_iter(GTK_TREE_MODEL(__g_priv.model), &iter, path);
+    gtk_tree_model_get_iter(GTK_TREE_MODEL(__g_priv.filter), &iter, path);
     val.g_type = 0;
-    gtk_tree_model_get_value(GTK_TREE_MODEL(__g_priv.model), &iter, HASH_COLUMN, &val);
+    gtk_tree_model_get_value(GTK_TREE_MODEL(__g_priv.filter), &iter, HASH_COLUMN, &val);
 
     klog(("AAAAAAAAAAA \n"));
     klog(("iter.user_data: %x\n", iter.user_data));
