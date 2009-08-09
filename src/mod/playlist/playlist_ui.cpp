@@ -57,33 +57,6 @@ struct _priv {
 
 priv __g_priv = { 0 };
 
-/* TreeItem structure */
-typedef struct _TreeItem TreeItem;
-struct _TreeItem {
-    const gchar *label;
-    gboolean alex;
-    gboolean havoc;
-    gboolean tim;
-    gboolean owen;
-    gboolean dave;
-    gboolean world_holiday;     /* shared by the European hackers */
-    TreeItem *children;
-};
-
-/* columns */
-enum {
-    HOLIDAY_NAME_COLUMN = 0,
-    ALEX_COLUMN,
-    HAVOC_COLUMN,
-    TIM_COLUMN,
-    OWEN_COLUMN,
-    DAVE_COLUMN,
-
-    VISIBLE_COLUMN,
-    WORLD_COLUMN,
-    NUM_COLUMNS
-};
-
 enum {
     TYPE_COLUMN,                        /**< ??? */
 
@@ -104,32 +77,6 @@ enum {
 };
 
 
-/* tree data */
-static TreeItem january[] = {
-    {NULL}
-};
-
-static TreeItem february[] = {
-    {"Presidents' Day", FALSE, TRUE, FALSE, TRUE, FALSE, FALSE, NULL},
-    {"Groundhog Day", FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, NULL},
-    {"Valentine's Day", FALSE, FALSE, FALSE, FALSE, TRUE, TRUE, NULL},
-    {NULL}
-};
-
-static TreeItem march[] = {
-    {"National Tree Planting Day", FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, NULL},
-    {"St Patrick's Day", FALSE, FALSE, FALSE, FALSE, FALSE, TRUE, NULL},
-    {NULL}
-};
-
-static TreeItem toplevel[] = {
-    {"January", FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, january},
-    {"february february ", FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, february},
-    {"March", FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, march},
-    {NULL}
-};
-
-
 static GtkTreeModel *create_model()
 {
     GtkTreeStore *store;
@@ -146,63 +93,6 @@ static GtkTreeModel *create_model()
         );
 
     return GTK_TREE_MODEL(store);
-}
-
-static void fill_data(GtkWidget * treeview, GtkTreeStore * store)
-{
-    int i = 34;
-    GtkTreeIter iter;
-    GtkTreeModel *filter;
-    TreeItem *month = toplevel;
-    /* add data to the tree store */
-    while (month->label) {
-        i++;
-
-        TreeItem *holiday = month->children;
-
-        gchar *title = g_strdup_printf("<span color='%s'>%s</span>\n<span color='%s' size='smaller'>%s%d%s</span>",
-                                       "red", month->label, "blue", " shit ", i, " oyes");
-
-        GdkPixbuf *status;
-        status = gtk_widget_render_icon(GTK_WIDGET(treeview), GTK_STOCK_DIRECTORY, GTK_ICON_SIZE_SMALL_TOOLBAR, NULL);
-
-        gtk_tree_store_append(store, &iter, NULL);
-        gtk_tree_store_set(store, &iter,
-                           HASH_COLUMN, "0",
-                           STATUS_ICON_COLUMN, status,
-                           STATUS_ICON_VISIBLE_COLUMN, TRUE,
-                           TITLE_COLUMN, title,
-                           RATE_ICON_COLUMN, status,
-                           RATE_ICON_VISIBLE_COLUMN, TRUE, REMIDER_COLUMN, NULL, REMIDER_VISIBLE_COLUMN, NULL, -1);
-
-
-        /* add children */
-        while (holiday->label) {
-            i++;
-
-            GtkTreeIter child_iter;
-
-            gchar *title = g_strdup_printf("<span color='%s'>%s</span>\n<span color='%s' size='smaller'>%s%s%s</span>",
-                                           "red", month->label, "blue", " shit ",
-                                           holiday->alex ? "true" : "false", " oyes");
-
-            GdkPixbuf *status;
-            status = gtk_widget_render_icon(GTK_WIDGET(treeview), GTK_STOCK_NETWORK, GTK_ICON_SIZE_DIALOG, NULL);
-            gtk_tree_store_append(store, &child_iter, &iter);
-            gtk_tree_store_set(store, &child_iter,
-                               HASH_COLUMN, "0",
-                               STATUS_ICON_COLUMN, status,
-                               STATUS_ICON_VISIBLE_COLUMN, TRUE,
-                               TITLE_COLUMN, title,
-                               RATE_ICON_COLUMN, status,
-                               RATE_ICON_VISIBLE_COLUMN, TRUE, REMIDER_COLUMN, NULL, REMIDER_VISIBLE_COLUMN, NULL, -1);
-
-            holiday++;
-        }
-
-        month++;
-    }
-
 }
 
 static void add_columns(GtkTreeView * treeview)
@@ -273,10 +163,6 @@ GtkWidget *pidgin_new_item_from_stock(GtkWidget * menu, const char *str, const c
                                       gpointer data, guint accel_key, guint accel_mods, char *mod)
 {
     GtkWidget *menuitem;
-    /*
-     * GtkWidget *hbox;
-     * GtkWidget *label;
-     */
     GtkWidget *image;
 
     if (icon == NULL)
@@ -291,8 +177,8 @@ GtkWidget *pidgin_new_item_from_stock(GtkWidget * menu, const char *str, const c
         g_signal_connect(G_OBJECT(menuitem), "activate", sf, data);
 
     if (icon != NULL) {
-        //image = gtk_image_new_from_stock(icon, gtk_icon_size_from_name(PIDGIN_ICON_SIZE_TANGO_EXTRA_SMALL));
-        //gtk_image_menu_item_set_image(GTK_IMAGE_MENU_ITEM(menuitem), image);
+        image = gtk_image_new_from_stock(icon, GTK_ICON_SIZE_BUTTON);
+        gtk_image_menu_item_set_image(GTK_IMAGE_MENU_ITEM(menuitem), image);
     }
 
     gtk_widget_show_all(menuitem);
@@ -317,23 +203,47 @@ void pidgin_treeview_popup_menu_position_func(GtkMenu * menu, gint * x, gint * y
     *y += rect.y + (rect.height / 2) + ythickness;
 }
 
-void create_group_menu(guint32 time)
+static void play_channel(GtkObject *obj, GtkTreeIter *iter)
+{
+    GValue val;
+    val.g_type = 0;
+    gtk_tree_model_get_value(GTK_TREE_MODEL(__g_priv.model), iter, HASH_COLUMN, &val);
+
+    klog(("play_channel: %s\n", (char*)g_value_get_string(&val)));
+
+    KMediaChannel *channel = __g_mc->getMediaChannelFromChannel((char*)g_value_get_string(&val));
+    GtkWidget *mediaWindow = (GtkWidget*)kim_getptr(__g_im, "p.ui.ui.window.main", knil);
+
+    channel->setOutputWindow(mediaWindow->window);
+    channel->setPlayState(KMCPS_PLAY);
+}
+
+void show_popup_menu(GtkTreeIter *iter)
 {
     GtkWidget *menu = 0;
     GtkWidget *item;
+    GtkMenuShell *menu_shell;
+
+    GValue val;
+    val.g_type = 0;
+    gtk_tree_model_get_value(GTK_TREE_MODEL(__g_priv.model), iter, HASH_COLUMN, &val);
+    klog(("xxxxxxxx\n"));
 
     menu = gtk_menu_new();
-    item = pidgin_new_item_from_stock(menu, ("Add _Buddy..."), GTK_STOCK_ADD, NULL, NULL, 0, 0, NULL);
-    gtk_menu_item_activate(GTK_MENU_ITEM(item));
-    gtk_menu_item_select(GTK_MENU_ITEM(item));
+    item = pidgin_new_item_from_stock(menu, ("_Play"), GTK_STOCK_MEDIA_PLAY, NULL, NULL, 0, 0, NULL);
+    g_signal_connect(G_OBJECT(item), "activate", G_CALLBACK(play_channel), iter);
 
-    item = pidgin_new_item_from_stock(menu, ("Add C_hat..."), GTK_STOCK_ADD, NULL, NULL, 0, 0, NULL);
-    pidgin_new_item_from_stock(menu, ("_Delete Group"), GTK_STOCK_REMOVE, NULL, NULL, 0, 0, NULL);
-    pidgin_new_item_from_stock(menu, ("_Rename"), NULL, NULL, NULL, 0, 0, NULL);
+    item = pidgin_new_item_from_stock(menu, ("Add/Remove _Alarm"), GTK_STOCK_YES, NULL, NULL, 0, 0, NULL);
+    g_signal_connect(G_OBJECT(item), "activate", G_CALLBACK(play_channel), iter);
 
+    item = pidgin_new_item_from_stock(menu, ("More _Information"), GTK_STOCK_NEW, NULL, NULL, 0, 0, NULL);
+    g_signal_connect(G_OBJECT(item), "activate", G_CALLBACK(play_channel), iter);
+
+    menu_shell = GTK_MENU_SHELL(menu);
+    gtk_menu_shell_select_first(menu_shell, TRUE);
 
     gtk_widget_show_all(menu);
-    gtk_menu_popup(GTK_MENU(menu), NULL, NULL, pidgin_treeview_popup_menu_position_func, __g_priv.treeview, NULL, time);
+    gtk_menu_popup(GTK_MENU(menu), NULL, NULL, pidgin_treeview_popup_menu_position_func, __g_priv.treeview, NULL, gtk_get_current_event_time());
 }
 
 static gboolean cb_entry_changed(GtkEditable * entry, GtkTreeView * treeview)
@@ -378,7 +288,6 @@ int update_channel(gpointer handle, KMediaChannel * channel)
     GtkTreeIter iter, child_iter, *used_iter;
     GtkTreePath *path = 0;
     gchar *input[2] = { (gchar *) channel->getHash(), 0 };
-    // gchar *input[2] = { "0", 0 };
 
     GdkPixbuf *status;
     status =
@@ -413,20 +322,40 @@ int update_channel(gpointer handle, KMediaChannel * channel)
 static gboolean gtk_blist_key_press_cb(GtkWidget * treeview, GdkEventKey * event, gpointer data)
 {
     GValue val;
-    GtkTreeIter iter;
+    GtkTreeIter iter, *new_iter;
     GtkTreeSelection *sel;
+    GtkTreeModel *model = GTK_TREE_MODEL(__g_priv.model);
+    GtkTreeStore *store = GTK_TREE_STORE(__g_priv.filter);
 
     sel = gtk_tree_view_get_selection(GTK_TREE_VIEW(treeview));
-    if (!gtk_tree_selection_get_selected(sel, NULL, &iter))
+    if (!gtk_tree_selection_get_selected(sel, &model, &iter))
         return FALSE;
 
-    //val.g_type = 0;
-    //gtk_tree_model_get_value(GTK_TREE_MODEL(__g_priv.model), &iter, HASH_COLUMN, &val);
+    val.g_type = 0;
+    gtk_tree_model_get_value(GTK_TREE_MODEL(__g_priv.model), &iter, HASH_COLUMN, &val);
+
+    klog(("aaaaaaaaaaa \n"));
+    klog(("iter.user_data: %x\n", iter.user_data));
+    klog(("iter.stamp: %x :: store.stamp: %x\n", iter.stamp, store->stamp));
+
 
 #define GDK_Return 0xff0d
-    if (event->keyval == GDK_Return) {
-        klog(("ctrl+return\n"));
-        create_group_menu(event->time);
+#define GDK_Menu 0xff67
+    if ((event->keyval == GDK_Return) || (event->keyval == GDK_Menu)) {
+
+        val.g_type = 0;
+        gtk_tree_model_get_value(GTK_TREE_MODEL(__g_priv.model), &iter, HASH_COLUMN, &val);
+        klog(("iiiiiiiiiiiiiii \n"));
+
+
+        val.g_type = 0;
+        new_iter = gtk_tree_iter_copy(&iter);
+        gtk_tree_model_get_value(GTK_TREE_MODEL(__g_priv.model), new_iter, HASH_COLUMN, &val);
+        klog(("kkkkkkkkkkkkkk \n"));
+
+
+        show_popup_menu(new_iter);
+        return TRUE;
     }
 
     return FALSE;
@@ -439,8 +368,8 @@ static gboolean gtk_blist_button_press_cb(GtkWidget * treeview, GdkEventButton *
     GtkTreeIter iter;
     GtkTreeSelection *sel;
     gboolean handled = FALSE;
+    GtkTreeStore *store = GTK_TREE_STORE(__g_priv.model);
 
-    /* Here we figure out which node was clicked */
     if (!gtk_tree_view_get_path_at_pos(GTK_TREE_VIEW(treeview), event->x, event->y, &path, NULL, NULL, NULL))
         return FALSE;
 
@@ -448,14 +377,23 @@ static gboolean gtk_blist_button_press_cb(GtkWidget * treeview, GdkEventButton *
     val.g_type = 0;
     gtk_tree_model_get_value(GTK_TREE_MODEL(__g_priv.model), &iter, HASH_COLUMN, &val);
 
+    klog(("AAAAAAAAAAA \n"));
+    klog(("iter.user_data: %x\n", iter.user_data));
+    klog(("iter.stamp: %x :: store.stamp: %x\n", iter.stamp, store->stamp));
+
+
     if ((event->button == 3) && (event->type == GDK_BUTTON_PRESS)) {
 
-        // create_group_menu(NULL, NULL, NULL, 3, event->time);
-        create_group_menu(event->time);
+        show_popup_menu(gtk_tree_iter_copy(&iter));
 
         klog(("right clicked\n"));
-    } else if ((event->button == 2) && (event->type == GDK_2BUTTON_PRESS)) {
+    } else if ((event->button == 1) && (event->type == GDK_2BUTTON_PRESS)) {
+        KMediaChannel *channel = __g_mc->getMediaChannelFromChannel((char*)g_value_get_string(&val));
+        GtkWidget *mediaWindow = (GtkWidget*)kim_getptr(__g_im, "p.ui.ui.window.main", knil);
+
         klog(("double clicked, play it\n"));
+        channel->setOutputWindow(mediaWindow->window);
+        channel->setPlayState(KMCPS_PLAY);
     }
 
     gtk_tree_path_free(path);
@@ -470,9 +408,6 @@ static void pidgin_blist_selection_changed(GtkTreeSelection * selection, gpointe
 
     if (gtk_tree_selection_get_selected(selection, NULL, &iter))
         klog(("selection changed\n"));
-
-    //gtk_tree_model_get(GTK_TREE_MODEL(__g_priv.model), &iter,
-    //HASH_COLUMN, &new_selection, -1);
 }
 
 
@@ -545,8 +480,6 @@ gpointer do_tree_store()
 
         g_signal_connect(G_OBJECT(treeview), "button-press-event", G_CALLBACK(gtk_blist_button_press_cb), NULL);
         g_signal_connect(G_OBJECT(treeview), "key-press-event", G_CALLBACK(gtk_blist_key_press_cb), NULL);
-
-        // fill_data(treeview, GTK_TREE_STORE(model));
 
         g_signal_connect(G_OBJECT(grep_entry), "changed", G_CALLBACK(cb_entry_changed), GTK_TREE_VIEW(treeview));
 
