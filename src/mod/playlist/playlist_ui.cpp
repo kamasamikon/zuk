@@ -365,13 +365,8 @@ static gboolean gtk_blist_button_press_cb(GtkWidget * treeview, GdkEventButton *
 
         show_popup_menu(gtk_tree_iter_copy(&iter));
 
-    } else if ((event->button == 1) && (event->type == GDK_2BUTTON_PRESS)) {
-        KMediaChannel *channel = __g_mc->getMediaChannelFromChannel((char*)g_value_get_string(&val));
-        GtkWidget *mediaWindow = (GtkWidget*)kim_getptr(__g_im, "p.ui.ui.window.main", knil);
-
-        channel->setOutputWindow(mediaWindow->window);
-        channel->setPlayState(KMCPS_PLAY);
-    }
+    } else if ((event->button == 1) && (event->type == GDK_2BUTTON_PRESS))
+        play_channel(NULL, gtk_tree_iter_copy(&iter));
 
     gtk_tree_path_free(path);
 
