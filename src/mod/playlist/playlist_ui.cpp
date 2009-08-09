@@ -227,7 +227,6 @@ void show_popup_menu(GtkTreeIter *iter)
     GValue val;
     val.g_type = 0;
     gtk_tree_model_get_value(GTK_TREE_MODEL(__g_priv.filter), iter, HASH_COLUMN, &val);
-    klog(("xxxxxxxx\n"));
 
     menu = gtk_menu_new();
     item = pidgin_new_item_from_stock(menu, ("_Play"), GTK_STOCK_MEDIA_PLAY, NULL, NULL, 0, 0, NULL);
@@ -296,21 +295,21 @@ int update_channel(gpointer handle, KMediaChannel * channel)
     gchar *title = g_strdup_printf("<span color='%s'>%s</span>\n<span color='%s' size='smaller'>%s</span>",
                                    "red", channel->getName(), "blue", channel->getHash());
 
-    gtk_tree_model_foreach(GTK_TREE_MODEL(__g_priv.filter), foreach_func, input);
+    gtk_tree_model_foreach(GTK_TREE_MODEL(__g_priv.model), foreach_func, input);
 
     if (input[1]) {
         path = gtk_tree_path_new_from_string(input[1]);
-        gtk_tree_model_get_iter(GTK_TREE_MODEL(__g_priv.filter), &iter, path);
-        gtk_tree_store_append(GTK_TREE_STORE(__g_priv.filter), &child_iter, &iter);
+        gtk_tree_model_get_iter(GTK_TREE_MODEL(__g_priv.model), &iter, path);
+        gtk_tree_store_append(GTK_TREE_STORE(__g_priv.model), &child_iter, &iter);
         used_iter = &child_iter;
     } else {
-        gtk_tree_store_append(GTK_TREE_STORE(__g_priv.filter), &iter, NULL);
+        gtk_tree_store_append(GTK_TREE_STORE(__g_priv.model), &iter, NULL);
         used_iter = &iter;
     }
 
     klog(("update_channel: channel:%x, hash:%s, path:%s\n", channel, channel->getHash(), input[1]));
 
-    gtk_tree_store_set(GTK_TREE_STORE(__g_priv.filter), used_iter,
+    gtk_tree_store_set(GTK_TREE_STORE(__g_priv.model), used_iter,
                        HASH_COLUMN, input[0],
                        STATUS_ICON_COLUMN, status,
                        STATUS_ICON_VISIBLE_COLUMN, TRUE,
@@ -325,7 +324,6 @@ static gboolean gtk_blist_key_press_cb(GtkWidget * treeview, GdkEventKey * event
     GtkTreeIter iter, *new_iter;
     GtkTreeSelection *sel;
     GtkTreeModel *model = GTK_TREE_MODEL(__g_priv.filter);
-    GtkTreeStore *store = GTK_TREE_STORE(__g_priv.filter);
 
     sel = gtk_tree_view_get_selection(GTK_TREE_VIEW(treeview));
     if (!gtk_tree_selection_get_selected(sel, &model, &iter))
@@ -334,26 +332,12 @@ static gboolean gtk_blist_key_press_cb(GtkWidget * treeview, GdkEventKey * event
     val.g_type = 0;
     gtk_tree_model_get_value(GTK_TREE_MODEL(__g_priv.filter), &iter, HASH_COLUMN, &val);
 
-    klog(("aaaaaaaaaaa \n"));
-    klog(("iter.user_data: %x\n", iter.user_data));
-    klog(("iter.stamp: %x :: store.stamp: %x\n", iter.stamp, store->stamp));
-
 
 #define GDK_Return 0xff0d
 #define GDK_Menu 0xff67
     if ((event->keyval == GDK_Return) || (event->keyval == GDK_Menu)) {
 
-        val.g_type = 0;
-        gtk_tree_model_get_value(GTK_TREE_MODEL(__g_priv.filter), &iter, HASH_COLUMN, &val);
-        klog(("iiiiiiiiiiiiiii \n"));
-
-
-        val.g_type = 0;
         new_iter = gtk_tree_iter_copy(&iter);
-        gtk_tree_model_get_value(GTK_TREE_MODEL(__g_priv.filter), new_iter, HASH_COLUMN, &val);
-        klog(("kkkkkkkkkkkkkk \n"));
-
-
         show_popup_menu(new_iter);
         return TRUE;
     }
@@ -377,21 +361,14 @@ static gboolean gtk_blist_button_press_cb(GtkWidget * treeview, GdkEventButton *
     val.g_type = 0;
     gtk_tree_model_get_value(GTK_TREE_MODEL(__g_priv.filter), &iter, HASH_COLUMN, &val);
 
-    klog(("AAAAAAAAAAA \n"));
-    klog(("iter.user_data: %x\n", iter.user_data));
-    klog(("iter.stamp: %x :: store.stamp: %x\n", iter.stamp, store->stamp));
-
-
     if ((event->button == 3) && (event->type == GDK_BUTTON_PRESS)) {
 
         show_popup_menu(gtk_tree_iter_copy(&iter));
 
-        klog(("right clicked\n"));
     } else if ((event->button == 1) && (event->type == GDK_2BUTTON_PRESS)) {
         KMediaChannel *channel = __g_mc->getMediaChannelFromChannel((char*)g_value_get_string(&val));
         GtkWidget *mediaWindow = (GtkWidget*)kim_getptr(__g_im, "p.ui.ui.window.main", knil);
 
-        klog(("double clicked, play it\n"));
         channel->setOutputWindow(mediaWindow->window);
         channel->setPlayState(KMCPS_PLAY);
     }
