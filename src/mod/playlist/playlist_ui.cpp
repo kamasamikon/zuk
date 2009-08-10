@@ -153,9 +153,10 @@ static gboolean filter_func(GtkTreeModel * model, GtkTreeIter * iter, GtkEntry *
 
 static void cb_search_toggled(GtkToggleButton * button, GtkEntry * entry)
 {
-    if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(button)))
+    if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(button))) {
         gtk_widget_show(GTK_WIDGET(entry));
-    else
+        gtk_widget_activate(GTK_WIDGET(entry));
+    } else
         gtk_widget_hide(GTK_WIDGET(entry));
 }
 
@@ -203,22 +204,22 @@ void pidgin_treeview_popup_menu_position_func(GtkMenu * menu, gint * x, gint * y
     *y += rect.y + (rect.height / 2) + ythickness;
 }
 
-static void play_channel(GtkObject *obj, GtkTreeIter *iter)
+static void play_channel(GtkObject * obj, GtkTreeIter * iter)
 {
     GValue val;
     val.g_type = 0;
     gtk_tree_model_get_value(GTK_TREE_MODEL(__g_priv.filter), iter, HASH_COLUMN, &val);
 
-    klog(("play_channel: %s\n", (char*)g_value_get_string(&val)));
+    klog(("play_channel: %s\n", (char *) g_value_get_string(&val)));
 
-    KMediaChannel *channel = __g_mc->getMediaChannelFromChannel((char*)g_value_get_string(&val));
-    GtkWidget *mediaWindow = (GtkWidget*)kim_getptr(__g_im, "p.ui.ui.window.main", knil);
+    KMediaChannel *channel = __g_mc->getMediaChannelFromChannel((char *) g_value_get_string(&val));
+    GtkWidget *mediaWindow = (GtkWidget *) kim_getptr(__g_im, "p.ui.ui.window.main", knil);
 
     channel->setOutputWindow(mediaWindow->window);
     channel->setPlayState(KMCPS_PLAY);
 }
 
-void show_popup_menu(GtkTreeIter *iter)
+void show_popup_menu(GtkTreeIter * iter)
 {
     GtkWidget *menu = 0;
     GtkWidget *item;
@@ -242,7 +243,8 @@ void show_popup_menu(GtkTreeIter *iter)
     gtk_menu_shell_select_first(menu_shell, TRUE);
 
     gtk_widget_show_all(menu);
-    gtk_menu_popup(GTK_MENU(menu), NULL, NULL, pidgin_treeview_popup_menu_position_func, __g_priv.treeview, NULL, gtk_get_current_event_time());
+    gtk_menu_popup(GTK_MENU(menu), NULL, NULL, pidgin_treeview_popup_menu_position_func, __g_priv.treeview, NULL,
+                   gtk_get_current_event_time());
 }
 
 static gboolean cb_entry_changed(GtkEditable * entry, GtkTreeView * treeview)
@@ -253,7 +255,15 @@ static gboolean cb_entry_changed(GtkEditable * entry, GtkTreeView * treeview)
     gtk_tree_model_filter_refilter(filter);
 
     gtk_tree_view_expand_all(GTK_TREE_VIEW(treeview));
-    return (FALSE);
+    return FALSE;
+}
+
+static gboolean grep_entry_key_press_cb(GtkWidget * treeview, GdkEventKey * event, gpointer data)
+{
+#define GDK_Escape 0xff1b
+    if (event->keyval == GDK_Escape)
+        gtk_entry_set_text(GTK_ENTRY(__g_priv.grep_entry), "");
+    return FALSE;
 }
 
 gboolean foreach_func(GtkTreeModel * model, GtkTreePath * path, GtkTreeIter * iter, gpointer user_data)
@@ -282,15 +292,52 @@ gboolean foreach_func(GtkTreeModel * model, GtkTreePath * path, GtkTreeIter * it
     return found;
 }
 
+static GdkPixbuf *generate_thumbnail(const char *mrl)
+{
+    GdkPixbuf *pixbuf = NULL;
+    GtkWindow *window = NULL;
+    char *file_basename, *file_name, *uri_md5;
+    GError *err = NULL;
+
+    uri_md5 = g_compute_checksum_for_string(G_CHECKSUM_MD5, mrl, strlen(mrl));
+    file_basename = g_strdup_printf("%s.png", uri_md5);
+    file_name = g_build_filename(g_get_home_dir(), ".thumbnails", "normal", file_basename, NULL);
+
+    pixbuf = gdk_pixbuf_new_from_file(file_name, &err);
+    /* Try loading from the "large" thumbnails if normal fails */
+    if (pixbuf == NULL && err != NULL && err->domain == G_FILE_ERROR) {
+        g_clear_error(&err);
+        g_free(file_name);
+        file_name = g_build_filename(g_get_home_dir(), ".thumbnails", "large", file_basename, NULL);
+
+        pixbuf = gdk_pixbuf_new_from_file(file_name, &err);
+    }
+
+    g_free(uri_md5);
+    g_free(file_basename);
+    g_free(file_name);
+
+    if (pixbuf == NULL) {
+        if (err != NULL && err->domain != G_FILE_ERROR) {
+            g_printerr("%s\n", err->message);
+        }
+        return 0;
+    }
+
+    return pixbuf;
+}
+
+
 int update_channel(gpointer handle, KMediaChannel * channel)
 {
     GtkTreeIter iter, child_iter, *used_iter;
     GtkTreePath *path = 0;
     gchar *input[2] = { (gchar *) channel->getHash(), 0 };
+    gchar *full_name;
 
-    GdkPixbuf *status;
+    GdkPixbuf *status, *thumbnail = 0;
     status =
-        gtk_widget_render_icon(GTK_WIDGET(__g_priv.treeview), GTK_STOCK_DIRECTORY, GTK_ICON_SIZE_SMALL_TOOLBAR, NULL);
+        gtk_widget_render_icon(GTK_WIDGET(__g_priv.treeview), GTK_STOCK_MEDIA_PLAY, GTK_ICON_SIZE_SMALL_TOOLBAR, NULL);
 
     gchar *title = g_strdup_printf("<span color='%s'>%s</span>\n<span color='%s' size='smaller'>%s</span>",
                                    "red", channel->getName(), "blue", channel->getHash());
@@ -308,14 +355,20 @@ int update_channel(gpointer handle, KMediaChannel * channel)
     }
 
     klog(("update_channel: channel:%x, hash:%s, path:%s\n", channel, channel->getHash(), input[1]));
+    full_name = g_strdup_printf("file://%s/%s", g_get_home_dir(), channel->getName());
+    klog(("full_name: %s\n", full_name));
+    thumbnail = generate_thumbnail(full_name);
+    klog(("thumbnail: %x\n", thumbnail));
 
     gtk_tree_store_set(GTK_TREE_STORE(__g_priv.model), used_iter,
                        HASH_COLUMN, input[0],
-                       STATUS_ICON_COLUMN, status,
+                       STATUS_ICON_COLUMN, thumbnail,
                        STATUS_ICON_VISIBLE_COLUMN, TRUE,
                        TITLE_COLUMN, title,
                        RATE_ICON_COLUMN, status,
                        RATE_ICON_VISIBLE_COLUMN, TRUE, REMIDER_COLUMN, status, REMIDER_VISIBLE_COLUMN, NULL, -1);
+
+    // g_object_unref (thumbnail);
 }
 
 static gboolean gtk_blist_key_press_cb(GtkWidget * treeview, GdkEventKey * event, gpointer data)
@@ -454,6 +507,8 @@ gpointer do_tree_store()
         g_signal_connect(G_OBJECT(treeview), "key-press-event", G_CALLBACK(gtk_blist_key_press_cb), NULL);
 
         g_signal_connect(G_OBJECT(grep_entry), "changed", G_CALLBACK(cb_entry_changed), GTK_TREE_VIEW(treeview));
+        g_signal_connect(G_OBJECT(grep_entry), "key-press-event", G_CALLBACK(grep_entry_key_press_cb),
+                         GTK_TREE_VIEW(treeview));
 
         g_object_unref(model);
         gtk_tree_view_set_rules_hint(GTK_TREE_VIEW(treeview), TRUE);
@@ -480,9 +535,10 @@ gpointer do_tree_store()
         __g_priv.grep_entry = grep_entry;
     }
 
-    if (!GTK_WIDGET_VISIBLE(window))
+    if (!GTK_WIDGET_VISIBLE(window)) {
         gtk_widget_show_all(window);
-    else {
+        gtk_widget_hide(__g_priv.grep_entry);
+    } else {
         gtk_widget_destroy(window);
         window = NULL;
     }
