@@ -303,14 +303,14 @@ static GdkPixbuf *generate_thumbnail(const char *mrl)
     file_basename = g_strdup_printf("%s.png", uri_md5);
     file_name = g_build_filename(g_get_home_dir(), ".thumbnails", "normal", file_basename, NULL);
 
-    pixbuf = gdk_pixbuf_new_from_file(file_name, &err);
+    pixbuf = gdk_pixbuf_new_from_file_at_scale(file_name, 64, 48, TRUE, &err);
     /* Try loading from the "large" thumbnails if normal fails */
     if (pixbuf == NULL && err != NULL && err->domain == G_FILE_ERROR) {
         g_clear_error(&err);
         g_free(file_name);
         file_name = g_build_filename(g_get_home_dir(), ".thumbnails", "large", file_basename, NULL);
 
-        pixbuf = gdk_pixbuf_new_from_file(file_name, &err);
+        pixbuf = gdk_pixbuf_new_from_file_at_scale(file_name, 64, 48, TRUE, &err);
     }
 
     g_free(uri_md5);
