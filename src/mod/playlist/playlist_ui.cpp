@@ -21,6 +21,9 @@ static char guid[] = "7D378382-9351-4f4e-BF83-4FF20C456B6D";
 
 /////////////////////////////////////////////////////////////////////////////
 // defines
+#define GDK_Escape 0xff1b
+#define GDK_Return 0xff0d
+#define GDK_Menu 0xff67
 
 /////////////////////////////////////////////////////////////////////////////
 // support routines
@@ -118,9 +121,8 @@ static void add_columns(GtkTreeView * treeview)
     text_rend = rend = gtk_cell_renderer_text_new();
     gtk_tree_view_column_pack_start(column, rend, TRUE);
     gtk_tree_view_column_set_attributes(column, rend, "markup", TITLE_COLUMN, NULL);
-#if GTK_CHECK_VERSION(2,6,0)
+
     // g_signal_connect(G_OBJECT(rend), "editing-started", G_CALLBACK(gtk_blist_renderer_editing_started_cb), NULL);
-#endif
 
     g_object_set(rend, "ypad", 0, "yalign", 0.5, NULL);
     g_object_set(rend, "ellipsize", PANGO_ELLIPSIZE_END, NULL);
@@ -260,7 +262,6 @@ static gboolean cb_entry_changed(GtkEditable * entry, GtkTreeView * treeview)
 
 static gboolean grep_entry_key_press_cb(GtkWidget * treeview, GdkEventKey * event, gpointer data)
 {
-#define GDK_Escape 0xff1b
     if (event->keyval == GDK_Escape)
         gtk_entry_set_text(GTK_ENTRY(__g_priv.grep_entry), "");
     return FALSE;
@@ -318,9 +319,8 @@ static GdkPixbuf *generate_thumbnail(const char *mrl)
     g_free(file_name);
 
     if (pixbuf == NULL) {
-        if (err != NULL && err->domain != G_FILE_ERROR) {
+        if (err != NULL && err->domain != G_FILE_ERROR)
             g_printerr("%s\n", err->message);
-        }
         return 0;
     }
 
@@ -354,11 +354,8 @@ int update_channel(gpointer handle, KMediaChannel * channel)
         used_iter = &iter;
     }
 
-    klog(("update_channel: channel:%x, hash:%s, path:%s\n", channel, channel->getHash(), input[1]));
     full_name = g_strdup_printf("file://%s/%s", g_get_home_dir(), channel->getName());
-    klog(("full_name: %s\n", full_name));
     thumbnail = generate_thumbnail(full_name);
-    klog(("thumbnail: %x\n", thumbnail));
 
     gtk_tree_store_set(GTK_TREE_STORE(__g_priv.model), used_iter,
                        HASH_COLUMN, input[0],
@@ -374,7 +371,7 @@ int update_channel(gpointer handle, KMediaChannel * channel)
 static gboolean gtk_blist_key_press_cb(GtkWidget * treeview, GdkEventKey * event, gpointer data)
 {
     GValue val;
-    GtkTreeIter iter, *new_iter;
+    GtkTreeIter iter;
     GtkTreeSelection *sel;
     GtkTreeModel *model = GTK_TREE_MODEL(__g_priv.filter);
 
@@ -385,15 +382,11 @@ static gboolean gtk_blist_key_press_cb(GtkWidget * treeview, GdkEventKey * event
     val.g_type = 0;
     gtk_tree_model_get_value(GTK_TREE_MODEL(__g_priv.filter), &iter, HASH_COLUMN, &val);
 
-
-#define GDK_Return 0xff0d
-#define GDK_Menu 0xff67
     if ((event->keyval == GDK_Return) || (event->keyval == GDK_Menu)) {
-
-        new_iter = gtk_tree_iter_copy(&iter);
-        show_popup_menu(new_iter);
+        show_popup_menu(gtk_tree_iter_copy(&iter));
         return TRUE;
-    }
+    } else if (event->keyval == GDK_Escape)
+        gtk_entry_set_text(GTK_ENTRY(__g_priv.grep_entry), "");
 
     return FALSE;
 }
