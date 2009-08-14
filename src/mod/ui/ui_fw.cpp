@@ -19,16 +19,16 @@
 
 typedef struct _ToolEntry ToolEntry;
 struct _ToolEntry {
-    GtkWidget* (*create)();
-    void (*destroy)(GtkWidget*);
+    GtkWidget *(*create) ();
+    void (*destroy) (GtkWidget *);
 
-    kuint type;         /* trigger, page, tool */
+    kuint type;                 /* trigger, page, tool */
     kchar *tool_tip;
     kchar *name;
     kchar *icon;
 };
 
-static void register_tool(ToolEntry *te);
+static void register_tool(ToolEntry * te);
 
 static char guid[] = "52727E3B-08FD-4664-97B1-4CBABD17C985";
 
@@ -39,34 +39,23 @@ enum {
     TARGET_ROOTWIN
 };
 static GtkTargetEntry target_table[] = {
-    { "STRING",     0, TARGET_STRING },
+    { "STRING", 0, TARGET_STRING },
     { "text/plain", 0, TARGET_STRING },
     { "application/x-rootwindow-drop", 0, TARGET_ROOTWIN }
 };
 
 static guint n_targets = sizeof(target_table) / sizeof(target_table[0]);
 
-gboolean
-target_drag_drop(GtkWidget	       *widget,
-        GdkDragContext     *context,
-        gint                x,
-        gint                y,
-        guint               time) ;
-    void
-target_drag_data_received  (GtkWidget          *widget,
-        GdkDragContext     *context,
-        gint                x,
-        gint                y,
-        GtkSelectionData   *data,
-        guint               info,
-        guint               time) ;
+gboolean target_drag_drop(GtkWidget * widget, GdkDragContext * context, gint x, gint y, guint time);
+void
+target_drag_data_received(GtkWidget * widget,
+                          GdkDragContext * context, gint x, gint y, GtkSelectionData * data, guint info, guint time);
 
 /////////////////////////////////////////////////////////////////////////////
 // defines
-extern "C" void on_winmain_menu_item_about_activate(GtkMenuItem *menuitem, gpointer user_data)
+extern "C" void on_winmain_menu_item_about_activate(GtkMenuItem * menuitem, gpointer user_data)
 {
-    static int count = 0, i;
-    GtkWidget *window_main = (GtkWidget*)kim_getptr(__g_im, "p.ui.ui.window.main", knil);
+    GtkWidget *window_main = (GtkWidget *) kim_getptr(__g_im, "p.ui.ui.window.main", knil);
 
     const gchar *authors[] = {
         "auv <kamasamikon@gmail.com>",
@@ -79,40 +68,23 @@ extern "C" void on_winmain_menu_item_about_activate(GtkMenuItem *menuitem, gpoin
     };
 
     gtk_show_about_dialog(GTK_WINDOW(window_main),
-            "name", "zuk! zuk!",
-            "version", "0.0.1",
-            "copyright", "(C) 1997-2009 DYI",
-            "website", "http://www.zuk.org",
-            "comments", "zuk.",
-            "authors", authors,
-            "documenters", documentors,
-            "title", "About zuk! zuk!",
-            NULL);
-
-    GtkWidget *mediaWindow = (GtkWidget*)kim_getptr(__g_im, "p.ui.ui.window.main", knil);
-    KMediaChannel **chList = __g_mc->getMediaChannelClassList();
-    if (chList && chList[0]) {
-        for (i = 0; chList[i]; i++) {
-            if (i == count) {
-                chList[i]->setOutputWindow(mediaWindow->window);
-                chList[i]->setPlayState(KMCPS_PLAY);
-                count++;
-                return;
-            }
-        }
-        count = 0;
-    }
+                          "name", "zuk! zuk!",
+                          "version", "0.0.1",
+                          "copyright", "(C) 1997-2009 DYI",
+                          "website", "http://www.zuk.org",
+                          "comments", "zuk.",
+                          "authors", authors, "documenters", documentors, "title", "About zuk! zuk!", NULL);
 }
 
-extern "C" void on_winmain_menu_item_tool_activate(GtkMenuItem *menuitem, gpointer user_data)
+extern "C" void on_winmain_menu_item_tool_activate(GtkMenuItem * menuitem, gpointer user_data)
 {
-    GtkWidget *window_tool = (GtkWidget*)kim_getptr(__g_im, "p.ui.ui.window.tool", knil);
+    GtkWidget *window_tool = (GtkWidget *) kim_getptr(__g_im, "p.ui.ui.window.tool", knil);
     gtk_widget_show_all(window_tool);
 }
 
-extern "C" void on_winmain_menu_item_pref_activate(GtkMenuItem *menuitem, gpointer user_data)
+extern "C" void on_winmain_menu_item_pref_activate(GtkMenuItem * menuitem, gpointer user_data)
 {
-    GtkWidget *window_pref = (GtkWidget*)kim_getptr(__g_im, "p.ui.ui.window.optn", knil);
+    GtkWidget *window_pref = (GtkWidget *) kim_getptr(__g_im, "p.ui.ui.window.optn", knil);
 
     /* fill all the modules to the list */
     gtk_widget_show(window_pref);
@@ -122,14 +94,13 @@ extern "C" void on_winmain_menu_item_pref_activate(GtkMenuItem *menuitem, gpoint
 // support routines
 
 typedef struct _K_tool_button K_tool_button;
-struct _K_tool_button
-{
+struct _K_tool_button {
     gchar *text;
     gchar *tool_tip;
 
     guint type;             /**< trigger? container? */
     gboolean multi_instance;    /**< allow multi instance */
-    GtkWidget *(fun_init)(void);
+    GtkWidget *(fun_init) (void);
 };
 
 static GtkWidget *create_tool_widget()
@@ -151,7 +122,7 @@ static GtkWidget *create_tool_widget()
     return tool;
 }
 
-GtkWidget* htoolbar_create()
+GtkWidget *htoolbar_create()
 {
     GtkWidget *htbar, *button;
     htbar = gtk_hbox_new(TRUE, 1);
@@ -162,23 +133,18 @@ GtkWidget* htoolbar_create()
     button = gtk_button_new_with_label("htbar1");
     gtk_box_pack_start(GTK_BOX(htbar), button, TRUE, FALSE, 0);
 
-    gtk_drag_dest_set (htbar,
-            GTK_DEST_DEFAULT_ALL,
-            target_table, n_targets, /* no rootwin */
-            GdkDragAction(GDK_ACTION_COPY | GDK_ACTION_MOVE));
-    g_signal_connect (htbar, "drag_drop",
-            G_CALLBACK (target_drag_drop), htbar);
+    gtk_drag_dest_set(htbar, GTK_DEST_DEFAULT_ALL, target_table, n_targets,     /* no rootwin */
+                      GdkDragAction(GDK_ACTION_COPY | GDK_ACTION_MOVE));
+    g_signal_connect(htbar, "drag_drop", G_CALLBACK(target_drag_drop), htbar);
 
-    g_signal_connect (htbar, "drag_data_received",
-            G_CALLBACK (target_drag_data_received), NULL);
-
+    g_signal_connect(htbar, "drag_data_received", G_CALLBACK(target_drag_data_received), NULL);
 
     gtk_widget_show_all(htbar);
 
     return htbar;
 }
 
-void htoolbar_destroy(GtkWidget*)
+void htoolbar_destroy(GtkWidget *)
 {
 }
 
@@ -192,16 +158,16 @@ static kint IMWCH(imwch_button_play_clicked)
     /* toggle to pause or play the current media */
 }
 
-static void on_button_play_clicked(GtkButton *button, gpointer user_data)
+static void on_button_play_clicked(GtkButton * button, gpointer user_data)
 {
-    GtkWidget *but = (GtkWidget*)user_data;
-    g_assert((void*)but == (void*)button);
+    GtkWidget *but = (GtkWidget *) user_data;
+    g_assert((void *) but == (void *) button);
 
-    kim_setint(__g_im, "i.tool.evt.clicked", 1, (void**)but, knil);
+    kim_setint(__g_im, "i.tool.evt.clicked", 1, (void **) but, knil);
 }
 
 /* create the play button */
-GtkWidget* button_play_create()
+GtkWidget *button_play_create()
 {
     GtkWidget *button_play;
 
@@ -219,13 +185,13 @@ GtkWidget* button_play_create()
     return button_play;
 }
 
-void button_play_destroy(GtkWidget*)
+void button_play_destroy(GtkWidget *)
 {
 }
 
-static ToolEntry* mk_button_play(kbool pub)
+static ToolEntry *mk_button_play(kbool pub)
 {
-    ToolEntry *te = (ToolEntry*)kmem_alloz(sizeof(ToolEntry));
+    ToolEntry *te = (ToolEntry *) kmem_alloz(sizeof(ToolEntry));
     te->create = button_play_create;
     te->destroy = button_play_destroy;
 
@@ -243,13 +209,13 @@ static ToolEntry* mk_button_play(kbool pub)
  * button tool
  */
 
-static ToolEntry* mk_htoolbar2(kchar *clsid, kbool pub)
+static ToolEntry *mk_htoolbar2(kchar * clsid, kbool pub)
 {
 }
 
-static ToolEntry* mk_htoolbar(kbool pub)
+static ToolEntry *mk_htoolbar(kbool pub)
 {
-    ToolEntry *te = (ToolEntry*)kmem_alloz(sizeof(ToolEntry));
+    ToolEntry *te = (ToolEntry *) kmem_alloz(sizeof(ToolEntry));
     te->create = htoolbar_create;
     te->destroy = htoolbar_destroy;
 
@@ -268,29 +234,29 @@ void flow()
 {
     GtkWidget *vol = gtk_progress_bar_new();
     g_signal_connect(G_OBJECT(vol), "changed", G_CALLBACK(vol), vol);
-    kim_addawch(__g_im, "vol.enable", vol_enable, vol, ...);
+    kim_addawch(__g_im, "vol.enable", vol_enable, vol,...);
 
 
 
     GtkWidget *vol = gtk_progress_bar_new();
     g_signal_connect(G_OBJECT(vol), "changed", G_CALLBACK(vol), vol);
-    kim_addawch(__g_im, "vol.enable", vol_enable, vol, ...);
+    kim_addawch(__g_im, "vol.enable", vol_enable, vol,...);
 
 
 
     GtkWidget *vol = gtk_progress_bar_new();
     g_signal_connect(G_OBJECT(vol), "changed", G_CALLBACK(vol), vol);
-    kim_addawch(__g_im, "vol.enable", vol_enable, vol, ...);
+    kim_addawch(__g_im, "vol.enable", vol_enable, vol,...);
 }
 #endif
 
 GList *__g_tool_list = NULL;
-static void register_tool(ToolEntry *te)
+static void register_tool(ToolEntry * te)
 {
     __g_tool_list = g_list_append(__g_tool_list, te);
 }
 
-static GtkWidget *create_tool_widget2(ToolEntry *te)
+static GtkWidget *create_tool_widget2(ToolEntry * te)
 {
     static gint index = 0;
     gchar *labels[5] = { "a", "aa", "aaaaaaa", "sdfss", "x" };
@@ -311,30 +277,26 @@ static GtkWidget *create_tool_widget2(ToolEntry *te)
 
     return tool;
 }
-    void
-source_drag_data_get  (GtkWidget          *widget,
-        GdkDragContext     *context,
-        GtkSelectionData   *selection_data,
-        guint               info,
-        guint               time,
-        gpointer            data)
+
+void
+source_drag_data_get(GtkWidget * widget,
+                     GdkDragContext * context, GtkSelectionData * selection_data, guint info, guint time, gpointer data)
 {
     printf("--------- source_drag_data_get \n");
     g_print("source_drag_data_get: info : %x\n", info);
     if (info == TARGET_ROOTWIN)
-        g_print ("I was dropped on the rootwin\n");
+        g_print("I was dropped on the rootwin\n");
     else
-        gtk_selection_data_set (selection_data,
-                selection_data->target,
-                // 8, (const guchar*)"I'm Data!", 9);
-                8, (const guchar*)data, 4);
+        gtk_selection_data_set(selection_data, selection_data->target,
+                               // 8, (const guchar*)"I'm Data!", 9);
+                               8, (const guchar *) data, 4);
 }
 
 
 static void fill_tool_window()
 {
-    GtkWidget *window_tool_pool = (GtkWidget*)kim_getptr(__g_im, "p.ui.ui.window.tool_pool", knil);
-    GtkWidget *window_layout_tool_pool = (GtkWidget*)kim_getptr(__g_im, "p.ui.ui.window.layout_tool_pool", knil);
+    GtkWidget *window_tool_pool = (GtkWidget *) kim_getptr(__g_im, "p.ui.ui.window.tool_pool", knil);
+    GtkWidget *window_layout_tool_pool = (GtkWidget *) kim_getptr(__g_im, "p.ui.ui.window.layout_tool_pool", knil);
     window_tool_pool = window_layout_tool_pool;
 
     GtkWidget *tool_box;
@@ -360,27 +322,25 @@ static void fill_tool_window()
 
     gtk_widget_set_size_request(GTK_WIDGET(window_tool_pool), 200, 200);
 
-	tool_box = glade_palette_box_new ();
+    tool_box = glade_palette_box_new();
 
     /* FIXME: set border other than 0 can make layout mess some time */
     gtk_container_set_border_width(GTK_CONTAINER(tool_box), 0);
 
     for (l = __g_tool_list; l; l = l->next) {
-        te = (ToolEntry*)l->data;
+        te = (ToolEntry *) l->data;
         button = create_tool_widget2(te);
 
         printf("fill_tool_window: button: %x\n", button);
 
-#if 10 /* TODO */
-        gtk_drag_source_set (button, GdkModifierType(GDK_BUTTON1_MASK | GDK_BUTTON3_MASK),
-                target_table, n_targets,
-                GdkDragAction(GDK_ACTION_COPY | GDK_ACTION_MOVE));
+#if 10                          /* TODO */
+        gtk_drag_source_set(button, GdkModifierType(GDK_BUTTON1_MASK | GDK_BUTTON3_MASK),
+                            target_table, n_targets, GdkDragAction(GDK_ACTION_COPY | GDK_ACTION_MOVE));
 #endif
 
-        g_signal_connect (button, "drag_data_get",
-                G_CALLBACK (source_drag_data_get), te);
+        g_signal_connect(button, "drag_data_get", G_CALLBACK(source_drag_data_get), te);
 
-        gtk_container_add (GTK_CONTAINER (tool_box), button);
+        gtk_container_add(GTK_CONTAINER(tool_box), button);
     }
 
 #if 0
@@ -389,13 +349,12 @@ static void fill_tool_window()
         button = gtk_button_new_with_label(label);
         button = create_tool_widget();
 
-#if 10 /* TODO */
-        gtk_drag_source_set (button, GdkModifierType(GDK_BUTTON1_MASK | GDK_BUTTON3_MASK),
-                target_table, n_targets,
-                GdkDragAction(GDK_ACTION_COPY | GDK_ACTION_MOVE));
+#if 10                          /* TODO */
+        gtk_drag_source_set(button, GdkModifierType(GDK_BUTTON1_MASK | GDK_BUTTON3_MASK),
+                            target_table, n_targets, GdkDragAction(GDK_ACTION_COPY | GDK_ACTION_MOVE));
 #endif
 
-        gtk_container_add (GTK_CONTAINER (tool_box), button);
+        gtk_container_add(GTK_CONTAINER(tool_box), button);
     }
 #endif
 
@@ -404,17 +363,12 @@ static void fill_tool_window()
     gtk_widget_show_all(GTK_WIDGET(window_tool_pool));
 }
 
-gboolean
-target_drag_drop(GtkWidget	       *widget,
-        GdkDragContext     *context,
-        gint                x,
-        gint                y,
-        guint               time)
+gboolean target_drag_drop(GtkWidget * widget, GdkDragContext * context, gint x, gint y, guint time)
 {
     return FALSE;
 #if 0
     GtkWidget *button;
-    ToolEntry *te = (ToolEntry*)data->data;
+    ToolEntry *te = (ToolEntry *) data->data;
 
     printf("--------- target_drag_drop \n");
     printf("target_drag_drop: widget: %x\n", widget);
@@ -426,22 +380,17 @@ target_drag_drop(GtkWidget	       *widget,
     return FALSE;
 #endif
 }
-    void
-target_drag_data_received  (GtkWidget          *widget,
-        GdkDragContext     *context,
-        gint                x,
-        gint                y,
-        GtkSelectionData   *data,
-        guint               info,
-        guint               time)
+
+void
+target_drag_data_received(GtkWidget * widget,
+                          GdkDragContext * context, gint x, gint y, GtkSelectionData * data, guint info, guint time)
 {
     printf("--------- target_drag_data_received \n");
-    if ((data->length >= 0) && (data->format == 8))
-    {
-        g_print ("Received \"%x\" in trashcan\n", (gchar *)data->data);
+    if ((data->length >= 0) && (data->format == 8)) {
+        g_print("Received \"%x\" in trashcan\n", (gchar *) data->data);
         if (1) {
             GtkWidget *button;
-            ToolEntry *te = (ToolEntry*)data->data;
+            ToolEntry *te = (ToolEntry *) data->data;
 
             printf("--------- target_drag_drop \n");
             printf("target_drag_drop: widget: %x\n", widget);
@@ -449,14 +398,14 @@ target_drag_data_received  (GtkWidget          *widget,
             button = gtk_button_new_with_label("sdfsdfas");
             button = te->create();
             gtk_widget_show(GTK_WIDGET(button));
-            gtk_box_pack_start(GTK_BOX(widget), button, TRUE, FALSE, 0);
+            gtk_box_pack_start(GTK_BOX(widget), button, TRUE, TRUE, 0);
         }
 
-        gtk_drag_finish (context, TRUE, FALSE, time);
+        gtk_drag_finish(context, TRUE, FALSE, time);
         return;
     }
 
-    gtk_drag_finish (context, FALSE, FALSE, time);
+    gtk_drag_finish(context, FALSE, FALSE, time);
 }
 
 
@@ -464,37 +413,37 @@ target_drag_data_received  (GtkWidget          *widget,
 /**
  * \brief Create all the skel or container windows for modules but ui.
  *
+ * ui, is only part of skel, all the content is filled later.
+ *
+ * content type:
+ *      page, trigger, hbar, vbar
+ *
  * main window.             p.ui.ui.window.main
  * optn window.             p.ui.ui.window.optn
  * info window.             p.ui.ui.window.info
  * media window             p.ui.ui.window.media
  */
-static void ui_create_ui(KIM *im)
+static void ui_create_ui(KIM * im)
 {
     char xmlpath[1024];
     sprintf(xmlpath, "%s\\ui\\main.glade", kim_getstr(im, "s.env.path.moduleDir", knil));
     kstr_subs(xmlpath, '\\', kvfs_path_sep());
 
-    GladeXML *gxml = glade_xml_new (xmlpath, NULL, NULL);
-    kim_addptr(im, "p.ui.ui.glade", (kvoid*)gxml, RF_AUTOSET, knil, knil);
+    GladeXML *gxml = glade_xml_new(xmlpath, NULL, NULL);
+    kim_addptr(im, "p.ui.ui.glade", (kvoid *) gxml, RF_AUTOSET, knil, knil);
 
-    GtkWidget *window_main = glade_xml_get_widget (gxml, "window_main");
-    kim_addptr(im, "p.ui.ui.window.main", (kvoid*)window_main, RF_AUTOSET, knil, knil);
+    GtkWidget *window_main = glade_xml_get_widget(gxml, "window_main");
+    kim_addptr(im, "p.ui.ui.window.main", (kvoid *) window_main, RF_AUTOSET, knil, knil);
     klog(("window_main: %s\n", GTK_OBJECT_TYPE_NAME(window_main)));
 
     GtkWidget *vbox_main = glade_xml_get_widget(gxml, "winmain_vbox_main");
-    printf("ui_create_ui: vbox_main: %x\n", vbox_main);
     klog(("vbox_main: %s\n", GTK_OBJECT_TYPE_NAME(vbox_main)));
 
-    gtk_drag_dest_set (vbox_main,
-            GTK_DEST_DEFAULT_ALL,
-            target_table, n_targets, /* no rootwin */
-            GdkDragAction(GDK_ACTION_COPY | GDK_ACTION_MOVE));
-    g_signal_connect (vbox_main, "drag_drop",
-            G_CALLBACK (target_drag_drop), vbox_main);
+    gtk_drag_dest_set(vbox_main, GTK_DEST_DEFAULT_ALL, target_table, n_targets, /* no rootwin */
+                      GdkDragAction(GDK_ACTION_COPY | GDK_ACTION_MOVE));
+    g_signal_connect(vbox_main, "drag_drop", G_CALLBACK(target_drag_drop), vbox_main);
 
-    g_signal_connect (vbox_main, "drag_data_received",
-            G_CALLBACK (target_drag_data_received), NULL);
+    g_signal_connect(vbox_main, "drag_data_received", G_CALLBACK(target_drag_data_received), NULL);
 
 
     if (0) {
@@ -503,48 +452,49 @@ static void ui_create_ui(KIM *im)
         //button = gtk_viewport_new(NULL, NULL);//"GTK_WINDOW_TOPLEVEL");
         gtk_box_pack_start(GTK_BOX(vbox_main), button, TRUE, FALSE, 0);
 
-        gtk_drag_source_set (button, GdkModifierType(GDK_BUTTON1_MASK | GDK_BUTTON3_MASK),
-                target_table, n_targets,
-                GdkDragAction(GDK_ACTION_COPY | GDK_ACTION_MOVE));
+        gtk_drag_source_set(button, GdkModifierType(GDK_BUTTON1_MASK | GDK_BUTTON3_MASK),
+                            target_table, n_targets, GdkDragAction(GDK_ACTION_COPY | GDK_ACTION_MOVE));
     }
 
-    GtkWidget *window_info = glade_xml_get_widget (gxml, "window_info");
-    kim_addptr(im, "p.ui.ui.window.info", (kvoid*)window_info, RF_AUTOSET, knil, knil);
+    GtkWidget *window_info = glade_xml_get_widget(gxml, "window_info");
+    kim_addptr(im, "p.ui.ui.window.info", (kvoid *) window_info, RF_AUTOSET, knil, knil);
 
-    GtkWidget *window_media = glade_xml_get_widget (gxml, "window_media");
-    kim_addptr(im, "p.ui.ui.window.media", (kvoid*)window_media, RF_AUTOSET, knil, knil);
+    GtkWidget *window_media = glade_xml_get_widget(gxml, "window_media");
+    kim_addptr(im, "p.ui.ui.window.media", (kvoid *) window_media, RF_AUTOSET, knil, knil);
 
     // gtk_box_pack_start(GTK_BOX(vbox_main), window_media, TRUE, FALSE, 0);
 
-    GtkWidget *window_pref = glade_xml_get_widget (gxml, "window_pref");
-    kim_addptr(im, "p.ui.ui.window.optn", (kvoid*)window_pref, RF_AUTOSET, knil, knil);
+    GtkWidget *window_pref = glade_xml_get_widget(gxml, "window_pref");
+    kim_addptr(im, "p.ui.ui.window.optn", (kvoid *) window_pref, RF_AUTOSET, knil, knil);
     gtk_widget_show(window_pref);
 
     if (0) {
         GtkWidget *button;
         button = gtk_button_new_with_label("xxyyyx");
         gtk_box_pack_start(GTK_BOX(vbox_main), button, TRUE, TRUE, 0);
-        kim_addptr(im, "p.ui.ui.window.optn", (kvoid*)button, RF_AUTOSET, knil, knil);
+        kim_addptr(im, "p.ui.ui.window.optn", (kvoid *) button, RF_AUTOSET, knil, knil);
     }
 
-    GtkWidget *window_tool = glade_xml_get_widget (gxml, "window_tool");
-    kim_addptr(im, "p.ui.ui.window.tool", (kvoid*)window_tool, RF_AUTOSET, knil, knil);
+    GtkWidget *window_tool = glade_xml_get_widget(gxml, "window_tool");
+    kim_addptr(im, "p.ui.ui.window.tool", (kvoid *) window_tool, RF_AUTOSET, knil, knil);
 
-    GtkWidget *window_tool_pool = glade_xml_get_widget (gxml, "wintool_viewport_tool_pool");
-    kim_addptr(im, "p.ui.ui.window.tool_pool", (kvoid*)window_tool_pool, RF_AUTOSET, knil, knil);
+    GtkWidget *window_tool_pool = glade_xml_get_widget(gxml, "wintool_viewport_tool_pool");
+    kim_addptr(im, "p.ui.ui.window.tool_pool", (kvoid *) window_tool_pool, RF_AUTOSET, knil, knil);
 
-    GtkWidget *window_layout_tool_pool = glade_xml_get_widget (gxml, "wintool_viewport_layout_tool_pool");
-    kim_addptr(im, "p.ui.ui.window.layout_tool_pool", (kvoid*)window_layout_tool_pool, RF_AUTOSET, knil, knil);
+    GtkWidget *window_layout_tool_pool = glade_xml_get_widget(gxml, "wintool_viewport_layout_tool_pool");
+    kim_addptr(im, "p.ui.ui.window.layout_tool_pool", (kvoid *) window_layout_tool_pool, RF_AUTOSET, knil, knil);
 
     glade_xml_signal_autoconnect(gxml);
 
-    glade_xml_signal_connect_data(gxml, "on_winmain_menu_item_about_activate", G_CALLBACK(on_winmain_menu_item_about_activate), NULL);
-    glade_xml_signal_connect_data(gxml, "on_winmain_menu_item_tool_activate", G_CALLBACK(on_winmain_menu_item_tool_activate), NULL);
-    glade_xml_signal_connect_data(gxml, "on_winmain_menu_item_pref_activate", G_CALLBACK(on_winmain_menu_item_pref_activate), NULL);
+    glade_xml_signal_connect_data(gxml, "on_winmain_menu_item_about_activate",
+                                  G_CALLBACK(on_winmain_menu_item_about_activate), NULL);
+    glade_xml_signal_connect_data(gxml, "on_winmain_menu_item_tool_activate",
+                                  G_CALLBACK(on_winmain_menu_item_tool_activate), NULL);
+    glade_xml_signal_connect_data(gxml, "on_winmain_menu_item_pref_activate",
+                                  G_CALLBACK(on_winmain_menu_item_pref_activate), NULL);
 }
 
-static void status_icon_popup_menu_cb(GtkStatusIcon *status_icon,
-        guint button, guint activate_time, gpointer *icon)
+static void status_icon_popup_menu_cb(GtkStatusIcon * status_icon, guint button, guint activate_time, gpointer * icon)
 {
     GtkWidget *menu_item;
     GtkWidget *submenu;
@@ -558,11 +508,21 @@ static void status_icon_popup_menu_cb(GtkStatusIcon *status_icon,
         gtk_menu_shell_append(GTK_MENU_SHELL(submenu), menu_item);
     }
 
-    gtk_menu_popup (GTK_MENU (submenu), NULL, NULL, NULL,
-            NULL, NULL, activate_time);
+    gtk_menu_popup(GTK_MENU(submenu), NULL, NULL, NULL, NULL, NULL, activate_time);
 }
 
-static void ui_create_status_icon(KIM *im)
+int kwm_add_panel(GtkWidget *parent, GtkWidget *content, gchar *id, int pos, int width_or_height, gboolean fix_width_or_height)
+{
+    if (fix_width_or_height)
+        create_vbox;
+    else
+        create_splite_window();
+}
+int kwm_add_widget(GtkWidget *parent, GtkWidget *content, gchar *id, int pos, int width_or_height, gboolean fix_width_or_height)
+{
+}
+
+static void ui_create_status_icon(KIM * im)
 {
     GtkStatusIcon *trayIcon;
 
@@ -571,7 +531,7 @@ static void ui_create_status_icon(KIM *im)
     gtk_status_icon_set_blinking(trayIcon, TRUE);
     gtk_status_icon_set_tooltip(trayIcon, "auv is a good v!");
 
-    g_signal_connect(trayIcon, "popup-menu", G_CALLBACK (status_icon_popup_menu_cb), NULL);
+    g_signal_connect(trayIcon, "popup-menu", G_CALLBACK(status_icon_popup_menu_cb), NULL);
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -581,8 +541,8 @@ static void ui_create_status_icon(KIM *im)
 // kimat routines
 static kint imat_ui_act_show(struct _KIM *im, struct _KRtiRec *rec, kuchar reason)
 {
-    kint show = (kint)REC_SET(rec);
-    GtkWidget *window = (GtkWidget*)kim_getptr(im, "p.ui.ui.window.main", knil);
+    kint show = (kint) REC_SET(rec);
+    GtkWidget *window = (GtkWidget *) kim_getptr(im, "p.ui.ui.window.main", knil);
 
     if (show)
         gtk_widget_show_all(window);
@@ -603,7 +563,7 @@ static kint imat_ui_act_show(struct _KIM *im, struct _KRtiRec *rec, kuchar reaso
 /**
  * \brief UI module should startup first, so that it can watch other's module's window.
  */
-extern "C" EXPORT_FUN void mm_hey(KIM *im)
+extern "C" EXPORT_FUN void mm_hey(KIM * im)
 {
     klog(("into ui hey, THIS SHOULD BE FIRST MOD TO BE CALLED!\n"));
     SET_GLOBALS(im);
@@ -620,19 +580,20 @@ extern "C" EXPORT_FUN void mm_hey(KIM *im)
 }
 
 
-extern "C" EXPORT_FUN void mm_bye(KIM *im)
+extern "C" EXPORT_FUN void mm_bye(KIM * im)
 {
 }
 
-extern "C" EXPORT_FUN void mm_guid(KIM *im, char **retguid)
+extern "C" EXPORT_FUN void mm_guid(KIM * im, char **retguid)
 {
     klog(("into ui guid, %s\n", guid));
     *retguid = guid;
 }
 
-extern "C" EXPORT_FUN void jc_ui_get_script(KIM *im, kchar *ar0, kchar *ar1, kchar *ar2, kchar *ar3, kchar **pVarResult)
+extern "C" EXPORT_FUN void jc_ui_get_script(KIM * im, kchar * ar0, kchar * ar1, kchar * ar2, kchar * ar3,
+                                            kchar ** pVarResult)
 {
-    kchar **ret = (kchar**)pVarResult;
+    kchar **ret = (kchar **) pVarResult;
     GtkWidget *main_win;
 
     if (!ret)

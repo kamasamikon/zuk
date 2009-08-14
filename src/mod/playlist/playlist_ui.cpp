@@ -65,8 +65,8 @@ enum {
 
     HASH_COLUMN,                        /**< channel hash */
 
-    STATUS_ICON_COLUMN,                 /**< go or stop */
-    STATUS_ICON_VISIBLE_COLUMN,
+    THUMB_ICON_COLUMN,                  /**< go or stop */
+    THUMB_ICON_VISIBLE_COLUMN,
 
     TITLE_COLUMN,
 
@@ -86,8 +86,8 @@ static GtkTreeModel *create_model()
 
     store = gtk_tree_store_new(BLIST_COLUMNS, G_TYPE_INT,       /* TYPE_COLUMN */
                                G_TYPE_STRING,   /* HASH_COLUMN */
-                               GDK_TYPE_PIXBUF, /* STATUS_ICON_COLUMN */
-                               G_TYPE_BOOLEAN,  /* STATUS_ICON_VISIBLE_COLUMN */
+                               GDK_TYPE_PIXBUF, /* THUMB_ICON_COLUMN */
+                               G_TYPE_BOOLEAN,  /* THUMB_ICON_VISIBLE_COLUMN */
                                G_TYPE_STRING,   /* TITLE_COLUMN */
                                GDK_TYPE_PIXBUF, /* RATE_ICON_COLUMN */
                                G_TYPE_BOOLEAN,  /* RATE_ICON_VISIBLE_COLUMN */
@@ -115,7 +115,7 @@ static void add_columns(GtkTreeView * treeview)
     rend = gtk_cell_renderer_pixbuf_new();
     gtk_tree_view_column_pack_start(column, rend, FALSE);
     gtk_tree_view_column_set_attributes(column, rend,
-                                        "pixbuf", STATUS_ICON_COLUMN, "visible", STATUS_ICON_VISIBLE_COLUMN, NULL);
+                                        "pixbuf", THUMB_ICON_COLUMN, "visible", THUMB_ICON_VISIBLE_COLUMN, NULL);
     g_object_set(rend, "xalign", 0.0, "xpad", 6, "ypad", 0, NULL);
 
     text_rend = rend = gtk_cell_renderer_text_new();
@@ -162,7 +162,7 @@ static void cb_search_toggled(GtkToggleButton * button, GtkEntry * entry)
         gtk_widget_hide(GTK_WIDGET(entry));
 }
 
-GtkWidget *pidgin_new_item_from_stock(GtkWidget * menu, const char *str, const char *icon, GtkSignalFunc sf,
+static GtkWidget *new_menu_item_from_stock(GtkWidget * menu, const char *str, const char *icon, GtkSignalFunc sf,
                                       gpointer data, guint accel_key, guint accel_mods, char *mod)
 {
     GtkWidget *menuitem;
@@ -232,13 +232,13 @@ void show_popup_menu(GtkTreeIter * iter)
     gtk_tree_model_get_value(GTK_TREE_MODEL(__g_priv.filter), iter, HASH_COLUMN, &val);
 
     menu = gtk_menu_new();
-    item = pidgin_new_item_from_stock(menu, ("_Play"), GTK_STOCK_MEDIA_PLAY, NULL, NULL, 0, 0, NULL);
+    item = new_menu_item_from_stock(menu, ("_Play"), GTK_STOCK_MEDIA_PLAY, NULL, NULL, 0, 0, NULL);
     g_signal_connect(G_OBJECT(item), "activate", G_CALLBACK(play_channel), iter);
 
-    item = pidgin_new_item_from_stock(menu, ("Add/Remove _Alarm"), GTK_STOCK_YES, NULL, NULL, 0, 0, NULL);
+    item = new_menu_item_from_stock(menu, ("Add/Remove _Alarm"), GTK_STOCK_YES, NULL, NULL, 0, 0, NULL);
     g_signal_connect(G_OBJECT(item), "activate", G_CALLBACK(play_channel), iter);
 
-    item = pidgin_new_item_from_stock(menu, ("More _Information"), GTK_STOCK_NEW, NULL, NULL, 0, 0, NULL);
+    item = new_menu_item_from_stock(menu, ("More _Information"), GTK_STOCK_NEW, NULL, NULL, 0, 0, NULL);
     g_signal_connect(G_OBJECT(item), "activate", G_CALLBACK(play_channel), iter);
 
     menu_shell = GTK_MENU_SHELL(menu);
@@ -275,15 +275,10 @@ gboolean foreach_func(GtkTreeModel * model, GtkTreePath * path, GtkTreeIter * it
     input = (gchar **) user_data;
 
     gtk_tree_model_get(model, iter, HASH_COLUMN, &hash, -1);
-
     tree_path_str = gtk_tree_path_to_string(path);
-    g_print("Row %s\n", tree_path_str);
-    g_print("input_hash %s\n", input[0]);
 
     if (hash && input[0] && g_str_equal(hash, input[0]))
         found = TRUE;
-
-    g_print("found: %d\n", found);
 
     if (found)
         input[1] = tree_path_str;
@@ -359,8 +354,8 @@ int update_channel(gpointer handle, KMediaChannel * channel)
 
     gtk_tree_store_set(GTK_TREE_STORE(__g_priv.model), used_iter,
                        HASH_COLUMN, input[0],
-                       STATUS_ICON_COLUMN, thumbnail,
-                       STATUS_ICON_VISIBLE_COLUMN, TRUE,
+                       THUMB_ICON_COLUMN, thumbnail,
+                       THUMB_ICON_VISIBLE_COLUMN, TRUE,
                        TITLE_COLUMN, title,
                        RATE_ICON_COLUMN, status,
                        RATE_ICON_VISIBLE_COLUMN, TRUE, REMIDER_COLUMN, status, REMIDER_VISIBLE_COLUMN, NULL, -1);
@@ -544,9 +539,16 @@ gpointer do_tree_store()
 
 static GtkWidget *create_media_window()
 {
+    GtkWidget *htbar;
     GtkWidget *mediaWindow;
 
+    htbar = gtk_hbox_new(TRUE, 1);
+
     mediaWindow = gtk_drawing_area_new();
+    gtk_box_pack_start(GTK_BOX(htbar), mediaWindow, TRUE, FALSE, 0);
+
+    kim_addptr(__g_im, "p.playlist.ui.mediaWindow", mediaWindow, 0, knil, knil);
+
     return mediaWindow;
 }
 
@@ -557,17 +559,30 @@ static GtkWidget *create_playlist_window()
     do_tree_store();
 }
 
-int add_playitem(KMediaChannel * channel)
+static void create_ctrl_window()
 {
+    GtkWidget *htbar, *button;
+    htbar = gtk_hbox_new(FALSE, 1);
+
+    button = gtk_button_new_with_label("htbar0");
+    gtk_box_pack_start(GTK_BOX(htbar), button, TRUE, FALSE, 0);
+
+    button = gtk_button_new_with_label("htbar1");
+    gtk_box_pack_start(GTK_BOX(htbar), button, TRUE, FALSE, 0);
+
+    gtk_widget_show_all(htbar);
 }
 
+/**
+ * mediaWindow, ctrl buttons
+ */
 void create_ui(KIM * im)
 {
     SET_GLOBALS(im);
 
     GtkWidget *mediaWindow = create_media_window();
-    kim_addptr(im, "p.playlist.ui.mediaWindow", mediaWindow, 0, knil, knil);
 
     GtkWidget *playlistWindow = create_playlist_window();
     kim_addptr(im, "p.playlist.ui.playlistWindow", playlistWindow, 0, knil, knil);
 }
+

@@ -72,7 +72,7 @@ int KMC_LocalDevice::updateChannelList(void)
     if (fd) {
         do {
             if (0 != strcmp(finfo.name, ".") && 0 != strcmp(finfo.name, "..")) {
-                if (strstr(finfo.name, ".flv")) {
+                if (strstr(finfo.name, ".flv") || strstr(finfo.name, ".mp3")) {
                     sprintf(fullpath, "%s%s%s", baseDir, ps, finfo.name);
                     klog(("found: file:%s\n", fullpath));
                     KMC_LocalChannel *channel = new KMC_LocalChannel(im(), this, finfo.name, fullpath);
