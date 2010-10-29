@@ -40,7 +40,7 @@ kint ksal_get_commandline(kchar *buffer, kint buflen);
  * @name thread_api
  * @{
  */
-kbean ksal_tsk_new(kvoid (*a_entrypoint)(kvoid), kuchar a_priority, kuint a_stackSize, kvoid *a_param);
+kbean ksal_tsk_new(kvoid(*a_entrypoint) (kvoid), kuchar a_priority, kuint a_stackSize, kvoid *a_param);
 
 /*
  * return when the task completely destroyed
@@ -63,13 +63,13 @@ kvoid ksal_tsk_exit(kvoid);
  * @{
  */
 
-#define KMF_TRACK       0x00000001          /**< Track the memory usage */
-#define KMF_CHECK       0x00000002          /**< add pading bytes to check mismatch free, and overwrite */
+#define KMF_TRACK       0x00000001	    /**< Track the memory usage */
+#define KMF_CHECK       0x00000002	    /**< add pading bytes to check mismatch free, and overwrite */
 
 kint ksal_mem_init(kuint a_flg);
 kint ksal_mem_final(kvoid);
 
-kvoid* ksal_mem_alloc(kuint a_size);
+kvoid *ksal_mem_alloc(kuint a_size);
 kvoid ksal_mem_free(kvoid *a_ptr);
 /** @} */
 
@@ -153,17 +153,17 @@ kint kvfs_cwd(kchar *a_buf, kint a_size);
  */
 kint kvfs_dsk_free(kchar *a_path);
 
-#define KVFS_A_NORMAL 0x00                  /**< Normal file - No read/write restrictions */
-#define KVFS_A_RDONLY 0x01                  /**< Read only file */
-#define KVFS_A_HIDDEN 0x02                  /**< Hidden file */
-#define KVFS_A_SYSTEM 0x04                  /**< System file */
-#define KVFS_A_SUBDIR 0x10                  /**< Subdirectory */
-#define KVFS_A_ARCH   0x20                  /**< Archive file */
+#define KVFS_A_NORMAL 0x00		    /**< Normal file - No read/write restrictions */
+#define KVFS_A_RDONLY 0x01		    /**< Read only file */
+#define KVFS_A_HIDDEN 0x02		    /**< Hidden file */
+#define KVFS_A_SYSTEM 0x04		    /**< System file */
+#define KVFS_A_SUBDIR 0x10		    /**< Subdirectory */
+#define KVFS_A_ARCH   0x20		    /**< Archive file */
 
 typedef struct _KVFS_FINDDATA_ {
-    kuchar attrib;                          /**< OR-ed of KVFS_A_XXX */
-    kint size;                              /**< file size in bytes */
-    kchar name[260];                        /**< Null-terminated name of matched file/directory, without the path */
+	kuchar attrib;			    /**< OR-ed of KVFS_A_XXX */
+	kint size;			    /**< file size in bytes */
+	kchar name[260];		    /**< Null-terminated name of matched file/directory, without the path */
 } KVFS_FINDDATA;
 
 /**
@@ -178,6 +178,4 @@ kint kvfs_findclose(kbean a_find);
 #ifdef __cplusplus
 }
 #endif
-
 #endif /* __K_KSAL_H__ */
-

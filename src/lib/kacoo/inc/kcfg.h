@@ -5,6 +5,4 @@
 
 #define KCFG_DEBUG
 
-#endif /* __K_CFG_H__ */
-
-
+#endif				/* __K_CFG_H__ */

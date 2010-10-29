@@ -4,31 +4,31 @@
 
 FileName:
 
-    kerr.h
+kerr.h
 
 Abstract:
 
-    defination the Error Code, this number is defined for each task.
+defination the Error Code, this number is defined for each task.
 
-    If the ec is negative, it is a error, or else is not a error.
+If the ec is negative, it is a error, or else is not a error.
 
-    The Real ErrorCode is (MainErroCode & __LINES__)
+The Real ErrorCode is (MainErroCode & __LINES__)
 
 Author:
 
-    Yu Wenbin <kamasamikon@yahoo.com.cn>
+Yu Wenbin <kamasamikon@yahoo.com.cn>
 
 Environment:
 
-    Kernel_mode
+Kernel_mode
 
 Revision History:
 
-    2003/11/17 11:48 : Create
-    2004/02/04 14:11 : Change the error code to contain the line number
-                       Add NG, OK, REC, LEC Macros
+2003/11/17 11:48 : Create
+2004/02/04 14:11 : Change the error code to contain the line number
+Add NG, OK, REC, LEC Macros
 
-    2004/02/10 17:10 : Add CEC
+2004/02/10 17:10 : Add CEC
 
 ---------------------------------------------------------------------------------*/
 
@@ -83,11 +83,7 @@ extern "C" {
  */
 #define CEC(_x_) (REC(_x_) & __LINE__)
 
-
 #ifdef __cplusplus
 }
 #endif
-
-
 #endif /* __K_ERR_H__ */
-

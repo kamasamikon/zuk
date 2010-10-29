@@ -1,4 +1,5 @@
-/* vim:set et sw=4 sts=4 ff=unix: */
+/* vim:set noet ts=8 sw=8 sts=8 ff=unix: */
+
 /*
  * Copyright(C) 2008 Felipe Contreras.
  *
@@ -24,7 +25,7 @@
 extern "C" {
 #endif
 
-void* backend_init(int *argc, char **argv[]);
+void *backend_init(int *argc, char **argv[]);
 void backend_deinit(void *handle);
 void backend_set_window(void *handle, void *window);
 void backend_play(void *handle, const char *filename);
@@ -40,6 +41,4 @@ unsigned int backend_query_duration(void *handle);
 #ifdef __cplusplus
 }
 #endif
-
 #endif /* GST_BACKEND_H */
-

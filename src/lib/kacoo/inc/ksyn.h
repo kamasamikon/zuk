@@ -22,6 +22,4 @@ kint ksyn_sem_rel(kbean a_sema);
 #ifdef __cplusplus
 }
 #endif
-
 #endif /* __K_SYN_H__ */
-

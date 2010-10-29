@@ -24,7 +24,7 @@ struct _TreeItem {
     gboolean tim;
     gboolean owen;
     gboolean dave;
-    gboolean world_holiday;     /* shared by the European hackers */
+    gboolean world_holiday;	/* shared by the European hackers */
     TreeItem *children;
 };
 
@@ -43,16 +43,16 @@ enum {
 };
 
 enum {
-    TYPE_COLUMN,                        /**< ??? */
+    TYPE_COLUMN,			/**< ??? */
 
-    HASH_COLUMN,                        /**< channel hash */
+    HASH_COLUMN,			/**< channel hash */
 
-    STATUS_ICON_COLUMN,                 /**< go or stop */
+    STATUS_ICON_COLUMN,		/**< go or stop */
     STATUS_ICON_VISIBLE_COLUMN,
 
     TITLE_COLUMN,
 
-    RATE_ICON_COLUMN,                   /**< star */
+    RATE_ICON_COLUMN,		/**< star */
     RATE_ICON_VISIBLE_COLUMN,
 
     REMIDER_COLUMN,
@@ -60,7 +60,6 @@ enum {
 
     BLIST_COLUMNS
 };
-
 
 /* tree data */
 static TreeItem january[] = {
@@ -76,23 +75,24 @@ static TreeItem february[] = {
 
 static TreeItem march[] = {
     {"National Tree Planting Day", FALSE, FALSE, FALSE, FALSE, FALSE,
-     FALSE, NULL},
+        FALSE, NULL},
     {"St Patrick's Day", FALSE, FALSE, FALSE, FALSE, FALSE, TRUE, NULL},
     {NULL}
 };
+
 static TreeItem april[] = {
     {"April Fools' Day", FALSE, FALSE, FALSE, FALSE, FALSE, TRUE, NULL},
     {"Army Day", FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, NULL},
     {"Earth Day", FALSE, FALSE, FALSE, FALSE, FALSE, TRUE, NULL},
     {"Administrative Professionals' Day", FALSE, FALSE, FALSE, FALSE,
-     FALSE, FALSE, NULL},
+        FALSE, FALSE, NULL},
     {NULL}
 };
 
 static TreeItem may[] = {
     {"Nurses' Day", FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, NULL},
     {"National Day of Prayer", FALSE, FALSE, FALSE, FALSE, FALSE, FALSE,
-     NULL},
+        NULL},
     {"Mothers' Day", FALSE, FALSE, FALSE, FALSE, FALSE, TRUE, NULL},
     {"Armed Forces Day", FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, NULL},
     {"Memorial Day", TRUE, TRUE, TRUE, TRUE, FALSE, TRUE, NULL},
@@ -102,33 +102,32 @@ static TreeItem may[] = {
 static TreeItem toplevel[] = {
     {"January", FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, january},
     {"february february ", FALSE, FALSE, FALSE, FALSE, FALSE, FALSE,
-     february},
+        february},
     {"March", FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, march},
     {"April", FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, april},
     {"May", FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, may},
     {NULL}
 };
 
-
 static GtkTreeModel *create_model()
 {
     GtkTreeStore *store;
 
-    store = gtk_tree_store_new(BLIST_COLUMNS, G_TYPE_INT,   /* TYPE_COLUMN */
-                               G_TYPE_STRING,   /* HASH_COLUMN */
-                               GDK_TYPE_PIXBUF, /* STATUS_ICON_COLUMN */
-                               G_TYPE_BOOLEAN,  /* STATUS_ICON_VISIBLE_COLUMN */
-                               G_TYPE_STRING,   /* TITLE_COLUMN */
-                               GDK_TYPE_PIXBUF, /* RATE_ICON_COLUMN */
-                               G_TYPE_BOOLEAN,  /* RATE_ICON_VISIBLE_COLUMN */
-                               GDK_TYPE_PIXBUF, /* REMIDER_COLUMN */
-                               G_TYPE_BOOLEAN   /* RATE_ICON_VISIBLE_COLUMN */
-        );
+    store = gtk_tree_store_new(BLIST_COLUMNS, G_TYPE_INT,	/* TYPE_COLUMN */
+            G_TYPE_STRING,	/* HASH_COLUMN */
+            GDK_TYPE_PIXBUF,	/* STATUS_ICON_COLUMN */
+            G_TYPE_BOOLEAN,	/* STATUS_ICON_VISIBLE_COLUMN */
+            G_TYPE_STRING,	/* TITLE_COLUMN */
+            GDK_TYPE_PIXBUF,	/* RATE_ICON_COLUMN */
+            G_TYPE_BOOLEAN,	/* RATE_ICON_VISIBLE_COLUMN */
+            GDK_TYPE_PIXBUF,	/* REMIDER_COLUMN */
+            G_TYPE_BOOLEAN	/* RATE_ICON_VISIBLE_COLUMN */
+            );
 
     return GTK_TREE_MODEL(store);
 }
 
-static void fill_data(GtkWidget * treeview, GtkTreeStore * store)
+static void fill_data(GtkWidget *treeview, GtkTreeStore *store)
 {
     int i = 34;
     GtkTreeIter iter;
@@ -139,27 +138,19 @@ static void fill_data(GtkWidget * treeview, GtkTreeStore * store)
         i++;
 
         TreeItem *holiday = month->children;
-        gchar *title =
-            g_strdup_printf
-            ("<span color='%s'>%s</span>\n<span color='%s' size='smaller'>%s%d%s</span>",
-             "red", month->label, "blue", " shit ", i, " oyes");
+        gchar *title = g_strdup_printf("<span color='%s'>%s</span>\n<span color='%s' size='smaller'>%s%d%s</span>",
+                "red", month->label, "blue", " shit ", i, " oyes");
 
         GdkPixbuf *status;
-        status =
-            gtk_widget_render_icon(GTK_WIDGET(treeview),
-                                   GTK_STOCK_DIRECTORY,
-                                   GTK_ICON_SIZE_SMALL_TOOLBAR, NULL);
+        status = gtk_widget_render_icon(GTK_WIDGET(treeview), GTK_STOCK_DIRECTORY, GTK_ICON_SIZE_SMALL_TOOLBAR, NULL);
 
         gtk_tree_store_append(store, &iter, NULL);
         gtk_tree_store_set(store, &iter,
-                           STATUS_ICON_COLUMN, status,
-                           STATUS_ICON_VISIBLE_COLUMN, TRUE,
-                           TITLE_COLUMN, title,
-                           RATE_ICON_COLUMN, status,
-                           RATE_ICON_VISIBLE_COLUMN, TRUE,
-                           REMIDER_COLUMN, NULL,
-                           REMIDER_VISIBLE_COLUMN, NULL, -1);
-
+                STATUS_ICON_COLUMN, status,
+                STATUS_ICON_VISIBLE_COLUMN, TRUE,
+                TITLE_COLUMN, title,
+                RATE_ICON_COLUMN, status,
+                RATE_ICON_VISIBLE_COLUMN, TRUE, REMIDER_COLUMN, NULL, REMIDER_VISIBLE_COLUMN, NULL, -1);
 
         /* add children */
         while (holiday->label) {
@@ -167,26 +158,19 @@ static void fill_data(GtkWidget * treeview, GtkTreeStore * store)
 
             GtkTreeIter child_iter;
 
-            gchar *title =
-                g_strdup_printf
-                ("<span color='%s'>%s</span>\n<span color='%s' size='smaller'>%s%s%s</span>",
-                 "red", month->label, "blue", " shit ",
-                 holiday->alex ? "true" : "false", " oyes");
+            gchar *title = g_strdup_printf("<span color='%s'>%s</span>\n<span color='%s' size='smaller'>%s%s%s</span>",
+                    "red", month->label, "blue", " shit ",
+                    holiday->alex ? "true" : "false", " oyes");
 
             GdkPixbuf *status;
-            status =
-                gtk_widget_render_icon(GTK_WIDGET(treeview),
-                                       GTK_STOCK_NETWORK,
-                                       GTK_ICON_SIZE_DIALOG, NULL);
+            status = gtk_widget_render_icon(GTK_WIDGET(treeview), GTK_STOCK_NETWORK, GTK_ICON_SIZE_DIALOG, NULL);
             gtk_tree_store_append(store, &child_iter, &iter);
             gtk_tree_store_set(store, &child_iter,
-                               STATUS_ICON_COLUMN, status,
-                               STATUS_ICON_VISIBLE_COLUMN, TRUE,
-                               TITLE_COLUMN, title,
-                               RATE_ICON_COLUMN, status,
-                               RATE_ICON_VISIBLE_COLUMN, TRUE,
-                               REMIDER_COLUMN, NULL,
-                               REMIDER_VISIBLE_COLUMN, NULL, -1);
+                    STATUS_ICON_COLUMN, status,
+                    STATUS_ICON_VISIBLE_COLUMN, TRUE,
+                    TITLE_COLUMN, title,
+                    RATE_ICON_COLUMN, status,
+                    RATE_ICON_VISIBLE_COLUMN, TRUE, REMIDER_COLUMN, NULL, REMIDER_VISIBLE_COLUMN, NULL, -1);
 
             holiday++;
         }
@@ -196,11 +180,12 @@ static void fill_data(GtkWidget * treeview, GtkTreeStore * store)
 
 }
 
-static void add_columns(GtkTreeView * treeview)
+static void add_columns(GtkTreeView *treeview)
 {
     GtkCellRenderer *rend;
     GtkTreeViewColumn *column;
-    GtkTreeViewColumn *text_column; /**< Column */
+    GtkTreeViewColumn *text_column;
+    /**< Column */
     GtkCellRenderer *text_rend;
 
     column = gtk_tree_view_column_new();
@@ -213,15 +198,12 @@ static void add_columns(GtkTreeView * treeview)
     rend = gtk_cell_renderer_pixbuf_new();
     gtk_tree_view_column_pack_start(column, rend, FALSE);
     gtk_tree_view_column_set_attributes(column, rend,
-                                        "pixbuf", STATUS_ICON_COLUMN,
-                                        "visible",
-                                        STATUS_ICON_VISIBLE_COLUMN, NULL);
+            "pixbuf", STATUS_ICON_COLUMN, "visible", STATUS_ICON_VISIBLE_COLUMN, NULL);
     g_object_set(rend, "xalign", 0.0, "xpad", 6, "ypad", 0, NULL);
 
     text_rend = rend = gtk_cell_renderer_text_new();
     gtk_tree_view_column_pack_start(column, rend, TRUE);
-    gtk_tree_view_column_set_attributes(column, rend,
-                                        "markup", TITLE_COLUMN, NULL);
+    gtk_tree_view_column_set_attributes(column, rend, "markup", TITLE_COLUMN, NULL);
 #if GTK_CHECK_VERSION(2,6,0)
     // g_signal_connect(G_OBJECT(rend), "editing-started", G_CALLBACK(gtk_blist_renderer_editing_started_cb), NULL);
 #endif
@@ -229,17 +211,14 @@ static void add_columns(GtkTreeView * treeview)
     g_object_set(rend, "ellipsize", PANGO_ELLIPSIZE_END, NULL);
     gtk_tree_view_append_column(GTK_TREE_VIEW(treeview), column);
 
-
     rend = gtk_cell_renderer_pixbuf_new();
     g_object_set(rend, "xalign", 1.0, "ypad", 0, NULL);
     gtk_tree_view_column_pack_start(column, rend, FALSE);
     gtk_tree_view_column_set_attributes(column, rend, "pixbuf",
-                                        RATE_ICON_COLUMN, "visible",
-                                        RATE_ICON_VISIBLE_COLUMN, NULL);
+            RATE_ICON_COLUMN, "visible", RATE_ICON_VISIBLE_COLUMN, NULL);
 }
 
-static gboolean filter_func(GtkTreeModel * model, GtkTreeIter * iter,
-                            GtkEntry * entry)
+static gboolean filter_func(GtkTreeModel *model, GtkTreeIter *iter, GtkEntry *entry)
 {
     const gchar *needle;
     gchar *haystack;
@@ -260,7 +239,7 @@ static gboolean filter_func(GtkTreeModel * model, GtkTreeIter * iter,
     return ret;
 }
 
-static void cb_search_toggled(GtkToggleButton * button, GtkEntry * entry)
+static void cb_search_toggled(GtkToggleButton *button, GtkEntry *entry)
 {
     if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(button)))
         gtk_widget_show(GTK_WIDGET(entry));
@@ -268,8 +247,7 @@ static void cb_search_toggled(GtkToggleButton * button, GtkEntry * entry)
         gtk_widget_hide(GTK_WIDGET(entry));
 }
 
-static gboolean cb_entry_changed(GtkEditable * entry,
-                                 GtkTreeView * treeview)
+static gboolean cb_entry_changed(GtkEditable *entry, GtkTreeView *treeview)
 {
     GtkTreeModelFilter *filter;
 
@@ -303,11 +281,9 @@ gpointer do_tree_store()
 
         /* create window, etc */
         window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
-        gtk_window_set_screen(GTK_WINDOW(window),
-                              gtk_widget_get_screen(NULL));
+        gtk_window_set_screen(GTK_WINDOW(window), gtk_widget_get_screen(NULL));
         gtk_window_set_title(GTK_WINDOW(window), "list");
-        g_signal_connect(window, "destroy",
-                         G_CALLBACK(gtk_widget_destroyed), &window);
+        g_signal_connect(window, "destroy", G_CALLBACK(gtk_widget_destroyed), &window);
 
         vbox = gtk_vbox_new(FALSE, 1);
         gtk_container_set_border_width(GTK_CONTAINER(vbox), 1);
@@ -318,8 +294,7 @@ gpointer do_tree_store()
         gtk_box_pack_start(GTK_BOX(vbox), tool_hbox, FALSE, FALSE, 0);
 
         scan_button = gtk_toggle_button_new_with_mnemonic("_Rescan");
-        gtk_box_pack_start(GTK_BOX(tool_hbox), scan_button, FALSE, FALSE,
-                           0);
+        gtk_box_pack_start(GTK_BOX(tool_hbox), scan_button, FALSE, FALSE, 0);
 
         grep_button = gtk_toggle_button_new_with_mnemonic("_Search");
         gtk_box_pack_end(GTK_BOX(tool_hbox), grep_button, FALSE, FALSE, 0);
@@ -331,57 +306,43 @@ gpointer do_tree_store()
         grep_entry = gtk_entry_new();
         gtk_box_pack_start(GTK_BOX(grep_hbox), grep_entry, TRUE, TRUE, 0);
 
-        g_signal_connect(G_OBJECT(grep_button), "toggled",
-                         G_CALLBACK(cb_search_toggled), GTK_ENTRY(grep_entry));
+        g_signal_connect(G_OBJECT(grep_button), "toggled", G_CALLBACK(cb_search_toggled), GTK_ENTRY(grep_entry));
 
         sw = gtk_scrolled_window_new(NULL, NULL);
-        gtk_scrolled_window_set_shadow_type(GTK_SCROLLED_WINDOW(sw),
-                                            GTK_SHADOW_ETCHED_IN);
-        gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(sw),
-                                       GTK_POLICY_AUTOMATIC,
-                                       GTK_POLICY_AUTOMATIC);
+        gtk_scrolled_window_set_shadow_type(GTK_SCROLLED_WINDOW(sw), GTK_SHADOW_ETCHED_IN);
+        gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(sw), GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
         gtk_box_pack_start(GTK_BOX(vbox), sw, TRUE, TRUE, 0);
 
         /* create model */
         model = create_model();
 
-        gtk_tree_view_set_model(GTK_TREE_VIEW(treeview),
-                                GTK_TREE_MODEL(model));
-
+        gtk_tree_view_set_model(GTK_TREE_VIEW(treeview), GTK_TREE_MODEL(model));
 
         /* Create filter and set visible function */
         filter = gtk_tree_model_filter_new(model, NULL);
-        gtk_tree_model_filter_set_visible_func(GTK_TREE_MODEL_FILTER
-                                               (filter),
-                                               (GtkTreeModelFilterVisibleFunc)
-                                               filter_func, grep_entry, NULL);
+        gtk_tree_model_filter_set_visible_func(GTK_TREE_MODEL_FILTER(filter), (GtkTreeModelFilterVisibleFunc)
+                filter_func, grep_entry, NULL);
 
         /* Create treeview with model */
         treeview = gtk_tree_view_new_with_model(filter);
 
         fill_data(treeview, GTK_TREE_STORE(model));
 
-        g_signal_connect(G_OBJECT(grep_entry), "changed",
-                         G_CALLBACK(cb_entry_changed),
-                         GTK_TREE_VIEW(treeview));
+        g_signal_connect(G_OBJECT(grep_entry), "changed", G_CALLBACK(cb_entry_changed), GTK_TREE_VIEW(treeview));
 
         g_object_unref(model);
         gtk_tree_view_set_rules_hint(GTK_TREE_VIEW(treeview), TRUE);
         gtk_tree_view_set_show_expanders(GTK_TREE_VIEW(treeview), TRUE);
         gtk_tree_view_set_headers_visible(GTK_TREE_VIEW(treeview), FALSE);
-        gtk_tree_selection_set_mode(gtk_tree_view_get_selection
-                                    (GTK_TREE_VIEW(treeview)),
-                                    GTK_SELECTION_SINGLE);
+        gtk_tree_selection_set_mode(gtk_tree_view_get_selection(GTK_TREE_VIEW(treeview)), GTK_SELECTION_SINGLE);
 
         add_columns(GTK_TREE_VIEW(treeview));
 
         gtk_container_add(GTK_CONTAINER(sw), treeview);
 
         /* expand all rows after the treeview widget has been realized */
-        g_signal_connect(treeview, "realize",
-                         G_CALLBACK(gtk_tree_view_expand_all), NULL);
+        g_signal_connect(treeview, "realize", G_CALLBACK(gtk_tree_view_expand_all), NULL);
         gtk_window_set_default_size(GTK_WINDOW(window), 650, 400);
-
 
         /* set priv */
         __g_priv.window = window;
@@ -400,6 +361,5 @@ gpointer do_tree_store()
         window = NULL;
     }
 
-    return (gpointer)&__g_priv;
+    return (gpointer) & __g_priv;
 }
-

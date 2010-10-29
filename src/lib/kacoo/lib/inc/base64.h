@@ -15,5 +15,4 @@ kint base64_decode(const kchar *a_in, kint a_inlen, kchar **a_out, kint *a_outle
 #ifdef __cplusplus
 }
 #endif
-
 #endif /* __BASE64_H__ */

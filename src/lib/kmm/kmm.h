@@ -10,63 +10,60 @@
 extern "C" {
 #endif
 
-typedef kvoid (*WASP_JC)(KIM *a_im, kchar *a_ur0, kchar *a_ur1, kchar *a_ur2, kchar *a_ur3, kchar **a_result);
+typedef kvoid(*WASP_JC)(KIM *a_im, kchar *a_ur0, kchar *a_ur1, kchar *a_ur2, kchar *a_ur3, kchar **a_result);
 
-typedef struct _kmm_soinfo
-{
-    kchar *name;                /**< mod:modDir:modDir.dll */
-    kbean bean;                 /**< m_LibraryHandle = LoadLibrary(m_LibraryName); */
-    kchar *soid;                /**< DLL or SO's GUID */
+typedef struct _kmm_soinfo {
+	kchar *name;		/**< mod:modDir:modDir.dll */
+	kbean bean;		/**< m_LibraryHandle = LoadLibrary(m_LibraryName); */
+	kchar *soid;		/**< DLL or SO's GUID */
 } kmm_soinfo;
 
-typedef struct _kmm_moditem
-{
-    kchar *basepath;            /**< mod:modDir */
+typedef struct _kmm_moditem {
+	kchar *basepath;	/**< mod:modDir */
 
-    kbool used;
-    kbool loaded;
-    kint loadorder;             /**< Load order, used for unload sequency */
+	kbool used;
+	kbool loaded;
+	kint loadorder;		/**< Load order, used for unload sequency */
 
-    /* From cfg.xml */
-    kchar *id;
-    kchar *homeurl;
-    kchar *logourl;
-    kchar *updturl;
-    kchar *ver;
+	/* From cfg.xml */
+	kchar *id;
+	kchar *homeurl;
+	kchar *logourl;
+	kchar *updturl;
+	kchar *ver;
 
-    kchar *name;                /**< only load for current language */
-    kchar *desc;                /**< only load for current language */
+	kchar *name;		/**< only load for current language */
+	kchar *desc;		/**< only load for current language */
 
-    kuchar type;                /**< mod:modDir:type = text file */
-    kuchar state;               /**< mod:modDir:state = text file */
+	kuchar type;		/**< mod:modDir:type = text file */
+	kuchar state;		/**< mod:modDir:state = text file */
 
-    /* Only for current platform */
-    kmm_soinfo entry;           /**< main DLL for module */
+	/* Only for current platform */
+	kmm_soinfo entry;
+	/**< main DLL for module */
 } kmm_moditem;
 
-typedef struct _kmm_jc_his_entry
-{
-    kchar *soid;                /**< guid for SO, nil if this entry not used */
-    kchar *name;                /**< proc name */
-    WASP_JC proc;               /**< WASP_JC */
+typedef struct _kmm_jc_his_entry {
+	kchar *soid;		/**< guid for SO, nil if this entry not used */
+	kchar *name;		/**< proc name */
+	WASP_JC proc;		/**< WASP_JC */
 } kmm_jc_his_entry;
 
-typedef struct _KMM
-{
-    KIM* im;
+typedef struct _KMM {
+	KIM *im;
 
-    struct {
-        kint cnt;
-        kmm_moditem *arr;
-    } mod;
+	struct {
+		kint cnt;
+		kmm_moditem *arr;
+	} mod;
 
-    struct {
-        kint cnt;
-        kmm_jc_his_entry *arr;
-    } his;
+	struct {
+		kint cnt;
+		kmm_jc_his_entry *arr;
+	} his;
 
-    kint maxtype;
-    kint loadorder;
+	kint maxtype;
+	kint loadorder;
 } KMM;
 
 kbean kmm_init(KIM *a_im);
@@ -75,11 +72,10 @@ kint kmm_final(kbean a_mm);
 kint kmm_load_modules(kbean a_mm);
 kint kmm_unload_modules(kbean a_mm);
 
-kint kmm_jc_cmd(kbean a_mm, kchar *a_cname, kchar *a_soid, kchar *a_ur0, kchar *a_ur1, kchar *a_ur2, kchar *a_ur3, kchar **a_result);
+kint kmm_jc_cmd(kbean a_mm, kchar *a_cname, kchar *a_soid,
+		kchar *a_ur0, kchar *a_ur1, kchar *a_ur2, kchar *a_ur3, kchar **a_result);
 
 #ifdef __cplusplus
 }
 #endif
-
 #endif /* __K_MM_H__ */
-

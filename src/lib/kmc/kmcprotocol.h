@@ -18,52 +18,51 @@ class KMediaChannel;
 
 typedef struct _KMediaProtocolHeader KMediaProtocolHeader;
 struct _KMediaProtocolHeader {
-    K_dlist_entry m_deviceHeader;
-    K_dlist_entry m_protocolEntry;
+	K_dlist_entry m_deviceHeader;
+	K_dlist_entry m_protocolEntry;
 };
 
 class KMediaProtocol : public KMediaProtocolHeader
 {
 public:
-    KMediaProtocol(KIM *a_im, KMediaContainer* a_parentContainer, const char* a_name, int a_type);
-    virtual ~KMediaProtocol(void);
+	KMediaProtocol(KIM *a_im, KMediaContainer *a_parentContainer, const char *a_name, int a_type);
+	virtual ~ KMediaProtocol(void);
 
-    KIM *im();
+	KIM *im();
 
-    const char* getHash(void);
-    void setHash(const char *a_hash);
-    const char* getName(void);
-    const char* getDesc(void);
+	const char *getHash(void);
+	void setHash(const char *a_hash);
+	const char *getName(void);
+	const char *getDesc(void);
 
-    KMediaContainer *getContainer(void) const;
+	KMediaContainer *getContainer(void) const;
 
-    int getType(void);
+	int getType(void);
 
-    virtual kbool start(void);
-    virtual kbool stop(void);
-    kbool isStarted(void);
+	virtual kbool start(void);
+	virtual kbool stop(void);
+	kbool isStarted(void);
 
-    char** getMediaDeviceHashList(void);
-    KMediaDevice** getMediaDeviceClassList(void);
+	char **getMediaDeviceHashList(void);
+	KMediaDevice **getMediaDeviceClassList(void);
 
-    char** getMediaChannelHashList(void);
-    KMediaChannel** getMediaChannelClassList(void);
+	char **getMediaChannelHashList(void);
+	KMediaChannel **getMediaChannelClassList(void);
 
-    virtual int scanDevice(void);
+	virtual int scanDevice(void);
 
 protected:
-    char* m_desc;
+	char *m_desc;
 
 private:
-    KIM* m_im;
+	KIM *m_im;
 
-    KMediaContainer* m_parentContainer;
-    char* m_name;
-    char m_hash[33];
+	KMediaContainer *m_parentContainer;
+	char *m_name;
+	char m_hash[33];
 
-    kuint m_flg;
-    int m_type;
+	kuint m_flg;
+	int m_type;
 };
 
 #endif /*__KMC_PROTOCOL_H__*/
-

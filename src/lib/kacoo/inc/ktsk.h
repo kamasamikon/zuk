@@ -40,7 +40,6 @@ extern "C" {
 /* Used by ktmr module */
 #define KMSG_TIMER              0xF0000002
 
-
 /**--------------------------------------------------------------------------------
  * Message Flag
  */
@@ -57,8 +56,9 @@ extern "C" {
 #define KMDR_CANCEL             0x00000003
 #define KMDR_ABORT              0x00000004
 
-typedef int (*KTSK_PROC)(kvoid *a_ur0, kvoid *a_ur1, kvoid *a_ur2, kvoid *a_ur3);
-typedef int (*KMSG_DISP)(kbean a_tsk, kuint a_msg, kvoid *a_ur0, kvoid *a_ur1, kvoid *a_ur2, kvoid *a_ur3, kint a_rsn);
+typedef int (*KTSK_PROC) (kvoid *a_ur0, kvoid *a_ur1, kvoid *a_ur2, kvoid *a_ur3);
+typedef int (*KMSG_DISP) (kbean a_tsk, kuint a_msg, kvoid *a_ur0,
+		kvoid *a_ur1, kvoid *a_ur2, kvoid *a_ur3, kint a_rsn);
 
 /* K Task On Message */
 #define KTOM(f) (f)(kbean a_tsk, kuint a_msg, kvoid *a_ur0, kvoid *a_ur1, kvoid *a_ur2, kvoid *a_ur3, kint a_rsn)
@@ -73,8 +73,8 @@ kint kmsg_slot_del(kbean a_tsk, kuint a_msg);
 kbean ktsk_cur(kvoid);
 kbool ktsk_running(kbean a_tsk);
 
-kbean ktsk_new(const kchar *a_name, KTSK_PROC a_mainproc, kint a_prio, kint a_stack_size,
-        kvoid *a_ur0, kvoid *a_ur1, kvoid *a_ur2, kvoid *a_ur3);
+kbean ktsk_new(const kchar *a_name, KTSK_PROC a_mainproc, kint a_prio,
+		kint a_stack_size, kvoid *a_ur0, kvoid *a_ur1, kvoid *a_ur2, kvoid *a_ur3);
 kint ktsk_del(kbean a_tsk);
 
 /* return user data set in ktsk_new */
@@ -106,6 +106,4 @@ kint ktsk_msg_reg_bhook(kuint a_msg, ...);
 #ifdef __cplusplus
 }
 #endif
-
 #endif /* __K_TSK_H__ */
-

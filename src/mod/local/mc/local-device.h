@@ -1,4 +1,5 @@
-/* vim:set et sw=4 sts=4 ff=unix: */
+/* vim:set noet ts=8 sw=8 sts=8 ff=unix: */
+
 #ifndef __KMC_LOCAL_DEVICE_H__
 #define __KMC_LOCAL_DEVICE_H__
 
@@ -10,8 +11,8 @@
 class KMC_LocalDevice : public KMediaDevice
 {
 public:
-    KMC_LocalDevice(KIM *a_im, KMC_LocalProtocol* a_parentProtocal, char* a_name);
-    virtual ~KMC_LocalDevice(void);
+    KMC_LocalDevice(KIM *a_im, KMC_LocalProtocol *a_parentProtocal, char *a_name);
+    virtual ~ KMC_LocalDevice(void);
 
     virtual kbool start();
     virtual kbool stop();

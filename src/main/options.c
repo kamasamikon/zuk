@@ -1,4 +1,5 @@
-/* vim:set et sw=4 sts=4 ff=unix: */
+/* vim:set noet ts=8 sw=8 sts=8 ff=unix: */
+
 #include <stdio.h>
 
 #include <kini.h>
@@ -6,24 +7,24 @@
 
 #include "options.h"
 
-static zuk_opt zukopts[] =
-{
-    { "help", 'n', "Show help the quit", knil },
-    { "log-level", 'i', "log level", knil },
-    { "skip-update", 'b', "[y/*n]: skip update install when boot", "0" },
-    { "fullscreen", 'b', "[y/*n]: auto fullscreen when boot", "0" },
-    { "maximize", 'b', "[y/*n]: auto fullscreen when boot", "0" },
-    { "skip-single", 'b', "[y/*n]: allow mutli instance", "0" },
-    { "show-loading", 'b', "[*y/n]: show 'now loading' dialog when boot", "1" },
-    { knil, knil, knil, knil }
+static zuk_opt zukopts[] = {
+    {"help", 'n', "Show help the quit", knil},
+    {"log-level", 'i', "log level", knil},
+    {"skip-update", 'b', "[y/*n]: skip update install when boot", "0"},
+    {"fullscreen", 'b', "[y/*n]: auto fullscreen when boot", "0"},
+    {"maximize", 'b', "[y/*n]: auto fullscreen when boot", "0"},
+    {"skip-single", 'b', "[y/*n]: allow mutli instance", "0"},
+    {"show-loading", 'b', "[*y/n]: show 'now loading' dialog when boot",
+        "1"},
+    {knil, knil, knil, knil}
 };
 
-zuk_opt* zuk_opt_init()
+zuk_opt *zuk_opt_init()
 {
     zuk_opt *opt;
     kint i, cnt = sizeof(zukopts) / sizeof(zuk_opt);
 
-    opt = (zuk_opt*)kmem_alloz(cnt * sizeof(zuk_opt));
+    opt = (zuk_opt *) kmem_alloz(cnt * sizeof(zuk_opt));
     if (!opt) {
         return knil;
     }
@@ -53,7 +54,7 @@ kvoid zuk_opt_final(zuk_opt *a_opt)
     return opt;
 }
 
-static kchar* get_default_opt_start(const kchar *a_desc)
+static kchar *get_default_opt_start(const kchar *a_desc)
 {
     kchar *desc = a_desc;
     if (*desc || ('[' != *desc)) {
@@ -74,17 +75,17 @@ static kint get_default_opt(const kchar *a_desc, kchar a_type, kvoid **a_ret)
     kchar *start = get_default_opt_start(a_desc);
     if (start) {
         if ('i' == a_type) {
-            *a_ret = (kvoid*)atoi(start);
+            *a_ret = (kvoid *) atoi(start);
             return 0;
         } else if ('b' == a_type) {
             if ('y' == *start) {
-                *a_ret = (kvoid*)ktrue;
+                *a_ret = (kvoid *) ktrue;
             } else {
-                *a_ret = (kvoid*)kfalse;
+                *a_ret = (kvoid *) kfalse;
             }
             return 0;
         } else if ('b' == a_type) {
-            *a_ret = (kvoid*)kstr_dup(start);
+            *a_ret = (kvoid *) kstr_dup(start);
             kstr_subs(*a_ret, '/', '\0');
             return 0;
         }
@@ -105,25 +106,26 @@ void read_ini_opt(zuk_opt *a_opt, const kchar *a_inipath)
             continue;
         }
         switch (opt[i].type) {
-            case 'i':
-            case 'b':
-                if (!kini_getint("opt", opt[i].name, &retval, a_inipath)) {
-                    retval = (kvoid*)kini_getint("opt", opt[i].name, defval, a_inipath);
-                }
-                sprintf(buf, "%d", (kint)retval);
+        case 'i':
+        case 'b':
+            if (!kini_getint("opt", opt[i].name, &retval, a_inipath)) {
+                retval = (kvoid *) kini_getint("opt", opt[i].name, defval, a_inipath);
+            }
+            sprintf(buf, "%d", (kint) retval);
+            opt[i].val = kstr_dup(buf);
+            break;
+        case 's':
+            if (kini_getstr("opt", opt[i].name, buf, sizeof(buf), a_inipath)) {
                 opt[i].val = kstr_dup(buf);
-                break;
-            case 's':
-                if (kini_getstr("opt", opt[i].name, buf, sizeof(buf), a_inipath)) {
-                    opt[i].val = kstr_dup(buf);
-                }
-                break;
-            default:
-                break;
+            }
+            break;
+        default:
+            break;
         }
     }
 }
-void read_arg_opt(zuk_opt *a_opt, kint a_argc, kchar **a_argv)
+
+void read_arg_opt(zuk_opt *a_opt, kint a_argc, kchar ** a_argv)
 {
     zuk_opt *opt = a_opt;
     kint i, j;
@@ -136,7 +138,8 @@ void read_arg_opt(zuk_opt *a_opt, kint a_argc, kchar **a_argv)
         }
 
         for (j = 0; opt[j].name; j++) {
-            if ((!strcmp(opt[j].name, a_argv[i] + 2)) && (i < a_argc - 1)) {
+            if ((!strcmp(opt[j].name, a_argv[i] + 2))
+                    && (i < a_argc - 1)) {
                 if ('s' == opt[j].type) {
                     i++;
                     kmem_free_s(opt[j].val);
@@ -158,7 +161,8 @@ void read_arg_opt(zuk_opt *a_opt, kint a_argc, kchar **a_argv)
         }
     }
 }
-kchar* read_opt(zuk_opt *a_opt, const kchar *a_optname)
+
+kchar *read_opt(zuk_opt *a_opt, const kchar *a_optname)
 {
     zuk_opt *opt = a_opt;
     kint i;
@@ -186,5 +190,3 @@ void show_help(zuk_opt *a_opt)
         printf(" %s\t\t%c\t\t%s\n", opt[i].name, opt[i].type, opt[i].desc);
     }
 }
-
-

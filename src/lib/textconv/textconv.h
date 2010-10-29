@@ -17,5 +17,4 @@ char *acp_to_utf8(char *acp);
 #ifdef __cplusplus
 }
 #endif
-
 #endif /* __TEXT_CONV_H__ */

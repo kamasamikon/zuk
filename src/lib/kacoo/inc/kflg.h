@@ -3,7 +3,6 @@
 #ifndef __K_FLG_H__
 #define __K_FLG_H__
 
-
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -15,7 +14,4 @@ extern "C" {
 #ifdef __cplusplus
 }
 #endif
-
-
 #endif /* __K_FLG_H__ */
-

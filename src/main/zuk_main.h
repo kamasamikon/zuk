@@ -1,4 +1,5 @@
-/* vim:set et sw=4 sts=4 ff=unix: */
+/* vim:set noet ts=8 sw=8 sts=8 ff=unix: */
+
 #ifndef __ZUK_MAIN_H__
 #define __ZUK_MAIN_H__
 
@@ -8,5 +9,4 @@ kint zuk_init(KIM *im, kint argc, kchar **argv);
 kint zuk_show(KIM *im, kint argc, kchar **argv);
 kint zuk_final(KIM *im, kint argc, kchar **argv);
 
-#endif /* __ZUK_MAIN_H__ **/
-
+#endif /* __ZUK_MAIN_H__ */

@@ -4,18 +4,18 @@
 
 FileName:
 
-    ktypes.h
+ktypes.h
 
 Abstract:
 
-    Override some data type to provide independance between some platform.
+Override some data type to provide independance between some platform.
 
-    The assumption for the data length is:
-        sizeof(kllint) >= 8 byte
-        sizeof(klong) >= 4 byte
-        sizeof(kint) >= 4 byte
-        sizeof(kshort) >= 2 byte
-        sizeof(kchar) >= 1 byte
+The assumption for the data length is:
+sizeof(kllint) >= 8 byte
+sizeof(klong) >= 4 byte
+sizeof(kint) >= 4 byte
+sizeof(kshort) >= 2 byte
+sizeof(kchar) >= 1 byte
 
 ---------------------------------------------------------------------------------*/
 
@@ -60,4 +60,3 @@ typedef void *kbean;
 #define knil knull
 
 #endif /* __K_TYPES_H__ */
-

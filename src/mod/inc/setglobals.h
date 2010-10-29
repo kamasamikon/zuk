@@ -1,4 +1,4 @@
-/* vim:set et sw=4 sts=4 ff=unix: */
+/* vim:set noet ts=8 sw=8 sts=8 ff=unix: */
 
 #ifndef __SET_GLOBALS_H__
 #define __SET_GLOBALS_H__
@@ -9,9 +9,9 @@
 #include <kmm.h>
 #include <kmccontainer.h>
 
-static KIM *__g_im = (KIM*)knil;
-static KMM *__g_mm = (KMM*)knil;
-static KMediaContainer *__g_mc = (KMediaContainer*)knil;
+static KIM *__g_im = (KIM *) knil;
+static KMM *__g_mm = (KMM *) knil;
+static KMediaContainer *__g_mc = (KMediaContainer *) knil;
 
 #define SET_GLOBALS(im) \
     do { \
@@ -21,5 +21,3 @@ static KMediaContainer *__g_mc = (KMediaContainer*)knil;
     } while (0)
 
 #endif /* __SET_GLOBALS_H__ */
-
-

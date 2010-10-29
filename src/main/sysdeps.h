@@ -1,4 +1,5 @@
-/* vim:set et sw=4 sts=4 ff=unix: */
+/* vim:set noet ts=8 sw=8 sts=8 ff=unix: */
+
 #ifndef __K_SYSDEPS_H__
 #define __K_SYSDEPS_H__
 
@@ -15,6 +16,4 @@ kint zuk_sysdeps_term();
 #ifdef __cplusplus
 }
 #endif
-
 #endif /* __K_SYSDEPS_H__ */
-

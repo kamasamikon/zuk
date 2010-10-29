@@ -3,7 +3,6 @@
 #ifndef __K_MEM_H__
 #define __K_MEM_H__
 
-
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -23,11 +22,9 @@ kvoid kmem_free(kvoid *a_ptr);
 #define kmem_free_zs(p) do { if (p) { kmem_free(p); p = knil; } } while (0)
 
 kvoid *kmem_realloc(kvoid *a_ptr, kuint a_size);
-kvoid* kmem_move(kvoid *a_addr1, kvoid *a_addr2, kuint a_num);
+kvoid *kmem_move(kvoid *a_addr1, kvoid *a_addr2, kuint a_num);
 
 #ifdef __cplusplus
 }
 #endif
-
 #endif /* __K_MEM_H__ */
-

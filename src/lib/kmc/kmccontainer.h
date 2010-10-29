@@ -14,44 +14,43 @@
 
 typedef struct _KMediaContainerHeader KMediaContainerHeader;
 struct _KMediaContainerHeader {
-    K_dlist_entry m_protocolHeader;
+	K_dlist_entry m_protocolHeader;
 };
 
 class KMediaContainer : public KMediaContainerHeader
 {
 public:
-    KMediaContainer(KIM *a_im, const char* a_name);
-    virtual ~KMediaContainer(void);
+	KMediaContainer(KIM *a_im, const char *a_name);
+	virtual ~ KMediaContainer(void);
 
-    KIM *im();
+	KIM *im();
 
-    const char* getName(void);
+	const char *getName(void);
 
-    KMediaProtocol* getMediaProtocolFromProtocol(const char* protHash);
-    KMediaProtocol* getMediaProtocolFromDevice(const char* devHash);
-    KMediaProtocol* getMediaProtocolFromChannel(const char* chHash);
+	KMediaProtocol *getMediaProtocolFromProtocol(const char *protHash);
+	KMediaProtocol *getMediaProtocolFromDevice(const char *devHash);
+	KMediaProtocol *getMediaProtocolFromChannel(const char *chHash);
 
-    KMediaDevice* getMediaDeviceFromDevice(const char* devHash);
-    KMediaDevice* getMediaDeviceFromChannel(const char* chHash);
+	KMediaDevice *getMediaDeviceFromDevice(const char *devHash);
+	KMediaDevice *getMediaDeviceFromChannel(const char *chHash);
 
-    KMediaChannel* getMediaChannelFromChannel(const char* chHash);
+	KMediaChannel *getMediaChannelFromChannel(const char *chHash);
 
-    /** protocol hash list, 0 end */
-    char** getMediaProtocolHashList(void);
-    KMediaProtocol** getMediaProtocolClassList(void);
+	/** protocol hash list, 0 end */
+	char **getMediaProtocolHashList(void);
+	KMediaProtocol **getMediaProtocolClassList(void);
 
-    /** device hash list, 0 end */
-    char** getMediaDeviceHashList(void);
-    KMediaDevice** getMediaDeviceClassList(void);
+	/** device hash list, 0 end */
+	char **getMediaDeviceHashList(void);
+	KMediaDevice **getMediaDeviceClassList(void);
 
-    /** channel hash list, 0 end */
-    char** getMediaChannelHashList(void);
-    KMediaChannel** getMediaChannelClassList(void);
+	/** channel hash list, 0 end */
+	char **getMediaChannelHashList(void);
+	KMediaChannel **getMediaChannelClassList(void);
 
 private:
-    char* m_name;
-    KIM* m_im;
+	char *m_name;
+	KIM *m_im;
 };
 
 #endif /*__KMC_CONTAINER_H__*/
-

@@ -14,46 +14,46 @@
  * internal used structue
  */
 typedef struct _ktmr {
-    /**
-     * Queue item, queue the global timer item queue.
-     */
-    K_dlist_entry ent;
+	/**
+	 * Queue item, queue the global timer item queue.
+	 */
+	K_dlist_entry ent;
 
-    kuint flg;
+	kuint flg;
 
-    /**
-     * target task, if set, KMSG_TIMER will be send to this task.
-     */
-    kbean tsk;
+	/**
+	 * target task, if set, KMSG_TIMER will be send to this task.
+	 */
+	kbean tsk;
 
-    /**
-     * the timer, in millisecond this timer be processed.
-     */
-    kuint proctime;
+	/**
+	 * the timer, in millisecond this timer be processed.
+	 */
+	kuint proctime;
 
-    /**
-     * base time or start time for each time the timer is set.
-     * When ktmr::time + ktmr::elapse larger than current time
-     * in millisecond, the timer is elapse and been processed.
-     */
-    kuint time;
+	/**
+	 * base time or start time for each time the timer is set.
+	 * When ktmr::time + ktmr::elapse larger than current time
+	 * in millisecond, the timer is elapse and been processed.
+	 */
+	kuint time;
 
-    /**
-     * define the time gap in millisecond to elapse time.
-     */
-    kuint elapse;
+	/**
+	 * define the time gap in millisecond to elapse time.
+	 */
+	kuint elapse;
 
-    /**
-     * If the use do not want the timer be processed in task,
-     * a timer callback can be set. If cbk set, always call
-     * the callback even if the ktmr::tsk is set.
-     */
-    kint (*cbk)(kvoid *ur0, kvoid *ur1, kvoid *ur2, kvoid *ur3);
+	/**
+	 * If the use do not want the timer be processed in task,
+	 * a timer callback can be set. If cbk set, always call
+	 * the callback even if the ktmr::tsk is set.
+	 */
+	kint(*cbk) (kvoid *ur0, kvoid *ur1, kvoid *ur2, kvoid *ur3);
 
-    /**
-     * user parameters used for ktmr::cbk or for KMSG_TIMER message.
-     */
-    kvoid *ur0, *ur1, *ur2, *ur3;
+	/**
+	 * user parameters used for ktmr::cbk or for KMSG_TIMER message.
+	 */
+	kvoid *ur0, *ur1, *ur2, *ur3;
 } ktmr;
 
 static kint __g_tmr_init_cnt = 0;
@@ -76,68 +76,68 @@ static kbean __g_tmr_qlck;
  */
 static kvoid ktmr_task(kvoid)
 {
-    K_dlist_entry *list_entry;
-    kuint cur_time;
-    ktmr *tmr;
-    kint ret, tmp;
+	K_dlist_entry *list_entry;
+	kuint cur_time;
+	ktmr *tmr;
+	kint ret, tmp;
 
-    while (kfalse == __g_tmr_stop) {
-        tmp = __g_tmr_wait_tmo;
-        ret = ksyn_sem_get(__g_tmr_wait_sema, __g_tmr_wait_tmo);
+	while (kfalse == __g_tmr_stop) {
+		tmp = __g_tmr_wait_tmo;
+		ret = ksyn_sem_get(__g_tmr_wait_sema, __g_tmr_wait_tmo);
 
-        if (kfalse != __g_tmr_stop) {
-            break;
-        }
+		if (kfalse != __g_tmr_stop) {
+			break;
+		}
 
-        cur_time = ksal_get_tick();
+		cur_time = ksal_get_tick();
 
-        ksyn_lck_get(__g_tmr_qlck);
+		ksyn_lck_get(__g_tmr_qlck);
 
 try_again:
-        __g_tmr_wait_tmo = 0x7FFFFFFF;
+		__g_tmr_wait_tmo = 0x7FFFFFFF;
 
-        list_entry = __g_tmr_hdr.next;
-        while ((list_entry != &__g_tmr_hdr) && (kfalse == __g_tmr_stop)) {
-            tmr = FIELD_TO_STRUCTURE(list_entry, ktmr, ent);
-            list_entry = list_entry->next;
+		list_entry = __g_tmr_hdr.next;
+		while ((list_entry != &__g_tmr_hdr) && (kfalse == __g_tmr_stop)) {
+			tmr = FIELD_TO_STRUCTURE(list_entry, ktmr, ent);
+			list_entry = list_entry->next;
 
-            if (tmr->proctime == cur_time) {
-                /* the timer has been callback or messaged */
-                tmr->proctime = 0;
+			if (tmr->proctime == cur_time) {
+				/* the timer has been callback or messaged */
+				tmr->proctime = 0;
 
-                if (!kflg_chk(tmr->flg, TMF_LOOP)) {
-                    remove_dlist_entry(&tmr->ent);
-                    init_dlist_head(&tmr->ent);
-                    kmem_free(tmr);
+				if (!kflg_chk(tmr->flg, TMF_LOOP)) {
+					remove_dlist_entry(&tmr->ent);
+					init_dlist_head(&tmr->ent);
+					kmem_free(tmr);
 
-                    /* er, this timer is deleted, so do not go to calculate the wait time */
-                    continue;
-                } else {
-                    tmr->time = cur_time;
-                }
-            } else if ((tmr->time + tmr->elapse) <= cur_time) {
+					/* er, this timer is deleted, so do not go to calculate the wait time */
+					continue;
+				} else {
+					tmr->time = cur_time;
+				}
+			} else if ((tmr->time + tmr->elapse) <= cur_time) {
 
-                tmr->proctime = cur_time;
-                ksyn_lck_rel(__g_tmr_qlck);
-                if (tmr->cbk) {
-                    tmr->cbk(tmr->ur0, tmr->ur1, tmr->ur2, tmr->ur3);
-                } else {
-                    kmsg_post(tmr->tsk, KMSG_TIMER, tmr->ur0, tmr->ur1, tmr->ur2, tmr->ur3);
-                }
-                ksyn_lck_get(__g_tmr_qlck);
-                goto try_again;
-            }
+				tmr->proctime = cur_time;
+				ksyn_lck_rel(__g_tmr_qlck);
+				if (tmr->cbk) {
+					tmr->cbk(tmr->ur0, tmr->ur1, tmr->ur2, tmr->ur3);
+				} else {
+					kmsg_post(tmr->tsk, KMSG_TIMER, tmr->ur0, tmr->ur1, tmr->ur2, tmr->ur3);
+				}
+				ksyn_lck_get(__g_tmr_qlck);
+				goto try_again;
+			}
 
-            if ((kuint)__g_tmr_wait_tmo > (tmr->time + tmr->elapse - cur_time)) {
-                __g_tmr_wait_tmo = tmr->time + tmr->elapse - cur_time;
-            }
-        }
-        ksyn_lck_rel(__g_tmr_qlck);
-    }
+			if ((kuint) __g_tmr_wait_tmo > (tmr->time + tmr->elapse - cur_time)) {
+				__g_tmr_wait_tmo = tmr->time + tmr->elapse - cur_time;
+			}
+		}
+		ksyn_lck_rel(__g_tmr_qlck);
+	}
 
-    __g_tmr_stopped = ktrue;
+	__g_tmr_stopped = ktrue;
 
-    ksal_tsk_exit();
+	ksal_tsk_exit();
 }
 
 /**
@@ -149,27 +149,27 @@ try_again:
  */
 kint ktmr_init(kvoid)
 {
-    if (__g_tmr_init_cnt++) {
-        kerror(("ktmr_init, ref:%d\n", __g_tmr_init_cnt));
-        return 0;
-    }
+	if (__g_tmr_init_cnt++) {
+		kerror(("ktmr_init, ref:%d\n", __g_tmr_init_cnt));
+		return 0;
+	}
 
-    __g_tmr_stop = kfalse;
-    __g_tmr_stopped = kfalse;
+	__g_tmr_stop = kfalse;
+	__g_tmr_stopped = kfalse;
 
-    __g_tmr_wait_tmo = 0x7FFFFFFF;
-    __g_tmr_wait_sema = ksyn_sem_new(0);
-    kassert(__g_tmr_wait_sema);
+	__g_tmr_wait_tmo = 0x7FFFFFFF;
+	__g_tmr_wait_sema = ksyn_sem_new(0);
+	kassert(__g_tmr_wait_sema);
 
-    init_dlist_head(&__g_tmr_hdr);
+	init_dlist_head(&__g_tmr_hdr);
 
-    __g_tmr_qlck = ksyn_lck_new();
-    kassert(__g_tmr_qlck);
+	__g_tmr_qlck = ksyn_lck_new();
+	kassert(__g_tmr_qlck);
 
-    __g_tmr_tsk = ksal_tsk_new(ktmr_task, 0, 0, knil);
-    kassert(__g_tmr_tsk);
+	__g_tmr_tsk = ksal_tsk_new(ktmr_task, 0, 0, knil);
+	kassert(__g_tmr_tsk);
 
-    return 0;
+	return 0;
 }
 
 /**
@@ -181,30 +181,30 @@ kint ktmr_init(kvoid)
  */
 kint ktmr_final(kvoid)
 {
-    klog(("ktmr_final, ref:%d\n", __g_tmr_init_cnt));
+	klog(("ktmr_final, ref:%d\n", __g_tmr_init_cnt));
 
-    if (0 < --__g_tmr_init_cnt) {
-        return 0;
-    }
+	if (0 < --__g_tmr_init_cnt) {
+		return 0;
+	}
 
-    ktmr_killall(knil);
+	ktmr_killall(knil);
 
-    __g_tmr_stop = ktrue;
-    ksyn_sem_rel(__g_tmr_wait_sema);
-    while (kfalse == __g_tmr_stopped) {
-        ksal_tsk_sleep(100);
-    }
+	__g_tmr_stop = ktrue;
+	ksyn_sem_rel(__g_tmr_wait_sema);
+	while (kfalse == __g_tmr_stopped) {
+		ksal_tsk_sleep(100);
+	}
 
-    if (0 != __g_tmr_wait_sema) {
-        ksyn_sem_del(__g_tmr_wait_sema);
-        __g_tmr_wait_sema = 0;
-    }
+	if (0 != __g_tmr_wait_sema) {
+		ksyn_sem_del(__g_tmr_wait_sema);
+		__g_tmr_wait_sema = 0;
+	}
 
-    if (__g_tmr_qlck) {
-        ksyn_lck_del(__g_tmr_qlck);
-    }
+	if (__g_tmr_qlck) {
+		ksyn_lck_del(__g_tmr_qlck);
+	}
 
-    return 0;
+	return 0;
 }
 
 /**
@@ -222,43 +222,43 @@ kint ktmr_final(kvoid)
  * @return
  */
 kbean ktmr_set(kbean a_tsk, kuint a_elapse, kbool a_loop,
-        kint (*a_cbk)(kvoid *ur0, kvoid *ur1, kvoid *ur2, kvoid *ur3),
-        kvoid *a_ur0, kvoid *a_ur1, kvoid *a_ur2, kvoid *a_ur3)
+		kint(*a_cbk) (kvoid *ur0, kvoid *ur1, kvoid *ur2,
+			kvoid *ur3), kvoid *a_ur0, kvoid *a_ur1, kvoid *a_ur2, kvoid *a_ur3)
 {
-    kuint flg = 0;
-    ktmr *tmr;
+	kuint flg = 0;
+	ktmr *tmr;
 
-    if (kfalse != __g_tmr_stop) {
-        kerror(("ktmr_set: module unload, exit!\n"));
-        return knil;
-    }
+	if (kfalse != __g_tmr_stop) {
+		kerror(("ktmr_set: module unload, exit!\n"));
+		return knil;
+	}
 
-    tmr = kmem_alloc(sizeof(ktmr));
-    if (!tmr) {
-        kerror(("ktmr_set: bad memory\n"));
-        return knil;
-    }
+	tmr = kmem_alloc(sizeof(ktmr));
+	if (!tmr) {
+		kerror(("ktmr_set: bad memory\n"));
+		return knil;
+	}
 
-    if (a_loop) {
-        flg |= TMF_LOOP;
-    }
-    tmr->flg = flg;
-    tmr->tsk = a_tsk;
-    tmr->proctime = 0;
-    tmr->time = ksal_get_tick();
-    tmr->elapse = a_elapse;
-    tmr->cbk = a_cbk;
-    tmr->ur0 = a_ur0;
-    tmr->ur1 = a_ur1;
-    tmr->ur2 = a_ur2;
-    tmr->ur3 = a_ur3;
+	if (a_loop) {
+		flg |= TMF_LOOP;
+	}
+	tmr->flg = flg;
+	tmr->tsk = a_tsk;
+	tmr->proctime = 0;
+	tmr->time = ksal_get_tick();
+	tmr->elapse = a_elapse;
+	tmr->cbk = a_cbk;
+	tmr->ur0 = a_ur0;
+	tmr->ur1 = a_ur1;
+	tmr->ur2 = a_ur2;
+	tmr->ur3 = a_ur3;
 
-    ksyn_lck_get(__g_tmr_qlck);
-    insert_dlist_tail_entry(&__g_tmr_hdr, &tmr->ent);
-    ksyn_lck_rel(__g_tmr_qlck);
-    ksyn_sem_rel(__g_tmr_wait_sema);
+	ksyn_lck_get(__g_tmr_qlck);
+	insert_dlist_tail_entry(&__g_tmr_hdr, &tmr->ent);
+	ksyn_lck_rel(__g_tmr_qlck);
+	ksyn_sem_rel(__g_tmr_wait_sema);
 
-    return (kbean)tmr;
+	return (kbean) tmr;
 }
 
 /*
@@ -279,28 +279,28 @@ kbean ktmr_set(kbean a_tsk, kuint a_elapse, kbool a_loop,
  */
 kvoid ktmr_killall(kbean a_tsk)
 {
-    ktmr *tmr = knil;
-    K_dlist_entry *list_entry;
+	ktmr *tmr = knil;
+	K_dlist_entry *list_entry;
 
-    if (kfalse != __g_tmr_stop) {
-        kerror(("ktmr_killall: module unload, exit!\n"));
-        return;
-    }
+	if (kfalse != __g_tmr_stop) {
+		kerror(("ktmr_killall: module unload, exit!\n"));
+		return;
+	}
 
-    ksyn_lck_get(__g_tmr_qlck);
-    list_entry = __g_tmr_hdr.next;
-    while (list_entry != &__g_tmr_hdr) {
-        tmr = FIELD_TO_STRUCTURE(list_entry, ktmr, ent);
-        list_entry = list_entry->next;
+	ksyn_lck_get(__g_tmr_qlck);
+	list_entry = __g_tmr_hdr.next;
+	while (list_entry != &__g_tmr_hdr) {
+		tmr = FIELD_TO_STRUCTURE(list_entry, ktmr, ent);
+		list_entry = list_entry->next;
 
-        if ((!a_tsk) || (a_tsk == tmr->tsk)) {
-            remove_dlist_entry(&tmr->ent);
-            init_dlist_head(&tmr->ent);
+		if ((!a_tsk) || (a_tsk == tmr->tsk)) {
+			remove_dlist_entry(&tmr->ent);
+			init_dlist_head(&tmr->ent);
 
-            kmem_free(tmr);
-        }
-    }
-    ksyn_lck_rel(__g_tmr_qlck);
+			kmem_free(tmr);
+		}
+	}
+	ksyn_lck_rel(__g_tmr_qlck);
 }
 
 /**
@@ -312,33 +312,32 @@ kvoid ktmr_killall(kbean a_tsk)
  */
 kbool ktmr_kill(kbean a_tmr)
 {
-    ktmr *tmptmr = knil;
-    K_dlist_entry *list_entry;
+	ktmr *tmptmr = knil;
+	K_dlist_entry *list_entry;
 
-    if (kfalse != __g_tmr_stop) {
-        kerror(("ktmr_kill: module unload, exit!\n"));
-        return kfalse;
-    }
+	if (kfalse != __g_tmr_stop) {
+		kerror(("ktmr_kill: module unload, exit!\n"));
+		return kfalse;
+	}
 
-    ksyn_lck_get(__g_tmr_qlck);
-    list_entry = __g_tmr_hdr.next;
-    while (list_entry != &__g_tmr_hdr) {
-        tmptmr = FIELD_TO_STRUCTURE(list_entry, ktmr, ent);
-        list_entry = list_entry->next;
+	ksyn_lck_get(__g_tmr_qlck);
+	list_entry = __g_tmr_hdr.next;
+	while (list_entry != &__g_tmr_hdr) {
+		tmptmr = FIELD_TO_STRUCTURE(list_entry, ktmr, ent);
+		list_entry = list_entry->next;
 
-        if ((kbean)tmptmr == a_tmr) {
+		if ((kbean) tmptmr == a_tmr) {
 
-            remove_dlist_entry(&tmptmr->ent);
-            init_dlist_head(&tmptmr->ent);
+			remove_dlist_entry(&tmptmr->ent);
+			init_dlist_head(&tmptmr->ent);
 
-            kmem_free(tmptmr);
+			kmem_free(tmptmr);
 
-            ksyn_lck_rel(__g_tmr_qlck);
-            return ktrue;
-        }
-    }
+			ksyn_lck_rel(__g_tmr_qlck);
+			return ktrue;
+		}
+	}
 
-    ksyn_lck_rel(__g_tmr_qlck);
-    return kfalse;
+	ksyn_lck_rel(__g_tmr_qlck);
+	return kfalse;
 }
-

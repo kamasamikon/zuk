@@ -1,4 +1,4 @@
-/* vim:set et sw=4 sts=4 ff=unix: */
+/* vim:set noet ts=8 sw=8 sts=8 ff=unix: */
 
 #ifndef __SYS_CFG_H__
 #define __SYS_CFG_H__

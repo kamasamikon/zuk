@@ -1,4 +1,5 @@
-/* vim:set et sw=4 sts=4 ff=unix: */
+/* vim:set noet ts=8 sw=8 sts=8 ff=unix: */
+
 /*
  * Copyright(C) 2008 Felipe Contreras.
  *
@@ -39,51 +40,50 @@ struct _GstBackend {
 
 static gboolean bus_cb(GstBus *bus, GstMessage *msg, gpointer data)
 {
-    switch (GST_MESSAGE_TYPE(msg))
-    {
-        case GST_MESSAGE_EOS:
-            {
-                g_debug("end-of-stream");
-                break;
-            }
-        case GST_MESSAGE_ERROR:
-            {
-                gchar *debug;
-                GError *err;
-
-                gst_message_parse_error(msg, &err, &debug);
-                g_free(debug);
-
-                g_warning("Error: %s", err->message);
-                g_error_free(err);
-                break;
-            }
-        default:
+    switch (GST_MESSAGE_TYPE(msg)) {
+    case GST_MESSAGE_EOS:
+        {
+            g_debug("end-of-stream");
             break;
+        }
+    case GST_MESSAGE_ERROR:
+        {
+            gchar *debug;
+            GError *err;
+
+            gst_message_parse_error(msg, &err, &debug);
+            g_free(debug);
+
+            g_warning("Error: %s", err->message);
+            g_error_free(err);
+            break;
+        }
+    default:
+        break;
     }
 
     return TRUE;
 }
 
-void* backend_init(int *argc, char **argv[])
+void *backend_init(int *argc, char **argv[])
 {
     GstBackend *be = g_new0(GstBackend, 1);
 
     gst_init(argc, argv);
 
-    return (void*)be;
+    return (void *) be;
 }
 
 void backend_set_window(void *handle, void *a_window)
 {
-    GstBackend *be = (GstBackend*)handle;
+    GstBackend *be = (GstBackend *) handle;
 
     be->window = GINT_TO_POINTER(GDK_WINDOW_XWINDOW(a_window));
 }
 
 void backend_play(void *handle, const char *filename)
 {
-    GstBackend *be = (GstBackend*)handle;
+    GstBackend *be = (GstBackend *) handle;
 
     backend_stop(handle);
 
@@ -132,7 +132,7 @@ void backend_play(void *handle, const char *filename)
 
 void backend_stop(void *handle)
 {
-    GstBackend *be = (GstBackend*)handle;
+    GstBackend *be = (GstBackend *) handle;
 
     if (be->playElement) {
         gst_element_set_state(be->playElement, GST_STATE_NULL);
@@ -143,54 +143,46 @@ void backend_stop(void *handle)
 
 void backend_pause(void *handle)
 {
-    GstBackend *be = (GstBackend*)handle;
+    GstBackend *be = (GstBackend *) handle;
 
     gst_element_set_state(be->playElement, GST_STATE_PAUSED);
 }
 
 void backend_resume(void *handle)
 {
-    GstBackend *be = (GstBackend*)handle;
+    GstBackend *be = (GstBackend *) handle;
 
     gst_element_set_state(be->playElement, GST_STATE_PLAYING);
 }
 
 void backend_reset(void *handle)
 {
-    GstBackend *be = (GstBackend*)handle;
+    GstBackend *be = (GstBackend *) handle;
 
     gst_element_seek(be->playElement, 1.0,
-            GST_FORMAT_TIME,
-            seek_flags,
-            GST_SEEK_TYPE_SET, 0,
-            GST_SEEK_TYPE_NONE, GST_CLOCK_TIME_NONE);
+            GST_FORMAT_TIME, seek_flags, GST_SEEK_TYPE_SET, 0, GST_SEEK_TYPE_NONE, GST_CLOCK_TIME_NONE);
 }
 
 void backend_seek(void *handle, int value)
 {
-    GstBackend *be = (GstBackend*)handle;
+    GstBackend *be = (GstBackend *) handle;
 
     gst_element_seek(be->playElement, 1.0,
             GST_FORMAT_TIME,
-            seek_flags,
-            GST_SEEK_TYPE_CUR, value * GST_SECOND,
-            GST_SEEK_TYPE_NONE, GST_CLOCK_TIME_NONE);
+            seek_flags, GST_SEEK_TYPE_CUR, value * GST_SECOND, GST_SEEK_TYPE_NONE, GST_CLOCK_TIME_NONE);
 }
 
 void backend_seek_absolute(void *handle, unsigned int value)
 {
-    GstBackend *be = (GstBackend*)handle;
+    GstBackend *be = (GstBackend *) handle;
 
     gst_element_seek(be->playElement, 1.0,
-            GST_FORMAT_TIME,
-            seek_flags,
-            GST_SEEK_TYPE_SET, value,
-            GST_SEEK_TYPE_NONE, GST_CLOCK_TIME_NONE);
+            GST_FORMAT_TIME, seek_flags, GST_SEEK_TYPE_SET, value, GST_SEEK_TYPE_NONE, GST_CLOCK_TIME_NONE);
 }
 
 unsigned int backend_query_position(void *handle)
 {
-    GstBackend *be = (GstBackend*)handle;
+    GstBackend *be = (GstBackend *) handle;
 
     GstFormat format = GST_FORMAT_TIME;
     guint64 cur;
@@ -199,12 +191,12 @@ unsigned int backend_query_position(void *handle)
     if (format != GST_FORMAT_TIME)
         return GST_CLOCK_TIME_NONE;
 
-    return (unsigned int)cur;
+    return (unsigned int) cur;
 }
 
 unsigned int backend_query_duration(void *handle)
 {
-    GstBackend *be = (GstBackend*)handle;
+    GstBackend *be = (GstBackend *) handle;
 
     GstFormat format = GST_FORMAT_TIME;
     guint64 cur;
@@ -213,12 +205,11 @@ unsigned int backend_query_duration(void *handle)
     if (format != GST_FORMAT_TIME)
         return GST_CLOCK_TIME_NONE;
 
-    return (unsigned int)cur;
+    return (unsigned int) cur;
 }
 
 void backend_deinit(void *handle)
 {
-    GstBackend *be = (GstBackend*)handle;
+    GstBackend *be = (GstBackend *) handle;
     g_free(be);
 }
-

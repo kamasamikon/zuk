@@ -7,5 +7,4 @@
 #define EC_NG               0x80000000
 #define EC_NOT_SUPPORT      0xFFFFFFFF
 
-#endif /*KERRCODE_H_*/
-
+#endif				/*KERRCODE_H_ */

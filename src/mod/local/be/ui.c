@@ -1,4 +1,5 @@
-/* vim:set et sw=4 sts=4 ff=unix: */
+/* vim:set noet ts=8 sw=8 sts=8 ff=unix: */
+
 /*
  * Copyright(C) 2008 Felipe Contreras.
  *
@@ -85,33 +86,32 @@ static void destroy(GtkWidget *widget, gpointer data)
 
 static gboolean key_press(GtkWidget *widget, GdkEventKey *event, gpointer data)
 {
-    switch(event->keyval)
-    {
-        case GDK_P:
-        case GDK_p:
-        case GDK_space:
-            toggle_paused();
-            break;
-        case GDK_F:
-        case GDK_f:
-            toggle_fullscreen();
-            break;
-        case GDK_R:
-        case GDK_r:
-            backend_reset(__g_backend);
-            break;
-        case GDK_Right:
-            backend_seek(__g_backend, 10);
-            break;
-        case GDK_Left:
-            backend_seek(__g_backend, -10);
-            break;
-        case GDK_Q:
-        case GDK_q:
-            gtk_main_quit();
-            break;
-        default:
-            break;
+    switch (event->keyval) {
+    case GDK_P:
+    case GDK_p:
+    case GDK_space:
+        toggle_paused();
+        break;
+    case GDK_F:
+    case GDK_f:
+        toggle_fullscreen();
+        break;
+    case GDK_R:
+    case GDK_r:
+        backend_reset(__g_backend);
+        break;
+    case GDK_Right:
+        backend_seek(__g_backend, 10);
+        break;
+    case GDK_Left:
+        backend_seek(__g_backend, -10);
+        break;
+    case GDK_Q:
+    case GDK_q:
+        gtk_main_quit();
+        break;
+    default:
+        break;
     }
 
     return TRUE;
@@ -235,13 +235,12 @@ static gboolean timeout(gpointer data)
         return TRUE;
 
 #if 0
-    g_print("__g_duration=%f\n", __g_duration /((double) 60 * 1000 * 1000 * 1000));
+    g_print("__g_duration=%f\n", __g_duration / ((double) 60 * 1000 * 1000 * 1000));
     g_print("position=%llu\n", pos);
 #endif
 
     /** @todo use events for seeking instead of checking for bad positions. */
-    if (pos != 0)
-    {
+    if (pos != 0) {
         double value;
         value = (pos * (((double) 100) / __g_duration));
         gtk_range_set_value(GTK_RANGE(__g_scale), value);
@@ -257,7 +256,7 @@ int __not_main(int argc, char *argv[])
     __g_backend = backend_init(&argc, &argv);
 
     start();
-    __g_video_output = (GtkWidget*)mediaWindow;
+    __g_video_output = (GtkWidget *) mediaWindow;
 
     __g_filename = g_strdup("/home/auv/Desktop/niaochao/MVI_0032.avi");
 
@@ -267,4 +266,3 @@ int __not_main(int argc, char *argv[])
 
     return 0;
 }
-

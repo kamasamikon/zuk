@@ -1,4 +1,5 @@
-/* vim:set et sw=4 sts=4 ff=unix: */
+/* vim:set noet ts=8 sw=8 sts=8 ff=unix: */
+
 #ifndef __KMC_LOCAL_PROTOCOL_H__
 #define __KMC_LOCAL_PROTOCOL_H__
 
@@ -7,7 +8,7 @@
 class KMC_LocalProtocol : public KMediaProtocol
 {
 public:
-    KMC_LocalProtocol(KIM *a_im, KMediaContainer* a_parentContainer, char* a_name, int a_type);
+    KMC_LocalProtocol(KIM *a_im, KMediaContainer *a_parentContainer, char *a_name, int a_type);
     virtual ~KMC_LocalProtocol(void);
 
     virtual kbool start(void);
@@ -17,4 +18,3 @@ public:
 };
 
 #endif /* __KMC_LOCAL_PROTOCOL_H__ */
-

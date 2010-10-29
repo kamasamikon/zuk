@@ -9,22 +9,30 @@
 class KMC_MCSkelDevice : public KMediaDevice
 {
 public:
-    KMC_MCSkelDevice(KMC_MCSkelProtocol* a_parentProtocal, char* a_name);
-    virtual ~KMC_MCSkelDevice(void);
+	KMC_MCSkelDevice(KMC_MCSkelProtocol *a_parentProtocal, char *a_name);
+	virtual ~ KMC_MCSkelDevice(void);
 
-    virtual char* getHash(void) = 0;
+	virtual char *getHash(void) = 0;
 
-    virtual kbool start(void);
-    virtual kbool stop(void);
+	virtual kbool start(void);
+	virtual kbool stop(void);
 
-    virtual int remove(void) { return EC_NOT_SUPPORT; }
+	virtual int remove(void) {
+		return EC_NOT_SUPPORT;
+	}
+	/**  0 <= a_amp < 100 */ virtual int setSignalAmp(int a_amp) {
+		return EC_NOT_SUPPORT;
+	}
+	virtual int getSignalAmp(int *a_pamp) {
+		return EC_NOT_SUPPORT;
+	}
 
-    /**  0 <= a_amp < 100 */
-    virtual int setSignalAmp(int a_amp) { return EC_NOT_SUPPORT; }
-    virtual int getSignalAmp(int *a_pamp) { return EC_NOT_SUPPORT; }
-
-    virtual int updateChannelList(void) { return EC_NOT_SUPPORT; }
-    virtual int cancelUpdateChannelList(void) { return EC_NOT_SUPPORT; }
+	virtual int updateChannelList(void) {
+		return EC_NOT_SUPPORT;
+	}
+	virtual int cancelUpdateChannelList(void) {
+		return EC_NOT_SUPPORT;
+	}
 
 private:
 };

@@ -3,7 +3,6 @@
 #ifndef __K_INI_H__
 #define __K_INI_H__
 
-
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -19,7 +18,4 @@ kbool kini_setint(const kchar *a_sec, const kchar *a_key, kint a_val, const kcha
 #ifdef __cplusplus
 }
 #endif
-
-
 #endif /* __K_INI_H__ */
-

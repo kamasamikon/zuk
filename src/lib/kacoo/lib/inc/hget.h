@@ -47,18 +47,20 @@ extern "C" {
  *
  * @return 0 for success, -1 for error.
  */
-kint hget(const kchar *a_url, const kchar *a_proxy, kbool a_get, const kchar *a_cmd,
-        kchar **a_datbuf, kint *a_datlen, kchar **a_hdrbuf, kint *a_hdrlen, SOCKET *a_socket);
+kint hget(const kchar *a_url, const kchar *a_proxy, kbool a_get,
+		const kchar *a_cmd, kchar **a_datbuf, kint *a_datlen,
+		kchar **a_hdrbuf, kint *a_hdrlen, SOCKET *a_socket);
 
-kint hget_parseurl(const kchar *a_url, kuint *a_prot, kchar a_user[], kchar a_pass[],
-        kchar a_host[], kchar a_path[], kushort *a_port);
+kint hget_parseurl(const kchar *a_url, kuint *a_prot, kchar a_user[],
+		kchar a_pass[], kchar a_host[], kchar a_path[], kushort *a_port);
 
-kint hget_connect(kint a_prot, const kchar *a_user, const kchar *a_pass,
-        const kchar *a_host, const kchar *a_path, kushort a_port, SOCKET *a_socket);
+kint hget_connect(kint a_prot, const kchar *a_user,
+		const kchar *a_pass, const kchar *a_host,
+		const kchar *a_path, kushort a_port, SOCKET *a_socket);
 
-kint hget_recv(SOCKET a_socket, const kchar *a_host, const kchar *a_path,
-        const kchar *a_proxy, kbool a_get, const kchar *a_cmd,
-        kchar **a_datbuf, kint *a_datlen, kchar **a_hdrbuf, kint *a_hdrlen);
+kint hget_recv(SOCKET a_socket, const kchar *a_host,
+		const kchar *a_path, const kchar *a_proxy, kbool a_get,
+		const kchar *a_cmd, kchar **a_datbuf, kint *a_datlen, kchar **a_hdrbuf, kint *a_hdrlen);
 
 /**
  * @brief close socket
@@ -68,6 +70,4 @@ kvoid hget_free_socket(SOCKET a_socket);
 #ifdef __cplusplus
 }
 #endif
-
 #endif /* __HGET_H__ */
-
