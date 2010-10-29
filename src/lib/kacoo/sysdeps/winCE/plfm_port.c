@@ -1,4 +1,5 @@
-/* vim:set et sw=4 sts=4 ff=unix: */
+/* vim:set noet ts=8 sw=8 sts=8 ff=unix: */
+
 // 此部分请根据平台的不同实现
 
 

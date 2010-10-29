@@ -1,4 +1,5 @@
-/* vim:set et sw=4 sts=4 ff=unix: */
+/* vim:set noet ts=8 sw=8 sts=8 ff=unix: */
+
 #ifndef __K_STR_H__
 #define __K_STR_H__
 
