@@ -23,17 +23,17 @@ kint kstr_escxml(const kchar *a_is, kchar **a_os, kint *a_ol);
 
 #if 0
 kint kstr_new
-/**< new a kstr */
-kint kstr_del
-/**< del a kstr */
-kint kstr_set
-/**< set value */
-kint kstr_ptr
-/**< get real string */
-kint kstr_cmp
-/**< strncmp */
-kchar *kstr_str
-/**< convert to kchar */
+	/**< new a kstr */
+	kint kstr_del
+	/**< del a kstr */
+	kint kstr_set
+	/**< set value */
+	kint kstr_ptr
+	/**< get real string */
+	kint kstr_cmp
+	/**< strncmp */
+	kchar *kstr_str
+	/**< convert to kchar */
 #endif
 #ifdef __cplusplus
 }

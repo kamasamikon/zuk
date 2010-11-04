@@ -11,23 +11,23 @@
 class KMC_LocalDevice : public KMediaDevice
 {
 public:
-    KMC_LocalDevice(KIM *a_im, KMC_LocalProtocol *a_parentProtocal, char *a_name);
-    virtual ~ KMC_LocalDevice(void);
+	KMC_LocalDevice(KIM *a_im, KMC_LocalProtocol *a_parentProtocal, char *a_name);
+	virtual ~ KMC_LocalDevice(void);
 
-    virtual kbool start();
-    virtual kbool stop();
+	virtual kbool start();
+	virtual kbool stop();
 
-    virtual int remove(void);
+	virtual int remove(void);
 
-    /**  0 <= a_amp < 100 */
-    virtual int setSignalAmp(int a_amp);
-    virtual int getSignalAmp(int *a_pamp);
+	/**  0 <= a_amp < 100 */
+	virtual int setSignalAmp(int a_amp);
+	virtual int getSignalAmp(int *a_pamp);
 
-    virtual int updateChannelList(void);
-    virtual int cancelUpdateChannelList(void);
+	virtual int updateChannelList(void);
+	virtual int cancelUpdateChannelList(void);
 
 private:
-    void *m_backend;
+	void *m_backend;
 };
 
 #endif /* __KMC_LOCAL_DEVICE_H__ */

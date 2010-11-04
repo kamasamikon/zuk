@@ -45,51 +45,51 @@ typedef kint(*WCHPROC) (KIM *im, KRtiRec *rec, kvoid *ua, kvoid *ub, kuchar type
 #define IMAT(f) (f)(KIM *im, KRtiRec *rec, kuchar reason)
 
 struct _KRtiWatch {
-K_dlist_entry abwchentry;
-/**< queue to KRtiRec::bwchhdr/awchhdr */
+	K_dlist_entry abwchentry;
+	/**< queue to KRtiRec::bwchhdr/awchhdr */
 
-WCHPROC wch;
-kvoid *ua;	/**< usr arg */
-kvoid *ub;	/**< usr arg */
-kchar *forid;	/**< watch what event */
-kchar *desc;
+	WCHPROC wch;
+	kvoid *ua;	/**< usr arg */
+	kvoid *ub;	/**< usr arg */
+	kchar *forid;	/**< watch what event */
+	kchar *desc;
 };
 
 #define WCH_UA(_wch_) (_wch_)->ua
 #define WCH_UB(_wch_) (_wch_)->ub
 
 struct _KRtiRec {
-kchar *id;	/**< identifier */
-kchar *desc;
+	kchar *id;	/**< identifier */
+	kchar *desc;
 
-struct {
-    kuchar type;
-	/**< RECTYP_XXX */
-    union {
-	kchar *sv;
-		/**< string value */
-	kvoid *pv;
-		/**< pointer value */
-	kint iv;
-		/**< kint value */
-    } use, def;
-	/**< used value, set value, default value */
-} var;
+	struct {
+		kuchar type;
+		/**< RECTYP_XXX */
+		union {
+			kchar *sv;
+			/**< string value */
+			kvoid *pv;
+			/**< pointer value */
+			kint iv;
+			/**< kint value */
+		} use, def;
+		/**< used value, set value, default value */
+	} var;
 
-ATPROC at;	/**< @see ATREASON */
-kvoid *val;
-kvoid *ua, *ub;	/**< XXX only for ATREASON_SET */
+	ATPROC at;	/**< @see ATREASON */
+	kvoid *val;
+	kvoid *ua, *ub;	/**< XXX only for ATREASON_SET */
 
-K_dlist_entry entry;
-/**< for queue into KIM::rechdr */
+	K_dlist_entry entry;
+	/**< for queue into KIM::rechdr */
 
-/* watch list */
-K_dlist_entry bwchhdr;
-/**< before watch header */
-K_dlist_entry awchhdr;
-/**< after watch header */
+	/* watch list */
+	K_dlist_entry bwchhdr;
+	/**< before watch header */
+	K_dlist_entry awchhdr;
+	/**< after watch header */
 
-kuint flg;	/**< RECFLG_XXX */
+	kuint flg;	/**< RECFLG_XXX */
 };
 
 #define REC_SET(_rec_) (_rec_)->val		    /**< val set by kim_setXXX */
@@ -106,17 +106,17 @@ kuint flg;	/**< RECFLG_XXX */
 #define REC_UB(_rec_) (_rec_)->ub
 
 struct _KIM {
-K_dlist_entry rechdr;
+	K_dlist_entry rechdr;
 
-/* watch that Not Yet connect */
-struct {
-    K_dlist_entry bhdr;
-	/**< before watch header */
-    K_dlist_entry ahdr;
-	/**< after watch header */
-} nywch;
+	/* watch that Not Yet connect */
+	struct {
+		K_dlist_entry bhdr;
+		/**< before watch header */
+		K_dlist_entry ahdr;
+		/**< after watch header */
+	} nywch;
 
-kbean lck;	    /**< lck to protect rechdr, ahdr, bhdr */
+	kbean lck;	    /**< lck to protect rechdr, ahdr, bhdr */
 };
 
 KRtiRec *kim_chkrec(KIM *im, const kchar *id);
@@ -125,8 +125,8 @@ kint kim_setflg(KIM *im, const kchar *id, kuint flg);
 kint kim_clrflg(KIM *im, const kchar *id, kuint flg);
 
 /*---------------------------------------------------------------------------------
-* prototype for val
-*/
+ * prototype for val
+ */
 kint kim_addstr(KIM *im, const kchar *id, kchar *def, kint flg, ATPROC at, const kchar *desc);
 kint kim_delstr(KIM *im, const kchar *id);
 kint kim_setstr(KIM *im, const kchar *id, kchar *val, kvoid **ua, kvoid **ub);
@@ -143,8 +143,8 @@ kint kim_setint(KIM *im, const kchar *id, kint val, kvoid **ua, kvoid **ub);
 kint kim_getint(KIM *im, const kchar *id, kint *err);
 
 /*---------------------------------------------------------------------------------
-* prototype for watch
-*/
+ * prototype for watch
+ */
 kbean kim_addawch(KIM *im, const kchar *id, WCHPROC watch, kvoid *ua, kvoid *ub, const kchar *desc);
 kint kim_delawch(KIM *im, kbean watch);
 
@@ -152,8 +152,8 @@ kbean kim_addbwch(KIM *im, const kchar *id, WCHPROC watch, kvoid *ua, kvoid *ub,
 kint kim_delbwch(KIM *im, kbean watch);
 
 /*---------------------------------------------------------------------------------
-* new and del
-*/
+ * new and del
+ */
 KIM *kim_new(KIM *im);
 kint kim_del(KIM *im);
 

@@ -98,6 +98,6 @@ kuint kdbg_getlevel(const kchar *a_file);
 #endif
 
 #ifdef __cplusplus
-	}
+}
 #endif
 #endif /* __K_DBG_H__ */

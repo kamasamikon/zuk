@@ -13,7 +13,7 @@ typedef struct _K_dlist_entry {
 } K_dlist_entry;
 
 #define FIELD_TO_STRUCTURE(address, type, field) \
-((type *)((char *)(address) - (char *)(&((type *)0)->field)))
+	((type *)((char *)(address) - (char *)(&((type *)0)->field)))
 
 void init_dlist_head(K_dlist_entry *list_head);
 int is_dlist_empty(K_dlist_entry *list_head);

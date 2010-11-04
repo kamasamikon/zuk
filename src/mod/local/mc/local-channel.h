@@ -9,140 +9,140 @@
 class KMC_LocalChannel : public KMediaChannel
 {
 public:
-    KMC_LocalChannel(KIM *im, KMC_LocalDevice *a_parentDevice, char *a_name, char *a_uri);
-    virtual ~ KMC_LocalChannel(void);
+	KMC_LocalChannel(KIM *im, KMC_LocalDevice *a_parentDevice, char *a_name, char *a_uri);
+	virtual ~ KMC_LocalChannel(void);
 
-    virtual kbool getCapability(KMC_CAP cap);
+	virtual kbool getCapability(KMC_CAP cap);
 
-    virtual int setChannel(kbool isSet);
-    virtual int remove(void);
-
-public:
-    void setBackend(void *a_backend);
+	virtual int setChannel(kbool isSet);
+	virtual int remove(void);
 
 public:
-    virtual int getChannelInfo(KMC_ChannelInfo *serviceInfo);
-    virtual int getChannelPreviewInfo(KMC_PREVIEW_TYPE infoType, KMC_PreviewInfo *previewInfo);
+	void setBackend(void *a_backend);
 
-    virtual int getProgramList(time_t startTime, time_t endTime, KMC_ProgInfo **a_pi_lst, int *piCnt);
-    virtual int getProgramDescrition(char *progID, char **description);
+public:
+	virtual int getChannelInfo(KMC_ChannelInfo *serviceInfo);
+	virtual int getChannelPreviewInfo(KMC_PREVIEW_TYPE infoType, KMC_PreviewInfo *previewInfo);
 
-    virtual int getInteractivityInfo(time_t a_time,
-            KMC_ItvInfo **a_ii_cur, int *iiCurCnt, KMC_ItvInfo **a_ii_nxt, int *iiNxtCnt);
+	virtual int getProgramList(time_t startTime, time_t endTime, KMC_ProgInfo **a_pi_lst, int *piCnt);
+	virtual int getProgramDescrition(char *progID, char **description);
 
-    /**
-     *return EC_NOT_SUPPORT if operation not supported
-     */
+	virtual int getInteractivityInfo(time_t a_time,
+			KMC_ItvInfo **a_ii_cur, int *iiCurCnt, KMC_ItvInfo **a_ii_nxt, int *iiNxtCnt);
 
-    /** percent 0 - 100 */
-    virtual int setVolume(int a_vol);
-    virtual int getVolume(int *a_vol);
+	/**
+	 *return EC_NOT_SUPPORT if operation not supported
+	 */
 
-    /** mute and unmute */
-    virtual int setMute(kbool a_mute);
-    virtual int getMute(kbool *a_mute);
+	/** percent 0 - 100 */
+	virtual int setVolume(int a_vol);
+	virtual int getVolume(int *a_vol);
 
-    /** play, stop, pause, */
-    virtual int setPlayState(KMCPS a_state);
-    virtual int getPlayState(KMCPS *a_state);
+	/** mute and unmute */
+	virtual int setMute(kbool a_mute);
+	virtual int getMute(kbool *a_mute);
 
-    /** recording: start, end */
-    virtual int setRecState(KMCRS a_state);
-    virtual int getRecState(KMCRS *a_state);
+	/** play, stop, pause, */
+	virtual int setPlayState(KMCPS a_state);
+	virtual int getPlayState(KMCPS *a_state);
 
-    /** percent 100% is normal */
-    virtual int setPlaySpeed(int a_speed);
-    virtual int getPlaySpeed(int *a_speed);
+	/** recording: start, end */
+	virtual int setRecState(KMCRS a_state);
+	virtual int getRecState(KMCRS *a_state);
 
-    /**
-     * sound track
-     *
-     * FIXME: How to get all sound track?
-     */
-    virtual int setAudio(int a_audio);
-    virtual int getAudio(int *a_audio);
+	/** percent 100% is normal */
+	virtual int setPlaySpeed(int a_speed);
+	virtual int getPlaySpeed(int *a_speed);
 
-    /** Language and locale: en_US, zh_CN, zh_CN.UTF-8 etc */
-    virtual int setLanguage(int a_lang);
-    virtual int getLanguage(int *a_lang);
+	/**
+	 * sound track
+	 *
+	 * FIXME: How to get all sound track?
+	 */
+	virtual int setAudio(int a_audio);
+	virtual int getAudio(int *a_audio);
 
-    /** Title: en_US, zh_CN, zh_CN.UTF-8 etc */
-    virtual int setTitle(int a_type);
-    virtual int getTitle(int *a_type);
+	/** Language and locale: en_US, zh_CN, zh_CN.UTF-8 etc */
+	virtual int setLanguage(int a_lang);
+	virtual int getLanguage(int *a_lang);
 
-    /** Url for  title files, file: / / /a.txt, http: / / xx.x.x.x */
-    virtual int setTitleSource(char *a_uri);
-    virtual int getTitleSource(char *a_uri);
+	/** Title: en_US, zh_CN, zh_CN.UTF-8 etc */
+	virtual int setTitle(int a_type);
+	virtual int getTitle(int *a_type);
 
-    /**
-     * Speed should set to equal to video speed when play start
-     *
-     * > 0: delay, < 0: ahead
-     */
-    virtual int audioDelay(int a_millisecond);
-    virtual int titleDelay(int a_millisecond);
+	/** Url for  title files, file: / / /a.txt, http: / / xx.x.x.x */
+	virtual int setTitleSource(char *a_uri);
+	virtual int getTitleSource(char *a_uri);
 
-    /** method use for seek operation */
-    virtual int setSeekFormat(KMC_SeekFormat a_format);
-    virtual int getSeekFormat(KMC_SeekFormat *a_format);
+	/**
+	 * Speed should set to equal to video speed when play start
+	 *
+	 * > 0: delay, < 0: ahead
+	 */
+	virtual int audioDelay(int a_millisecond);
+	virtual int titleDelay(int a_millisecond);
 
-    /**
-     * \warning play with KMC_SeekFormat
-     * XXX: when play speed changed, how can KMC_Seek_TIME do?
-     */
-    virtual int setPosition(int a_pos);
-    virtual int getPosition(int *a_pos);
+	/** method use for seek operation */
+	virtual int setSeekFormat(KMC_SeekFormat a_format);
+	virtual int getSeekFormat(KMC_SeekFormat *a_format);
 
-    /**
-     * \warning play with KMC_SeekFormat
-     *
-     * Seek range is not same as play range, it should less then play range.
-     */
-    virtual int getSeekRange(int *a_from, int *a_to);
+	/**
+	 * \warning play with KMC_SeekFormat
+	 * XXX: when play speed changed, how can KMC_Seek_TIME do?
+	 */
+	virtual int setPosition(int a_pos);
+	virtual int getPosition(int *a_pos);
 
-    /**
-     * \warning play with KMC_SeekFormat
-     */
-    virtual int getPlayRange(int *a_from, int *a_to);
+	/**
+	 * \warning play with KMC_SeekFormat
+	 *
+	 * Seek range is not same as play range, it should less then play range.
+	 */
+	virtual int getSeekRange(int *a_from, int *a_to);
 
-    /**
-     * \warning play with KMC_SeekFormat
-     */
-    virtual int stepSeek(int a_step);
+	/**
+	 * \warning play with KMC_SeekFormat
+	 */
+	virtual int getPlayRange(int *a_from, int *a_to);
 
-    virtual int setOutputWindow(void *a_window);
-    virtual int getOutputWindow(void **a_window);
+	/**
+	 * \warning play with KMC_SeekFormat
+	 */
+	virtual int stepSeek(int a_step);
 
-    /**
-     * Channel is one playable media resource, which can be played by
-     * some type of codec or player.
-     *
-     * should be file, video, audio, etc, MIME type?
-     */
-    virtual int regOutputType(int a_type);
-    virtual int getOutputType(int *a_type);
+	virtual int setOutputWindow(void *a_window);
+	virtual int getOutputWindow(void **a_window);
 
-    virtual int setOutputWindowRect(KMC_RECT *a_rc);
-    virtual int getOutputWindowRect(KMC_RECT *a_rc);
-    virtual int getOrgOutputWindowRect(KMC_RECT *a_rc);
+	/**
+	 * Channel is one playable media resource, which can be played by
+	 * some type of codec or player.
+	 *
+	 * should be file, video, audio, etc, MIME type?
+	 */
+	virtual int regOutputType(int a_type);
+	virtual int getOutputType(int *a_type);
 
-    virtual int setOutputWindowRatio(int a_h, int a_w);
-    virtual int getOutputWindowRatio(int a_h, int a_w);
-    virtual int getOrgOutputWindowRatio(int a_h, int a_w);
+	virtual int setOutputWindowRect(KMC_RECT *a_rc);
+	virtual int getOutputWindowRect(KMC_RECT *a_rc);
+	virtual int getOrgOutputWindowRect(KMC_RECT *a_rc);
 
-    /** clockwise, default is zero */
-    virtual int setVideoAngle(int a_angle);
-    virtual int getVideoAngle(int *a_angle);
+	virtual int setOutputWindowRatio(int a_h, int a_w);
+	virtual int getOutputWindowRatio(int a_h, int a_w);
+	virtual int getOrgOutputWindowRatio(int a_h, int a_w);
 
-private:
-    int m_volume;
-    kbool m_mute;
-    KMCPS m_playState;
-    KMCRS m_recState;
+	/** clockwise, default is zero */
+	virtual int setVideoAngle(int a_angle);
+	virtual int getVideoAngle(int *a_angle);
 
 private:
-    void *m_backend;
-    char *m_uri;
+	int m_volume;
+	kbool m_mute;
+	KMCPS m_playState;
+	KMCRS m_recState;
+
+private:
+	void *m_backend;
+	char *m_uri;
 };
 
 #endif /*__KMC_LOCAL_CHANNEL_H__*/

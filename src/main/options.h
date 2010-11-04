@@ -10,10 +10,10 @@ extern "C" {
 #include <ktypes.h>
 
 typedef struct _zuk_opt {
-    kchar *name;		    /**< --name is opt name */
-    kchar type;		    /**< n:nul, i:int, b:bool, s:string */
-    kchar *desc;		    /**< description */
-    kchar *val;		    /**< all value is string */
+	kchar *name;		    /**< --name is opt name */
+	kchar type;		    /**< n:nul, i:int, b:bool, s:string */
+	kchar *desc;		    /**< description */
+	kchar *val;		    /**< all value is string */
 } zuk_opt;
 
 zuk_opt *zuk_opt_init();
