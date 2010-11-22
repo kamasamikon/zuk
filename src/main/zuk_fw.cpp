@@ -1,4 +1,5 @@
-/* vim:set et sw=4 sts=4 ff=unix: */
+/* vim:set noet ts=8 sw=8 sts=8 ff=unix: */
+
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -22,60 +23,60 @@
  */
 int main(int argc, char *argv[])
 {
-    int retval;
+	int retval;
 
-    kdbg_init(DBG_LOG | DBG_ERR | DBG_FAT | DBG_TIME);
+	kdbg_init(DBG_LOG | DBG_ERR | DBG_FAT | DBG_TIME);
 
-    /* Initialize GThread before calling any Glib or GTK+ functions. */
-    g_thread_init(NULL);
+	/* Initialize GThread before calling any Glib or GTK+ functions. */
+	g_thread_init(NULL);
 
 #ifdef ENABLE_NLS
-    bindtextdomain(PACKAGE, LOCALEDIR);
-    bind_textdomain_codeset(PACKAGE, "UTF-8");
-    textdomain(PACKAGE);
+	bindtextdomain(PACKAGE, LOCALEDIR);
+	bind_textdomain_codeset(PACKAGE, "UTF-8");
+	textdomain(PACKAGE);
 #endif
 
 #ifdef HAVE_SETLOCALE
-    /* Locale initialization is not complete here.  See gtk_init_check() */
-    setlocale(LC_ALL, "");
+	/* Locale initialization is not complete here.  See gtk_init_check() */
+	setlocale(LC_ALL, "");
 #endif
 
-    /* Initialize GThread before calling any Glib or GTK+ functions. */
-    // g_thread_init(NULL);
+	/* Initialize GThread before calling any Glib or GTK+ functions. */
+	// g_thread_init(NULL);
 
 #ifdef ENABLE_NLS
-    bindtextdomain(PACKAGE, LOCALEDIR);
-    bind_textdomain_codeset(PACKAGE, "UTF-8");
-    textdomain(PACKAGE);
+	bindtextdomain(PACKAGE, LOCALEDIR);
+	bind_textdomain_codeset(PACKAGE, "UTF-8");
+	textdomain(PACKAGE);
 #endif
 
 #ifdef HAVE_SETLOCALE
-    /* Locale initialization is not complete here.  See gtk_init_check() */
-    setlocale(LC_ALL, "");
+	/* Locale initialization is not complete here.  See gtk_init_check() */
+	setlocale(LC_ALL, "");
 #endif
 
-    printf("gtk_init(&argc, &argv);\n");
-    gtk_init(&argc, &argv);
+	printf("gtk_init(&argc, &argv);\n");
+	gtk_init(&argc, &argv);
 
-    printf("KIM *im = kim_new(knil);\n");
-    KIM *im = kim_new(knil);
-    kim_start(im);
+	printf("KIM *im = kim_new(knil);\n");
+	KIM *im = kim_new(knil);
+	kim_start(im);
 
-    printf("zuk_init(im, argc, argv);\n");
-    zuk_init(im, argc, argv);
+	printf("zuk_init(im, argc, argv);\n");
+	zuk_init(im, argc, argv);
 
-    printf("zuk_show(im, argc, argv);\n");
-    zuk_show(im, argc, argv);
+	printf("zuk_show(im, argc, argv);\n");
+	zuk_show(im, argc, argv);
 
-    printf("gtk_main();\n");
-    gtk_main();
+	printf("gtk_main();\n");
+	gtk_main();
 
-    printf("zuk_final(argc, argv);\n");
-    zuk_final(im, argc, argv);
+	printf("zuk_final(argc, argv);\n");
+	zuk_final(im, argc, argv);
 
-    kim_del(im);
+	kim_del(im);
 
-    printf("main:: return:%d\n", retval);
-    return retval;
+	printf("main:: return:%d\n", retval);
+	return retval;
 }
 

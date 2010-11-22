@@ -13,24 +13,24 @@
 kint zuk_sysdeps_start(KIM *im, kint argc, kchar **argv)
 {
 #if defined(__WIN32__) || defined(__WINCE__)
-    /* use wsa SOCKET */
-    WSADATA wsd;
-    if (0 != WSAStartup(MAKEWORD(2, 2), &wsd)) {
-        klog(("WSAStartup() failed\n"));
-        return -1;
-    }
-    klog(("WSAStartup() success\n"));
+	/* use wsa SOCKET */
+	WSADATA wsd;
+	if (0 != WSAStartup(MAKEWORD(2, 2), &wsd)) {
+		klog(("WSAStartup() failed\n"));
+		return -1;
+	}
+	klog(("WSAStartup() success\n"));
 #else
 #endif
-    return 0;
+	return 0;
 }
 
 kint zuk_sysdeps_term()
 {
 #if defined(__WIN32__) || defined(__WINCE__)
-    /* undo WSAStartup */
-    WSACleanup();
+	/* undo WSAStartup */
+	WSACleanup();
 #else
 #endif
-    return 0;
+	return 0;
 }
