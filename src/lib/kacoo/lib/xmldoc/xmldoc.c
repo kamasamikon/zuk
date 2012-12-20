@@ -30,8 +30,8 @@
 static kvoid onStartElement(kvoid *userData, const kchar *name, const kchar **atts)
 {
 	kint i;
-	KXmlDoc *doc = (KXmlDoc *) userData;
-	KXmlNode *node = xmlnode_new(knil, (kchar *) name, knil);
+	KXmlDoc *doc = (KXmlDoc*)userData;
+	KXmlNode *node = xmlnode_new(knil, (kchar*)name, knil);
 	KXmlAttr *attr;
 
 	xmldoc_addNode(doc, node, doc->cur_node);
@@ -39,7 +39,7 @@ static kvoid onStartElement(kvoid *userData, const kchar *name, const kchar **at
 
 	/* (i)th is attribution name, (i+1)th is attribution value */
 	for (i = 0; atts[i]; i += 2) {
-		attr = xmlattr_new(knil, (kchar *) atts[i], (kchar *) atts[i + 1]);
+		attr = xmlattr_new(knil, (kchar*)atts[i], (kchar*)atts[i + 1]);
 		xmlnode_addattr(node, attr);
 	}
 }
@@ -52,7 +52,7 @@ static kvoid onStartElement(kvoid *userData, const kchar *name, const kchar **at
  */
 static kvoid onEndElement(kvoid *userData, const kchar *name)
 {
-	KXmlDoc *doc = (KXmlDoc *) userData;
+	KXmlDoc *doc = (KXmlDoc*)userData;
 	kassert(doc);
 
 	xmldoc_gotoNode(doc, "..", 0);
@@ -73,7 +73,7 @@ static kvoid onCharacterData(kvoid *userData, const XML_Char *s, kint len)
 {
 	kint osl, nsl;
 	kchar *nbuf;
-	KXmlNode *node = ((KXmlDoc *) userData)->cur_node;
+	KXmlNode *node = ((KXmlDoc*)userData)->cur_node;
 
 	if ((node->text)) {
 		osl = strlen((node->text));
@@ -109,7 +109,7 @@ KXmlDoc *xmldoc_new(KXmlDoc *doc)
 	mhs.free_fcn = kmem_free;
 
 	if (!doc)
-		doc = (KXmlDoc *) kmem_alloz(sizeof(KXmlDoc));
+		doc = (KXmlDoc*)kmem_alloz(sizeof(KXmlDoc));
 
 	if (doc) {
 		doc->root = xmlnode_new(knil, "/", "root");
@@ -253,7 +253,7 @@ kint xmldoc_save(KXmlDoc *doc, const kchar *path)
 	K_dlist_entry *entry, *hdr;
 	kint level = 0;
 
-	kbean fp = (kbean) kvfs_open((kchar *) path, "w+t", 0);
+	kbean fp = (kbean) kvfs_open((kchar*)path, "w+t", 0);
 	if (!fp)
 		return -1;
 
@@ -404,7 +404,7 @@ KXmlNode *xmldoc_addNode(KXmlDoc *doc, KXmlNode *node, KXmlNode *parent)
 KXmlNode *xmlnode_new(KXmlNode *node, const kchar *name, const kchar *text)
 {
 	if (!node)
-		node = (KXmlNode *) kmem_alloz(sizeof(KXmlNode));
+		node = (KXmlNode*)kmem_alloz(sizeof(KXmlNode));
 
 	if (node) {
 		init_dlist_head(&node->entry);
@@ -573,7 +573,7 @@ KXmlAttr *xmlnode_getattr(KXmlNode *node, const kchar *attrname)
 KXmlAttr *xmlattr_new(KXmlAttr *attr, const kchar *name, const kchar *value)
 {
 	if (!attr)
-		attr = (KXmlAttr *) kmem_alloz(sizeof(KXmlAttr));
+		attr = (KXmlAttr*)kmem_alloz(sizeof(KXmlAttr));
 
 	if (attr) {
 		init_dlist_head(&attr->entry);
@@ -587,8 +587,6 @@ KXmlAttr *xmlattr_new(KXmlAttr *attr, const kchar *name, const kchar *value)
 kint xmlattr_del(KXmlAttr *attr)
 {
 	if (attr) {
-		//kassert(is_dlist_empty(&attr->entry));
-		//klog(("attrdel:%s = %s\n", attr->name, attr->value));
 		kmem_free(attr->name);
 		kmem_free(attr->value);
 		kmem_free(attr);
@@ -636,10 +634,8 @@ kint xsmain(kint argc, kchar **argv)
 	len = fread(buffer, 1, sizeof(buffer), fp);
 	buffer[len] = '\0';
 
-	// 解析，生成树
 	xmldoc_parse(doc, buffer, len);
 
-	// 还解析，
 	node = xmldoc_getNode(doc, ".", 0);
 	node = xmldoc_gotoNode(doc, "/", 1);
 	node = xmldoc_gotoNode(doc, "Service", 0);
